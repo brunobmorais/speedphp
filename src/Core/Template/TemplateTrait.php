@@ -3,11 +3,8 @@
 namespace App\Core\Template;
 
 use App\Core\Controller\ControllerCore;
-use App\Core\PageCore;
 use App\Libs\AlertLib;
 use App\Libs\FuncoesLib;
-use App\Libs\JwtLib;
-use App\Libs\SessionLib;
 use App\Libs\twig\TwigLib;
 
 Trait TemplateTrait
