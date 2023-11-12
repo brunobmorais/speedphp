@@ -2,7 +2,6 @@
 
 namespace App\Core\Template;
 
-use App\Core\Template\TemplateInterface;
 use App\Libs\JwtLib;
 use App\Libs\SessionLib;
 
