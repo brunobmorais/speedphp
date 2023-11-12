@@ -2,27 +2,6 @@
 
 namespace App\Libs\Twig;
 
-use App\Daos\intranet\BBoletimDao;
-use App\Daos\intranet\FCriterioPromocaoDao;
-use App\Daos\intranet\RhFuncoesDao;
-use App\Daos\intranet\RhPostoGraduacaoDao;
-use App\Daos\intranet\RhQuadrosDao;
-use App\Daos\intranet\RhSituacaoCertificadoDao;
-use App\Daos\intranet\RhTipoAgregacaoDao;
-use App\Daos\intranet\RhTipoArmaFogoDao;
-use App\Daos\intranet\RhTipoBancosDao;
-use App\Daos\intranet\RhTipoComissaoDao;
-use App\Daos\intranet\RhTipoCursoDao;
-use App\Daos\intranet\RhTipoDiversosDao;
-use App\Daos\intranet\RhTipoDocumentoDao;
-use App\Daos\intranet\RhTipoElogiosDao;
-use App\Daos\intranet\RhTipoJuntaMedicaDao;
-use App\Daos\intranet\RhTipoLicencaDao;
-use App\Daos\intranet\RhTipoPunicoesDao;
-use App\Daos\intranet\RhTipoTccDao;
-use App\Daos\intranet\RhTipoTransferenciaDao;
-use App\Daos\intranet\View_UnidadesDao;
-use App\Enums\DadosComplementares_Funcionario;
 use Twig\TwigFilter;
 use Twig\TwigFunction;
 

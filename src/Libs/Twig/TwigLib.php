@@ -2,11 +2,7 @@
 
 namespace App\Libs\Twig;
 
-use App\Components\NavbarComponents;
-use App\Core\View;
-use App\Lib\AlertaLib;
-use App\Lib\FuncoesLib;
-use App\Libs\twig\TwigExtensionLib as LibsTwigExtension;
+use App\Libs\Twig\TwigExtensionLib as LibsTwigExtension;
 use Twig\Environment;
 use Twig\Loader\FilesystemLoader;
 
