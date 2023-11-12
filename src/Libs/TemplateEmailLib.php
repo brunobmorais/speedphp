@@ -2,7 +2,9 @@
 
 namespace App\Libs;
 
+use App\Core\Controller\ControllerCore;
 use App\Core\PageCore;
+use App\Libs\Twig\TwigLib;
 
 class TemplateEmailLib
 {
@@ -57,7 +59,7 @@ class TemplateEmailLib
         $this->urlEmail = CONFIG_SITE['url'];
         $this->nameFullEmail = CONFIG_SITE['nameFull'];
 
-        return (new PageCore())->render("components/email-2",[
+        return (new TwigLib())->render("components/email-2",[
             "titleEmail" => $title,
             "subTitleEmail" => $subTitle,
             "descriptionEmail" => $description,
@@ -82,7 +84,7 @@ class TemplateEmailLib
         $this->urlEmail = CONFIG_SITE['url'];
         $this->nameFullEmail = CONFIG_SITE['nameFull'];
 
-        return (new PageCore())->render("components/email-1",[
+        return (new TwigLib())->render("components/email-1",[
             "titleEmail" => $title,
             "subTitleEmail" => $subTitle,
             "descriptionEmail" => $description,
