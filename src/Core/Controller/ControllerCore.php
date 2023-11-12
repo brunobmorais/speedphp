@@ -187,9 +187,15 @@ class ControllerCore
     }
 
     public function render(string $template, string $view = "", array $data = [], array $css = [], array $js = []) {
-        $template = 'App\\Core\\Template\\' . $template . "Template";
-        $template = new $template;
-        return $template->build($view, $data, $css, $js);
+        if (file_exists(dirname(__DIR__, 3) . '/src/Core/Template/' . ucfirst($template) . 'Template.php')) {
+            $template = "App\\Core\\Template\\" . $template . "Template";
+            $template = new $template;
+            return $template->build($view, $data, $css, $js);
+        } else {
+            $template = "App\\Core\\Template\\DefaultTemplate";
+            $template = new $template;
+            return $template->build('erro/index',['TITLE' => 'Página não encontrada']);
+        }
     }
 
 
