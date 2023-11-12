@@ -1,0 +1,180 @@
+<main>
+    <section class="section">
+        <div class="container my-container">
+            <div class="row">
+                <div class="col-12 p-0">
+                    <div class="card shadow-1">
+                        <div class="card-body pt-4">
+                            <form id="formInformacoesUsuario" class="needs-validation" novalidate
+                                  action="/usuario/meusdadosaction"
+                                  method="post" enctype='multipart/form-data'>
+                                <div class="row">
+                                    <div class="col-sm-12 col-lg-12 p-0">
+                                        <div class="form-group col-12 col-md-6 float-left">
+                                            <label>Nome</label>
+                                            <input name="NOME" id="nome_rs" type="text" class="form-control" required
+                                                   placeholder="Seu nome completo" readonly
+                                                   value="{{ SESSAO.NOME }}"/>
+                                            <div class="invalid-feedback">
+                                                Preencha o campo corretamente
+                                            </div>
+                                        </div>
+                                        <div class="form-group col-12 col-md-12 float-left">
+                                            <label>CPF</label>
+                                            <input name="CPF" id="cpf_cnpj" type="text" class="form-control"
+                                                   placeholder="000.000.000-00" readonly
+                                                   onkeyup="mascara(this,cpfCnpj)"
+                                                   maxlength="18"
+                                                   value="{{ SESSAO.CPF }}"/>
+                                            <div class="invalid-feedback">
+                                                Preencha o campo corretamente
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-12 col-lg-12 p-0">
+                                        <div class="section-title col-12">Contato</div>
+                                        <div class="form-group col-12 col-md-12 float-left">
+                                            <label>Email</label>
+                                            <input name="EMAIL" id="email" type="email" class="form-control"
+                                                   placeholder="nome@exemplo.com" required
+                                                   autocomplete="nope"
+                                                   value="{{ SESSAO.EMAIL }}"/>
+                                            <div class="invalid-feedback">
+                                                Preencha o campo corretamente
+                                            </div>
+                                        </div>
+
+
+                                    </div>
+
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-12">
+                                        <a href="javascript:void(0)"
+                                           class="btn btn-outline-primary btn-lg col-md-3 col-lg-2" data-bs-toggle="modal" data-bs-target="#modalAlterarSenha">
+                                            Alterar senha
+                                        </a>
+
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                                        <a href="/usuario"
+                                           class="btn btn-lg btn-link btn-round col-md-3 col-lg-2 float-right mr-md-2 mt-2">
+                                            Voltar
+                                        </a>
+                                        <button type="button" id="btnSalvarUsuario"
+                                                onclick="submitForm('btnSalvarUsuario','formInformacoesUsuario')"
+                                                class="btn btn-lg btn-primary btn-round col-md-3 col-lg-2 float-right mt-2">
+                                            Alterar
+                                        </button>
+                                    </div>
+                                </div>
+                                <input type="hidden" name="CODPESSOA" value="{{ SESSAO.CODPESSOA }}"/>
+                                <input type="hidden" name="CODUSUARIO" value="{{ SESSAO.CODUSUARIO }}"/>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
+
+
+<!--MODAL ALTERAR SENHA-->
+<div class="modal fade" id="modalAlterarSenha" data-hash="#alterar-senha" aria-labelledby="modalAlterarSenha" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-telaCheia" role="document">
+        <div class="modal-content modal-lg modal-content-telaCheia">
+            <div class="modal-header">
+                <h5 class="modal-title fs-5" id="exampleModalLabel">Alterar senha</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body pl-1 pr-1">
+                <form id="formUsuarioSeguranca" class="needs-validation" novalidate action="/usuario/alterarsenha"
+                      method="post" enctype='multipart/form-data'>
+                    <div class="row">
+                        <div class="col-12 p-0">
+                            <div class="form-group col-12 col-md-12 float-left">
+                                <label>Senha atual</label>
+                                <input name="senhaatual" id="senhaatual" type="password" class="form-control"
+                                       placeholder="Sua senha atual" required>
+                                <div class="invalid-feedback">
+                                    Preencha o campo corretamente
+                                </div>
+                            </div>
+                            <div class="form-group col-12 col-md-12 float-left">
+                                <label>Nova senha</label>
+                                <input name="novasenha" id="novasenha" type="password" class="form-control"
+                                       placeholder="Nova senha" minlength="6" required>
+                                <div class="invalid-feedback">
+                                    Preencha o campo corretamente
+                                </div>
+                            </div>
+                            <div class="form-group col-12 col-md-12 float-left">
+                                <label>Repetir senha</label>
+                                <input name="repetirsenha" id="repetirsenha" type="password" class="form-control"
+                                       placeholder="Repetir senha" minlength="6" required>
+                                <div class="invalid-feedback">
+                                    Preencha o campo corretamente
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mt-5">
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <input type="hidden" name="codpessoa" value="{{ SESSAO.CODPESSOA }}"/>
+                            <input type="hidden" name="codusuario" value="{{ SESSAO.CODUSUARIO }}"/>
+                            <a href="javascript:void(0)"
+                               class="btn btn-lg btn-link btn-round col-md-3 col-lg-2 float-right mr-md-2 mt-2" data-bs-dismiss="modal">
+                                Voltar
+                            </a>
+                            <button type="button" id="btnAlterarSenha"
+                                    onclick="alterarSenha('btnAlterarSenha','formUsuarioSeguranca')"
+                                    class="btn btn-lg btn-primary btn-round col-md-3 col-lg-2 float-right mt-2">
+                                Alterar
+                            </button>
+
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+
+    function submitForm(nameButton, nameForm) {
+        clickBotaoProgressAtivo(nameButton);
+        validaForm();
+        if (document.getElementById(nameForm).checkValidity())
+            document.getElementById(nameForm).submit();
+        else {
+            alertaErro("Preencha todos os campos corretamente!")
+            clickBotaoProgressInativo(nameButton, "Alterar");
+        }
+    }
+
+    function alterarSenha(nameButton, nameForm) {
+
+        clickBotaoProgressAtivo(nameButton);
+        validaForm();
+        if (document.getElementById(nameForm).checkValidity()) {
+            if (document.getElementById('novasenha').value === document.getElementById('repetirsenha').value)
+                document.getElementById(nameForm).submit();
+            else {
+                alertaErro("Senhas não conferem!");
+                clickBotaoProgressInativo(nameButton, "Alterar");
+            }
+        } else {
+            alertaErro("Preencha todos os campos corretamente!")
+            clickBotaoProgressInativo(nameButton, "Alterar");
+        }
+    }
+
+
+</script>

@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang='pt-BR'>
+<head>
+    {{ head | raw}}
+    {% for item in css %}
+        {{ item | raw }}
+    {% endfor %}
+</head>
+<body>
+{{ navbar | raw }}
+{{ title | raw }}
+{{ main | raw}}
+{{ menu | raw }}
+{{ footer | raw }}
+</body>
+{{ javascript | raw}}
+{% for item in js %}
+    {{ item | raw }}
+{% endfor %}
+</html>

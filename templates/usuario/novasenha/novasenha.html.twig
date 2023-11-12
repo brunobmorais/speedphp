@@ -1,0 +1,63 @@
+<main class="mt-2">
+    <section class="section">
+        <div class="container my-container">
+            <div class="row">
+                <div class="col-12 col-sm-10 offset-sm-1 col-md-8 offset-md-2 col-lg-8 offset-lg-2 col-xl-8 offset-xl-2">
+                    <div class="row pl-2">
+                        <a href='javascript:void(0)' title="Voltar" class="colorPreto" id="btnTopoVoltar" onclick="clickProgress('btnTopoVoltar','/usuario/login','mt-2 ml-1 mb-2')"><span
+                                    class="mdi mdi-24px mdi-chevron-left"></span></a>
+                    </div>
+                    <div class="col-12 pb-3">
+                        <h1 class="h1-title">Cadastrar nova senha</h1>
+                        <p class="p-0 m-0 text-secondary" style="line-height: 15px">Informe a nova senha</p>
+                    </div>
+
+                    <form role="form" class="needs-validation" novalidate action="/usuario/addnovasenha" method="post"
+                          name="form">
+                        <input type="hidden" id="id" name="id"
+                               value="{{PESSOA.id}}">
+                        <input type="hidden" id="idfuncionario" name="idfuncionario"
+                               value="{{PESSOA.id_funcionario}}">
+                        <input type="hidden" id="token" name="token"
+                               value="{{TOKEN}}">
+                        <div class="row">
+                            <div class="form-group col-12">
+                                <div class="field-wrapper">
+                                    <input type="password" class="form-control form-control-material" name="cdsenha" id="cdsenha"
+                                           placeholder="Senha" autocomplete="nope" required>
+                                    <div class="field-placeholder"><span>Senha</span></div>
+                                    <div class="float-left invalid-feedback">
+                                        Preencha o campo!
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group col-12">
+                                <div class="field-wrapper">
+                                    <input type="password" class="form-control form-control-material" name="cdrptsenha" id="cdrptsenha"
+                                           placeholder="Repita a senha" autocomplete="username" required>
+                                    <div class="field-placeholder"><span>Repita a senha</span></div>
+                                    <div class="float-left invalid-feedback">
+                                        Preencha o campo!
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <button type="button" class="btn btn-primary btn-lg btn-block btn-round"
+                                    onclick="validarSenha()">
+                                Salvar
+                            </button>
+                        </div>
+
+                        <div class="form-group col-12">
+                            Fazer login! <a href="/usuario/login">Login</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
+
+

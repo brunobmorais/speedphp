@@ -1,0 +1,55 @@
+@media (min-width: 960px) {
+
+    .view-navbar{
+        margin-top: 70px;
+        margin-bottom: 9px;
+    }
+
+    #navbar-bottom {
+        display: none;
+    }
+
+    div.bodyScroll{
+        width: 100%;
+        height: calc(100vh - 320px);
+        overflow: hidden;
+    }
+
+    .gallery.gallery-md .gallery-item {
+        width: 85px;
+        height: 85px;
+    }
+
+    .fab button.fabIcone {
+        position: absolute;
+        width: 60px;
+        height: 60px;
+        border-radius: 30px;
+        background-color: #ea1d2c;
+        right: 10px;
+        bottom: 10px;
+        z-index: 20;
+    }
+    .fab button.fabIconeTexto {
+        position: absolute;
+        width: 120px;
+        height: 35px;
+        border-radius: 30px;
+        background-color: #3E9920;
+        right: 10px;
+        bottom: 10px;
+        z-index: 20;
+        font-size: 17px;
+    }
+
+    .h1-title {
+        font-family: 'Poppins', sans-serif !important;
+        font-weight:600;
+        color: #000000 !important;
+        font-size: 22px;
+        padding-left: 0px;
+        padding-bottom: 5px;
+        padding-top: 10px;
+    }
+
+}

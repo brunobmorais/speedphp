@@ -1,0 +1,165 @@
+<div class="col-sm-12 col-lg-12 p-0">
+    <input type="hidden" name="id_endereco" id="id_endereco" value="{{ ENDERECO.id }}">
+    <div class="section-title col-12">Endereço</div>
+    <div class="row">
+        <div class="form-group col-12 col-md-4 float-left">
+            <label>CEP</label>
+            <div class="form-group">
+                <input type="text" class="form-control" id="cep" name="cep"
+                       placeholder="77555-000"
+                       value="{{ ENDERECO.cep }}"
+                       onkeyup="mascara(this,mcep); buscarCep();"
+                       autocomplete="nope"
+                       maxlength="9" minlength="9" required>
+                <div class="invalid-feedback">
+                    Preencha o campo corretamente
+                </div>
+            </div>
+        </div>
+        <div class="form-group col-12 col-md-8 float-left">
+            <label>Logradouro</label>
+            <div class="form-group">
+                <input type="text" class="form-control" id="logradouro" name="logradouro"
+                       placeholder="Rua, Quadra, Alameda etc."
+                       value="{{ ENDERECO.logradouro }}"
+                       autocomplete="nope"
+                       required>
+                <div class="invalid-feedback">
+                    Preencha o campo corretamente
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="form-group col-12 col-md-2 float-left">
+            <label>Número</label>
+            <div class="form-group">
+                <input type="text" class="form-control" id="numero" name="numero"
+                       placeholder="01"
+                       value="{{ ENDERECO.numero }}"
+                       autocomplete="nope" required>
+                <div class="invalid-feedback">
+                    Obrigatório
+                </div>
+            </div>
+        </div>
+        <div class="form-group col-12 col-md-4 float-left">
+            <label>Bairro</label>
+            <div class="form-group">
+                <input type="text" class="form-control" id="bairro" name="bairro"
+                       placeholder="Nome do bairro"
+                       value="{{ ENDERECO.bairro }}"
+                       autocomplete="nope" required>
+                <div class="invalid-feedback">
+                    Preencha o campo corretamente
+                </div>
+            </div>
+        </div>
+        <div class="form-group col-12 col-md-6 float-left">
+            <label>Complemento</label>
+            <div class="form-group">
+                <input type="text" class="form-control" id="complemento" name="complemento"
+                       placeholder="Complemento ou referência"
+                       value="{{ ENDERECO.complemento }}"
+                       autocomplete="nope">
+                <div class="invalid-feedback">
+                    Preencha o campo corretamente
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="form-group col-12 col-md-6 float-left">
+        <label>Estado</label>
+        <div class="form-group">
+            <select class="form-control" id="estado" name="estado" required onchange="buscarMunicipio()">
+                <option value="">Selecione</option>
+                {% for item in ESTADO %}
+                    <option value="{{ item.uf }}" {{ ENDERECO.uf == item.uf?"selected":"" }}>{{ item.nome_estado }}</option>
+                {% endfor %}
+            </select>
+            <div class="invalid-feedback">
+                Preencha o campo corretamente
+            </div>
+        </div>
+    </div>
+    <div class="form-group col-12 col-md-6 float-left">
+        <label>Cidade</label>
+        <div class="form-group">
+            <select class="form-control" id="id_municipio" name="id_municipio" required>
+                <option value="">Selecione</option>
+                {% for item in MUNICIPIO %}
+                    <option value="{{ item.id_municipio }}" {{ ENDERECO.id_municipio == item.id_municipio?"selected":"" }}>{{ item.nome_municipio }}</option>
+                {% endfor %}
+            </select>
+            <div class="invalid-feedback">
+                Preencha o campo corretamente
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+
+    async function buscarCep() {
+
+        var cep = $('#cep').val();
+
+        if (cep.length > 8) {
+            cep = removeCaracteres(cep);
+
+            var valor = await requisicaoHttp("https://viacep.com.br/ws/" + cep + "/json/", "GET").then(async (data) => {
+                console.log(data);
+                if (data.erro !== true && data !== false) {
+                    $('#logradouro').val(data.logradouro);
+                    $('#bairro').val(data.bairro);
+                    $('#complemento').val(data.complemento);
+                    $('#estado').val(data.uf).prop('selected', true);
+
+                    await buscarMunicipio(data.localidade);
+
+                    $('#numero').focus();
+                } else {
+                }
+
+            }).catch(() => {
+
+            });
+
+            console.log(valor);
+        }
+    }
+
+    async function buscarMunicipio(nomecidade = null) {
+
+        var selectEstado = document.getElementById("estado");
+        var uf = selectEstado.options[selectEstado.selectedIndex].value;
+        var selectMunicipio = document.getElementById("id_municipio");
+        selectMunicipio.innerHTML = "";
+
+        if (nomecidade != null) {
+            nomecidade = removerAcentos(maiuscula(nomecidade));
+        }
+
+
+        await requisicaoHttp("/api/buscarmunicipio", "POST", JSON.stringify({"uf": uf})).then((data) => {
+
+            //console.log(data);
+            if (!data.error) {
+                for (var i = 0; i < data.data.length; i++) {
+                    option = document.createElement("option");
+                    texto = document.createTextNode(data.data[i].nome_municipio);
+                    if (removerAcentos(maiuscula(data.data[i].nome_municipio)) === nomecidade) {
+                        option.setAttribute("selected", "selected");
+                        $('#municipio').trigger('change');
+                    }
+                    option.setAttribute("value", data.data[i].id_municipio);
+                    option.appendChild(texto);
+                    selectMunicipio.appendChild(option);
+                }
+            }
+
+        }).catch(() => {
+
+        });
+    }
+</script>

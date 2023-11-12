@@ -1,0 +1,20 @@
+<div class="row">
+    <div class="col-md-6 col-12 p-0">
+        {% if(SERVICO.SALVAR=="1") %}
+            <button type="button" onclick="window.location.href = '/{{ SERVICO.url }}-cadastro/'" class="btn btn-outline-secondary col-md-3 col-lg-2 col-12 mb-1 mb-md-0"><span class="mdi mdi-plus"></span> Novo</button>
+        {% endif %}
+    </div>
+
+    <div class="col-md-6 col-12 p-0">
+        <form action="/{{ SERVICO.url }}/" class="mb-0">
+            <div class="input-group">
+                <input class="form-control" name="buscar" placeholder="Buscar..."
+                       value="{{ GETPARAMS.buscar }}">
+                <button class="btn btn-outline-secondary" type="submit" id="button-addon2">
+                    <span class="mdi mdi-magnify"></span> Buscar
+                </button>
+                <button type="button" class="btn btn-outline-secondary" onclick="window.location.href = './'"><span class="mdi mdi-format-list-bulleted"></span> Todos</button>
+            </div>
+        </form>
+    </div>
+</div>

@@ -1,0 +1,160 @@
+.text-primary {
+    color: var(--cor-bg-principal);
+}
+
+.btn {
+    font-size: 0.875rem;
+}
+
+.btn.active {
+    display: inline-block;
+}
+
+/*BTN PRIMARY*/
+.btn-primary {
+    --bs-btn-focus-box-shadow: 0 0 0 0.25rem rgba(var(--cor-bg-principal), .5);
+}
+
+.btn-primary{
+    border-radius: 15px;
+    background-color: var(--cor-bg-principal);
+    border-color: var(--cor-bg-principal);
+    box-shadow: 0 2px 6px #b9b9b9;
+}
+
+.btn-primary.disabled, .btn-primary:disabled {
+    color: #fff;
+    background-color: var(--cor-bg-principal-hover) !important;
+    border-color: var(--cor-bg-principal-hover) !important;
+}
+
+.btn-primary:focus, .btn-primary.disabled:focus {
+    background-color: var(--cor-bg-principal-hover) !important;
+}
+
+.btn-primary:focus:active, .btn-primary.disabled:focus:active {
+    background-color: var(--cor-bg-principal-hover) !important;
+}
+
+
+.btn-primary:active, .btn-primary:hover, .btn-primary.disabled:active, .btn-primary.disabled:hover {
+    background-color: var(--cor-bg-principal-hover) !important;
+    border-color: var(--cor-bg-principal-hover) !important;
+}
+
+/*BTN SECONDARY*/
+.btn-secondary {
+    color: #fff;
+    background-color: #6c757d;
+    border-color: #6c757d;
+    border-radius: 15px;
+}
+
+.btn-outline-secondary {
+    border-radius: 15px;
+}
+
+/*BTN OUTLINE*/
+.btn-outline-primary, .btn-outline-primary.disabled {
+    border-radius: 15px;
+    border-color: var(--cor-bg-principal);
+    color: var(--cor-bg-principal);
+}
+
+.btn-outline-primary:focus, .btn-outline-primary.disabled:focus {
+    background-color: var(--cor-bg-principal-hover) !important;
+}
+
+.btn-outline-primary:focus:active, .btn-outline-primary.disabled:focus:active {
+    background-color: var(--cor-bg-principal-hover) !important;
+}
+
+.btn-outline-primary:active, .btn-outline-primary:hover, .btn-outline-primary.disabled:active, .btn-outline-primary.disabled:hover {
+    background-color: var(--cor-bg-principal-hover) !important;
+}
+
+/*BTN LINK*/
+.btn-link {
+    text-decoration: none;
+    font-size: 0.875rem;
+    color: var(--cor-bg-principal-hover);
+}
+
+.btn-link:focus, .btn-link.disabled:focus {
+    color: var(--cor-bg-principal);
+}
+
+.btn-link:focus:active, .btn-link.disabled:focus:active {
+    color: var(--cor-bg-principal);
+}
+
+.btn-link:active, .btn-link:hover, .btn-link.disabled:active, .btn-link.disabled:hover {
+    color: var(--cor-bg-principal);
+}
+
+/*ESTILO PARA FORMULARIO - BOTAO DE UPLOAD */
+.btnInputFile {
+    width: 155px;
+    height: 40px;
+    position: relative;
+    overflow: hidden;
+    background: #0E7A7A;
+    padding: 0 .3em;
+    color: #fff;
+    line-height: 31px;
+    border-radius: 14px;
+    font-size: 12px;
+}
+
+.btnInputFile:hover {
+    background: #005050;
+}
+
+.btnInputFile div {
+    padding: .4em;
+    text-align: center;
+    display: block;
+    height: 100%;
+    width: 100%;
+    position: absolute;
+}
+
+.btnInputFile div {
+    cursor: pointer;
+}
+
+.btnInputFile input {
+    position: absolute;
+    right: 0;
+    z-index: 2;
+    font-size: 100px; /* Aumenta tamanho do campo */
+    opacity: 0;
+    filter: alpha(opacity=0);
+}
+
+/*LINK*/
+a {
+    color: var(--cor-bg-principal);
+}
+
+a:hover {
+    color: var(--cor-bg-principal-hover);
+}
+
+/* Colors of the buttons*/
+.button-active, .selectors button:hover, .selectors button:active, .selectors button:focus {
+    background-color: transparent !important;
+    color: var(--cor-bg-principal);
+    line-height: 16px;
+}
+
+.button-inactive {
+    color: #000;
+    line-height: 16px;
+}
+
+/* MOBILE */
+@media (max-width: 992px) {
+
+}
+

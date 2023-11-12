@@ -1,0 +1,40 @@
+<nav class="navbar navbar-expand-lg navbar-bg nav-down fixed-top navbar-dark" id="navbar">
+    <div class="container">
+        <div class="col">
+            <a id='topoVoltar' href='javascript:void(0)' class='float-start text-white {{btnVoltar}}' onclick="history.back()"><span class='mdi mdi-24px mdi-chevron-left'></span></a>
+            <a href="/" class="navbar-brand"><img alt="logo" src="/assets/img/logo_white.png" height="40px"/> </a>
+        </div>
+        <ul class="navbar-nav flex-row flex-wrap ms-md-auto">
+            <li class="nav-item dropdown">
+                {% if  primeiroNome %}
+                    <a href="#" data-toggle="dropdown" class="nav-link dropdown-toggle text-white"  data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="mdi mdi-24px mdi-account"></i>
+                        <span class="font-weight-light">{{primeiroNome ?: 'Fulano'}}</span>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-navbar dropdown-menu-end">
+                        <li> <h6 class="dropdown-header">Olá, {{primeiroNome ?: 'Fulano'}}</h6></li>
+                        <li>
+                            <a href="/" class="dropdown-item font-weight-light">
+                            <i class="mdi mdi-18px mdi-view-grid-outline"></i> Início</a>
+                        </li>
+                        <li><a href="/usuario/meusdados" class="dropdown-item font-weight-light">
+                            <i class="mdi mdi-18px mdi-account-outline"></i> Meus dados</a>
+                        </li>
+                        <li><a href="/institucional/privacidade" class="dropdown-item font-weight-light">
+                            <i class="mdi mdi-18px mdi-lock-outline"></i> Termo de uso</a>
+                        </li>
+                        <div class="dropdown-divider"></div>
+                        <li><a href="/usuario/logoff" class="dropdown-item font-weight-light">
+                            <span class="mdi mdi-18px mdi-logout"></span> Sair</a>
+                        </li>
+                    </ul>
+                {% else %}
+                    <a href="/usuario/login" class="nav-link text-white" aria-expanded="false">
+                        <i class="mdi mdi-24px mdi-account-lock-open"></i>
+                        <span class="font-weight-light">Entrar</span>
+                    </a>
+                {% endif %}
+            </li>
+        </ul>
+    </div>
+</nav>

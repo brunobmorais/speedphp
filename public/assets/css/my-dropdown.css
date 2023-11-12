@@ -1,0 +1,7 @@
+.dropdown-menu-navbar {
+    position: absolute !important;
+}
+
+.dropdown-menu-navbar .dropdown-header {
+    font-size: 18px;
+}

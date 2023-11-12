@@ -1,0 +1,79 @@
+.fab {
+    position: fixed;
+    bottom: 10px;
+    right: 10px;
+}
+.fab button {
+    cursor: pointer;
+    width: 48px;
+    height: 48px;
+    border-radius: 30px;
+    background-color: #cb60b3;
+    border: none;
+    box-shadow: 0 1px 5px rgba(0, 0, 0, .4);
+    font-size: 24px;
+    color: white;
+
+    -webkit-transition: .2s ease-out;
+    -moz-transition: .2s ease-out;
+    transition: .2s ease-out;
+}
+.fab button:focus {
+    outline: none;
+}
+
+/*.fab button div.beep:after{
+    content: '';
+    position: absolute;
+    top: 10px;
+    right: 13px;
+    width: 10px;
+    height: 10px;
+    background-color: #ffa426;
+    border-radius: 50%;
+    animation: pulsate 1s ease-out;
+    animation-iteration-count: infinite;
+    opacity: 1;
+    font-size: 0.5rem;
+}*/
+
+.fab .fabqtditem {
+    position: absolute;
+    top: 13px;
+    right: 13px;
+    width: 10px;
+    height: 10px;
+    font-size: 0.7rem;
+}
+
+/*.fab button.main:before{
+    content: '⏚';
+}*/
+
+.fab.show button.fabIcone,
+.fab.show button.fabIcone {
+    outline: none;
+    background-color: var(--my-color-primary);
+    box-shadow: 0 3px 8px rgba(0, 0, 0, .5);
+}
+
+.fab.show button.fabIcone:before,
+.fab.show button.fabIcone:before {
+    content: '↑';
+}
+
+.fab.show button.fabIcone + ul,
+.fab.show button.fabIcone + ul {
+    bottom: 70px;
+}
+
+.fab.show button.fabIcone + ul li,
+.fab.show button.fabIcone + ul li {
+    margin-bottom: 10px;
+    opacity: 1;
+}
+
+.fab.show button.fabIcone + ul li:hover label,
+.fab.show button.fabIcone + ul li:hover label {
+    opacity: 1;
+}

@@ -1,0 +1,19 @@
+.active>.page-link, .page-link.active {
+    background-color: var(--bs-secondary);
+    border-color: var(--bs-secondary);
+}
+
+table:not(.table-sm) thead th {
+    background-color: rgba(0, 0, 0, 0.04);
+    color: #666;
+    padding-top: 15px;
+    padding-bottom: 15px;
+}
+
+.table>:not(caption)>*>* {
+    border-bottom-width: 0px;
+}
+
+.table-striped>tbody>tr:nth-of-type(odd)>* {
+    --bs-table-accent-bg: #FAFAFA;
+}

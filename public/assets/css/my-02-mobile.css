@@ -1,0 +1,89 @@
+@media (max-width: 992px) {
+
+    .view-navbar{
+        margin-top: 70px;
+        margin-bottom: 9px;
+    }
+
+    .my-container {
+        padding-left: 0px;
+        padding-right: 0px;
+    }
+
+    #navbar-bottom {
+        display: flex;
+    }
+
+    div.bodyScroll{
+        width: 100%;
+        height: calc(100vh - 300px);
+    }
+
+    .fab button.fabIcone {
+        position: absolute;
+        width: 60px;
+        height: 60px;
+        border-radius: 30px;
+        background-color: #ea1d2c;
+        right: 0;
+        bottom: 50px;
+        z-index: 20;
+    }
+    .fab button.fabIconeTexto {
+        position: absolute;
+        width: 120px;
+        height: 35px;
+        border-radius: 30px;
+        background-color: #3E9920;
+        right: 0;
+        bottom: 50px;
+        z-index: 20;
+        font-size: 17px;
+    }
+
+    .h1-title {
+        font-family: 'Poppins', sans-serif !important;
+        font-weight: 600;
+        color: #000000 !important;
+        font-size: 20px; !important;
+        padding-left: 8px;
+        padding-bottom: 5px;
+        padding-top: 10px;
+    }
+
+    .card-menu{
+        border-radius: 8px !important;
+        max-height: 130px;
+        min-height: 130px;
+        box-shadow: rgba(0, 0, 0, 0.16) 0px 2px 8px !important;
+    }
+    .cardUsuarioTexto{
+        font-size: 14px !important;
+        font-weight: 600 !important;
+        line-height: 1.28571em !important;
+        color: rgb(72, 72, 72) !important;
+    }
+
+    .scroll-horizontal {
+        display: flex;
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        -ms-overflow-style: -ms-autohiding-scrollbar;
+    }
+    .scroll-horizontal::-webkit-scrollbar {
+        display: none;
+    }
+    .scroll-horizontal-item {
+        flex: 0 0 auto;
+        flex-wrap: nowrap;
+    }
+
+    .title-page{
+        font-size: 18px;
+    }
+
+    .breadcrumb-custom{
+        font-size: 9px;
+    }
+}

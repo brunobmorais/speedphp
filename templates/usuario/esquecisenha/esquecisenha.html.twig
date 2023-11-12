@@ -1,0 +1,59 @@
+<main class="mt-2">
+    <section class="section">
+        <div class="container my-container">
+            <div class="row">
+                <div class="col-12 col-sm-8 offset-sm-2 col-md-8 offset-md-2 col-lg-6 offset-lg-3 col-xl-4 offset-xl-4 p-1">
+                    <div class="text-center mt-0 mb-4">
+                        <a href="/login">
+                            <img class="img-responsive" height="90px" src="/assets/img/logo.png" alt="Logo">
+                        </a>
+                    </div>
+                    <div class="col-12 pb-3">
+
+                        <h1 class="h1-title"><a href='javascript:void(0)' title="Voltar" class="colorPreto" id="btnTopoVoltar" onclick="clickProgress('btnTopoVoltar','/usuario/login','mt-2 ml-1 mb-2')"><span
+                                        class="mdi mdi-24px mdi-chevron-left"></span></a>
+                            Esqueceu sua senha?</h1>
+                        <p class="p-0 m-0 text-secondary" style="line-height: 15px" >Informe o CPF cadastrado que iremos enviar um link para redefinir sua senha</p>
+                    </div>
+                    <form class="needs-validation" novalidate id="formEmpresaLogin">
+                        <div class="row">
+                            <div class="form-group col-12">
+                                <label for="email">CPF</label>
+                                <input id="cpf" type="text" class="form-control" name="cpf" placeholder="123.123.123-12" onkeyup="mascara(this, mcpf)" maxlength="14" minlength="14" required>
+                                <div class="invalid-feedback">
+                                    Preencha o cpf corretamente!
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row mt-3">
+                            <div class="form-group col-12 text-center mt-2">
+                                <p class="">
+                                    Lembrei a senha!
+                                    <a href="/usuario/login"
+                                       class="btn btn-link">
+                                        Fazer login
+                                    </a>
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-center mt-3 gap-2">
+                                <a href="/usuario/login"
+                                        class="btn btn-outline-primary btn-lg btn-block shadow-none"
+                                        style="font-size: 16px">
+                                    Voltar
+                                </a>
+                                <button type="button" class="btn btn-primary btn-lg btn-block" onclick="recuperasenha()" id="btnEsqueciSenhaEnviar"
+                                   style="font-size: 16px" >
+                                    Enviar
+                                </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+</main>
+

@@ -1,0 +1,57 @@
+
+<main class="mt-5">
+    <section class="section">
+        <div class="container my-container">
+            <div class="row">
+                <div class="col-12 col-sm-8 offset-sm-2 col-md-8 offset-md-2 col-lg-6 offset-lg-3 col-xl-4 offset-xl-4 p-1">
+                    <div class="text-center mt-0 mb-4">
+                        <a href="/login">
+                            <img class="img-responsive" height="90px" src="/assets/img/logo.png" alt="Logo">
+                        </a>
+                    </div>
+                    <div class="col-12 pb-3">
+                        <h1 class="h1-title">Login</h1>
+                        <p class="p-0 m-0 text-secondary">Entre com email e senha.</p>
+                    </div>
+                    <form class="needs-validation" novalidate id="formEmpresaLogin">
+                        <div class="col-12">
+                            <div class="field-wrapper">
+                                <input type="text" class="form-control form-control-material" name="cpf" id="cpf" maxlength="14"
+                                       placeholder="123.123.123-12" required onkeydown="mascara(this,mcpf)">
+                                <label for="text" class="field-placeholder"><span>CPF</span></label>
+                                <div class="float-left invalid-feedback">
+                                    Preencha o campo!
+                                </div>
+                            </div>
+                            <div class="field-wrapper">
+                                <div class="float-end">
+                                    <a href="/usuario/esquecisenha" class="btn btn-link">
+                                        Esqueceu a senha?
+                                    </a>
+                                </div>
+                                <input type="password" class="form-control form-control-material" name="senha" id="senha"
+                                       placeholder="Sua senha de acesso" required>
+                                <label for="senha" class="field-placeholder"><span>Senha</span></label>
+                                <div class="float-left invalid-feedback">
+                                    Preencha o campo!
+                                </div>
+                            </div>
+
+                            <div>
+                                <div class="d-grid gap-2 mt-5">
+                                <button id="btnLoginEntrar" type="button"
+                                            class="btn btn-primary btn-lg btn-block shadow-none"
+                                            onclick="loginusuario();"
+                                            style="font-size: 16px">
+                                        Entrar
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
+

@@ -1,0 +1,55 @@
+{
+  "name": "chocolat",
+  "version": "1.0.0",
+  "description": "Responsive Lightbox Plugin",
+  "main": "dist/js/chocolat.cjs.js",
+  "module": "dist/js/chocolat.esm.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "build": "npm run prettier && rollup -c",
+    "dev": "rollup -c -w",
+    "test": "mocha-chrome test/index.html",
+    "prettier": "./node_modules/.bin/prettier src/js/*.js test/*.js --write"
+  },
+  "dependencies": {
+    "es6-promise": "^4.2.5"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.2.2",
+    "babel-preset-env": "^1.7.0",
+    "chai": "^4.2.0",
+    "jquery": "^3.3.1",
+    "mocha": "^5.2.0",
+    "mocha-chrome": "^1.1.0",
+    "prettier": "1.15.2",
+    "prettier-check": "^2.0.0",
+    "rollup": "^0.68.1",
+    "rollup-plugin-babel": "^4.1.0",
+    "rollup-plugin-commonjs": "^9.2.0",
+    "rollup-plugin-copy": "^0.2.3",
+    "rollup-plugin-node-resolve": "^4.0.0",
+    "sinon": "^7.2.2"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nicolas-t/Chocolat.git"
+  },
+  "keywords": [
+    "lightbox",
+    "plugin",
+    "responsive"
+  ],
+  "author": "Nicolas Turlais",
+  "licenses": [
+    {
+      "type": "GPLv3",
+      "url": "https://github.com/nicolas-t/Chocolat/blob/master/LICENSE"
+    }
+  ],
+  "bugs": {
+    "url": "https://github.com/nicolas-t/Chocolat/issues"
+  },
+  "homepage": "http://chocolat.insipi.de"
+}

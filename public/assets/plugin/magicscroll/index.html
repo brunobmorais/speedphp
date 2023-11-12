@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+<title>Magic Scroll</title>
+
+<link href="magicscroll/magicscroll.css" rel="stylesheet" type="text/css" media="screen"/>
+<script src="magicscroll/magicscroll.js" type="text/javascript"></script>
+
+<style type="text/css">
+    html { position: relative; min-height: 100%; }
+    body { position: absolute; left:0; right: 0; min-height: 100%; background:#fff; margin:0; padding:0; font-size: 100%; }
+    body, td {
+        font-family: 'Helvetica Neue', Helvetica, 'Lucida Grande', Tahoma, Arial, Verdana, sans-serif;
+        line-height: 1.5em;
+        -webkit-text-rendering: geometricPrecision;
+        text-rendering: geometricPrecision;
+    }
+    h1 { font-size:1.5em; font-weight:normal; color:#555; }
+    h2 { font-size:1.3em; font-weight:normal; color:#555; }
+    h2.caption { margin: 2.5em 0 0;}
+    h3 { font-size:1.1em; font-weight: normal; color:#555; }
+    h3.pad { margin: 2em 0 1em; }
+    h4 { font-size: 1em; font-weight:normal; color:#555; }
+    p.pad { margin-top: 1.5em; }
+    a { outline: none;}
+
+
+    .cfg-btn {
+        background-color: rgb(55, 181, 114);
+        color: #fff;
+        border: 0;
+        box-shadow: 0 0 1px 0px rgba(0,0,0,0.3);
+        outline:0;
+        cursor: pointer;
+        width: 200px;
+        padding: 10px;
+        font-size: 1em;
+        position: relative;
+        display: inline-block;
+        margin: 10px auto;
+    }
+    .cfg-btn:hover:not([disabled]) {
+        background-color: rgb(37, 215, 120);
+    }
+    .mobile-magic .cfg-btn:hover:not([disabled]) { background: rgb(55, 181, 114); }
+    .cfg-btn[disabled] { opacity: .5; color: #808080; background: #ddd; }
+
+    .cfg-btn.btn-preview,
+    .cfg-btn.btn-preview:active,
+    .cfg-btn.btn-preview:focus {
+        font-size: 1em;
+        position: relative;
+        display: block;
+        margin: 10px auto;
+    }
+
+    .cfg-btn,
+    .preview,
+    .app-figure,
+    .api-controls,
+    .wizard-settings,
+    .wizard-settings .inner,
+    .wizard-settings .navigation-bottom,
+    .wizard-settings input,
+    .wizard-settings select {
+        -webkit-box-sizing: border-box;
+           -moz-box-sizing: border-box;
+                box-sizing: border-box;
+    }
+    .preview,
+    .wizard-settings {
+        padding: 10px;
+        border: 0;
+        min-height: 1px;
+    }
+    .preview {
+        position: relative;
+    }
+
+    .api-controls {
+        text-align: center;
+    }
+    .api-controls button,
+    .api-controls button:active,
+    .api-controls button:focus {
+         width: 80px; font-size: .7em;
+         white-space: nowrap;
+    }
+
+    .app-figure {
+        width: 80% !important;
+        margin: 50px auto; border: 0px solid red;
+        padding: 20px;
+        position: relative;
+        text-align: center;
+    }
+    .selectors { margin-top: 10px; }
+
+    .app-code-sample {
+        max-width: 80%;
+        margin: 80px auto 0;
+        text-align: center;
+        position: relative;
+    }
+    .app-code-sample input[type="radio"] {
+        display: none;
+    }
+    .app-code-sample label {
+        display: inline-block;
+        padding: 2px 12px;
+        margin: 0;
+        font-size: .8em;
+        text-decoration: none;
+        cursor: pointer;
+        color: #666;
+        border: 1px solid rgba(136, 136, 136, 0.5);
+        background-color: transparent;
+    }
+    .app-code-sample label:hover {
+        color: #fff;
+        background-color: rgb(253, 154, 30);
+        border-color: rgb(253, 154, 30);
+    }
+    .app-code-sample input[type="radio"]:checked+label {
+        color: #fff;
+        background-color: rgb(110, 110, 110) !important;
+        border-color: rgba(110, 110, 110, 0.7) !important;
+    }
+    .app-code-sample label:first-of-type {
+        border-radius: 4px 0 0 4px;
+        border-right-color: transparent;
+    }
+    .app-code-sample label:last-of-type {
+        border-radius: 0 4px 4px 0;
+        border-left-color: transparent;
+    }
+
+    .app-code-sample .app-code-holder {
+        padding: 0;
+        position: relative;
+        border: 1px solid #eee;
+        border-radius: 0px;
+        background-color: #fafafa;
+        margin: 15px 0;
+    }
+    .app-code-sample .app-code-holder > div {
+        display: none;
+    }
+    .app-code-sample .app-code-holder pre {
+        text-align: left;
+        white-space: pre-line;
+        border: 0px solid #eee;
+        border-radius: 0px;
+        background-color: transparent;
+        padding: 25px 50px 25px 25px;
+        margin: 0;
+        min-height: 25px;
+    }
+    .app-code-sample input[type="radio"]:nth-of-type(1):checked ~ .app-code-holder > div:nth-of-type(1) {
+        display: block;
+    }
+    .app-code-sample input[type="radio"]:nth-of-type(2):checked ~ .app-code-holder > div:nth-of-type(2) {
+        display: block;
+    }
+
+    .app-code-sample .app-code-holder .cfg-btn-copy {
+        display: none;
+        z-index: -1;
+        position: absolute;
+        top:10px; right: 10px;
+        width: 44px;
+        font-size: .65em;
+        white-space: nowrap;
+        margin: 0;
+        padding: 4px;
+    }
+    .copy-msg {
+        font: normal 11px/1.2em 'Helvetica Neue', Helvetica, 'Lucida Grande', 'Lucida Sans Unicode', Verdana, Arial, sans-serif;
+        color: #2a4d14;
+        border: 1px solid #2a4d14;
+        border-radius: 4px;
+        position: absolute;
+        top: 8px;
+        left: 0;
+        right: 0;
+        width: 200px;
+        max-width: 70%;
+        padding: 4px;
+        margin: 0px auto;
+        text-align: center;
+    }
+    .copy-msg-failed {
+        color: #b80c09;
+        border-color: #b80c09;
+        width: 430px;
+    }
+    .mobile-magic .app-code-sample .cfg-btn-copy { display: none; }
+    #code-to-copy { position: absolute; width: 0; height: 0; top: -10000px; }
+    .lt-ie9-magic .app-code-sample { display: none; }
+
+    .wizard-settings {
+        background-color: #4f4f4f;
+        color: #a5a5a5;
+        position: absolute;
+        right: 0;
+        width: 340px;
+    }
+    .wizard-settings .inner {
+        width: 100%;
+        margin-bottom: 30px;
+    }
+    .wizard-settings .navigation-bottom {
+        color: #c7d59f;
+        font-size: .75em;
+        width: 100%;
+        position: relative;
+        vertical-align: bottom;
+        text-align: center;
+        padding: 6px;
+        margin-top: 10px;
+    }
+    .wizard-settings .navigation-bottom a { color: inherit; text-decoration: none; }
+    .wizard-settings .navigation-bottom a:hover { text-decoration: underline; }
+
+    .wizard-settings a { color: #cc9933; }
+    .wizard-settings a:hover { color: #dfb363; }
+    .wizard-settings table > tbody > tr > td { vertical-align: top; }
+    .wizard-settings table { min-width: 300px; max-width: 100%; font-size: .8em; margin: 0 auto; }
+    .wizard-settings table caption { font-size: 1.5em; padding: 16px 8px; }
+    .wizard-settings table td { padding: 4px 8px; }
+    .wizard-settings table td:first-child { white-space: nowrap; }
+    .wizard-settings table td:nth-child(2) { text-align: left; }
+    .wizard-settings table td .values {
+        color: #a08794;
+        font-size: 0.8em;
+        line-height: 1.3em;
+        display: block;
+        max-width: 170px;
+    }
+    .wizard-settings table td .values:before { content: ''; display: block; }
+
+    .wizard-settings input,
+    .wizard-settings select {
+        width: 170px;
+    }
+    .wizard-settings input {
+        padding: 0px 4px;
+    }
+    .wizard-settings input[disabled] {
+        color: #808080;
+        background: #a7a7a7;
+        border: 1px solid #a7a7a7;
+    }
+
+    .preview { width: 70%; float: left; }
+    @media (min-width: 0px) {
+        .preview { width: 100%; float: none; }
+    }
+    @media (min-width: 1024px) {
+        .preview { width: calc(100% - 340px); }
+        .wizard-settings { top: 0; min-height: 100%; }
+        .wizard-settings .inner { margin-top: 60px; }
+        .wizard-settings .navigation-bottom { position: absolute; bottom: 0; left: 0; }
+        .wizard-settings .settings-controls {
+            position: fixed;
+            top: 0; right: 0;
+            width: 340px;
+            padding: 10px 0 0;
+            text-align: center;
+            background-color: inherit;
+        }
+    }
+    @media screen and (max-width: 1023px) {
+        .app-figure { width: 98% !important; margin: 50px 0; padding: 0; }
+        .app-code-sample { display: none; }
+        .wizard-settings { width: 100%; }
+    }
+    @media screen and (max-width: 600px) {
+        .api-controls button, .api-controls button:active, .api-controls button:focus {
+            width: 70px;
+        }
+    }
+    @media screen and (max-width: 560px) {
+        .api-controls .sep { content: ''; display: table; }
+    }
+    @media screen and (min-width: 1600px) {
+        .preview { padding: 10px 160px; }
+    }
+</style>
+<script>
+    var callbacks = {
+        onReady: function () {
+            console.log('onReady', arguments[0]);
+        },
+        onStop: function () {
+            console.log('onStop', arguments[0]);
+        },
+        onItemHover: function () {
+            console.log('onItemHover', arguments[0]);
+        },
+        onItemOut: function () {
+            console.log('onItemOut', arguments[0]);
+        },
+        onMoveStart: function () {
+            console.log('onMoveStart', arguments[0]);
+        },
+        onMoveEnd: function () {
+            console.log('onMoveEnd', arguments[0]);
+        }
+    };
+
+    var MagicScrollOptions = {};
+    magicJS.extend(MagicScrollOptions, callbacks);
+
+    function isDefaultOption(o) {
+        return magicJS.$A(magicJS.$(o).byTag('option')).filter(function(opt){
+            return opt.selected && opt.defaultSelected;
+        }).length > 0;
+    }
+
+    function toOptionValue(v) {
+        if ( /^(true|false)$/.test(v) ) {
+            return 'true' === v;
+        }
+        if ( /^[0-9]{1,}$/i.test(v) ) {
+            return parseInt(v,10);
+        }
+        return v;
+    }
+
+    function makeOptions(optType) {
+        var  value = null, isDefault = true, newParams = Array(), newParamsS = '', options = {};
+        magicJS.$(magicJS.$A(magicJS.$(optType).getElementsByTagName("INPUT"))
+            .concat(magicJS.$A(magicJS.$(optType).getElementsByTagName('SELECT'))))
+            .forEach(function(param){
+                value = ('checkbox'==param.type) ? param.checked.toString() : param.value;
+
+                isDefault = ('checkbox'==param.type) ? value == param.defaultChecked.toString() :
+                    ('SELECT'==param.tagName) ? isDefaultOption(param) : value == param.defaultValue;
+
+                if ( null !== value && !isDefault) {
+                    options[param.name] = toOptionValue(value);
+                }
+        });
+
+        magicJS.extend(options, callbacks);
+        return options;
+    }
+
+    function updateScriptCode() {
+        var code = '&lt;script&gt;\nvar MagicScrollOptions = ';
+        code += JSON.stringify(MagicScrollOptions, null, 2).replace(/\"(\w+)\":/g,"$1:")+';';
+        code += '\n&lt;/script&gt;';
+
+        magicJS.$('app-code-sample-script').changeContent(code);
+    }
+
+    function updateInlineCode() {
+        var code = '&lt;div class="MagicScroll" data-options="';
+        code += JSON.stringify(MagicScrollOptions).replace(/\"(\w+)\":(?:\"([^"]+)\"|([^,}]+))(,)?/g, "$1: $2$3; ").replace(/\{([^{}]*)\}/,"$1").replace(/\s*$/,'');
+        code += '"&gt;';
+
+        magicJS.$('app-code-sample-inline').changeContent(code);
+    }
+
+    function applySettings() {
+        MagicScroll.stop('scroll-1');
+        MagicScrollOptions = makeOptions('params');
+        MagicScroll.start('scroll-1');
+        updateScriptCode();
+        updateInlineCode();
+        try {
+            prettyPrint();
+        } catch(e) {}
+    }
+
+    function copyToClipboard(src) {
+        var
+            copyNode,
+            range, success;
+
+        if (!isCopySupported()) {
+            disableCopy();
+            return;
+        }
+        copyNode = document.getElementById('code-to-copy');
+        copyNode.innerHTML = document.getElementById(src).innerHTML;
+
+        range = document.createRange();
+        range.selectNode(copyNode);
+        window.getSelection().addRange(range);
+
+        try {
+            success = document.execCommand('copy');
+        } catch(err) {
+            success = false;
+        }
+        window.getSelection().removeAllRanges();
+        if (!success) {
+            disableCopy();
+        } else {
+            new magicJS.Message('Settings code copied to clipboard.', 3000,
+                document.querySelector('.app-code-holder'), 'copy-msg');
+        }
+    }
+
+    function disableCopy() {
+        magicJS.$A(document.querySelectorAll('.cfg-btn-copy')).forEach(function(node) {
+            node.disabled = true;
+        });
+        new magicJS.Message('Sorry, cannot copy settings code to clipboard. Please select and copy code manually.', 3000,
+            document.querySelector('.app-code-holder'), 'copy-msg copy-msg-failed');
+    }
+
+    function isCopySupported() {
+        if ( !window.getSelection || !document.createRange || !document.queryCommandSupported ) { return false; }
+        return document.queryCommandSupported('copy');
+    }
+</script>
+</head>
+<body>
+<div class="preview col">
+    <div class="api-controls">
+        <button class="cfg-btn" onclick="MagicScroll.start('scroll-1')">Start</button>
+        <button class="cfg-btn" onclick="MagicScroll.stop('scroll-1')">Stop</button>
+        <button class="cfg-btn" onclick="MagicScroll.refresh('scroll-1')">Refresh</button><span class="sep"></span>
+        <button class="cfg-btn" onclick="MagicScroll.backward('scroll-1')">Backward</button>
+        <button class="cfg-btn" onclick="MagicScroll.forward('scroll-1')">Forward</button>
+        <button class="cfg-btn" onclick="MagicScroll.play('scroll-1', 100)">Play</button>
+        <button class="cfg-btn" onclick="MagicScroll.pause('scroll-1')">Pause</button>
+    </div>
+
+    <div class="app-figure" id="zoom-fig">
+        <div class="MagicScroll" id="scroll-1">
+            <a><img
+                srcset="http://magictoolbox.sirv.com/images/magicscroll/allstar-1-1b.jpg?canvas.height=180&canvas.width=280 2x" src="http://magictoolbox.sirv.com/images/magicscroll/allstar-1-1b.jpg?scale.height=130&canvas.height=90&canvas.width=140" />All Star Plaid</a>
+            <a><img
+                srcset="http://magictoolbox.sirv.com/images/magicscroll/allstar-2-1b.jpg?canvas.height=180&canvas.width=280 2x" src="http://magictoolbox.sirv.com/images/magicscroll/allstar-2-1b.jpg?scale.height=130&canvas.height=90&canvas.width=140" />All Star Green</a>
+            <a><img
+                srcset="http://magictoolbox.sirv.com/images/magicscroll/allstar-3-1b.jpg?canvas.height=180&canvas.width=280 2x" src="http://magictoolbox.sirv.com/images/magicscroll/allstar-3-1b.jpg?scale.height=130&canvas.height=90&canvas.width=140" />All Star Tartan</a>
+            <a><img
+                srcset="http://magictoolbox.sirv.com/images/magicscroll/allstar-4-1b.jpg?canvas.height=180&canvas.width=280 2x" src="http://magictoolbox.sirv.com/images/magicscroll/allstar-4-1b.jpg?scale.height=130&canvas.height=90&canvas.width=140" />All Star Pink</a>
+            <a><img
+                srcset="http://magictoolbox.sirv.com/images/magicscroll/allstar-5-1b.jpg?canvas.height=180&canvas.width=280 2x" src="http://magictoolbox.sirv.com/images/magicscroll/allstar-5-1b.jpg?scale.height=130&canvas.height=90&canvas.width=140" />All Star Black</a>
+            <a><img
+                srcset="http://magictoolbox.sirv.com/images/magicscroll/allstar-6-1b.jpg?canvas.height=180&canvas.width=280 2x" src="http://magictoolbox.sirv.com/images/magicscroll/allstar-6-1b.jpg?scale.height=130&canvas.height=90&canvas.width=140" />All Star Orange</a>
+            <a><img
+                srcset="http://magictoolbox.sirv.com/images/magicscroll/allstar-7-1b.jpg?canvas.height=180&canvas.width=280 2x" src="http://magictoolbox.sirv.com/images/magicscroll/allstar-7-1b.jpg?scale.height=130&canvas.height=90&canvas.width=140" />All Star Charcoal</a>
+            <a><img
+                srcset="http://magictoolbox.sirv.com/images/magicscroll/allstar-8-1b.jpg?canvas.height=180&canvas.width=280 2x" src="http://magictoolbox.sirv.com/images/magicscroll/allstar-8-1b.jpg?scale.height=130&canvas.height=90&canvas.width=140" />All Star Navy</a>
+            <a><img
+                srcset="http://magictoolbox.sirv.com/images/magicscroll/allstar-9-1b.jpg?canvas.height=180&canvas.width=280 2x" src="http://magictoolbox.sirv.com/images/magicscroll/allstar-9-1b.jpg?scale.height=130&canvas.height=90&canvas.width=140" />All Star Red</a>
+        </div>
+    </div>
+
+    <div class="app-code-sample">
+        <input type="radio" name="code-sample-nav" id="code-sample-nav-1" checked="checked"><label for="code-sample-nav-1">Global settings</label
+        ><input type="radio" name="code-sample-nav" id="code-sample-nav-2"><label for="code-sample-nav-2">Inline settings</label>
+        <div class="app-code-holder">
+            <div>
+                <pre class="prettyprint" id="app-code-sample-script">
+                    &lt;script&gt;
+                    var MagicScrollOptions = {};
+                    &lt;/script&gt;
+                </pre>
+                <button class="cfg-btn cfg-btn-copy" autocomplete="off" onclick="copyToClipboard('app-code-sample-script')">Copy</button>
+            </div>
+            <div>
+                <pre class="prettyprint" id="app-code-sample-inline">
+                    &lt;div class="MagicScroll" data-options=""&gt;
+                </pre>
+                <button class="cfg-btn cfg-btn-copy" autocomplete="off" onclick="copyToClipboard('app-code-sample-inline')">Copy</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="wizard-settings col">
+    <div class="settings-controls">
+        <button class="cfg-btn btn-preview" form="app-params-form" autocomplete="off" onclick="applySettings();">Apply settings</button>
+    </div>
+    <div class="inner">
+        <form id="app-params-form" autocomplete="off" onsubmit="return false;">
+        <table id="params">
+            <tr><td>Mode:</td><td>
+                <select name="mode">
+                    <option selected value="scroll">scroll</option>
+                    <option value="carousel">carousel</option>
+                    <option value="cover-flow">cover-flow</option>
+                    <option value="animation">animation</option>
+                </select>
+            </td></tr>
+            <tr><td>Orientation:</td><td>
+                <select name="orientation">
+                    <option selected value="horizontal">horizontal</option>
+                    <option value="vertical">vertical</option>
+                </select>
+            </td></tr>
+            <tr><td>Scroll width:</td><td><input type="text" name="width" value="auto"/>
+            <span class="values">auto | &lt;pixels&gt; | &lt;percentage&gt; </span></td></tr>
+            <tr><td>Scroll height:</td><td><input type="text" name="height" value="auto"/>
+            <span class="values">auto | &lt;pixels&gt; | &lt;percentage&gt;</span></td></tr>
+            <tr><td>Items:</td><td><input type="text" name="items" value="auto"/>
+                    <span class="values">auto | fit | number | array</span>
+                    <span class="values">
+                    <p>You can preset the number of visible items depending on the width of scroll view.</p>
+                    <p>Format: <em>[ [x,y], [x,y], ... ]</em><br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;<strong>x</strong> - maximum scroll width<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;<strong>y</strong> - items to display.</p>
+                    <p>Example: <em>[ [600,2], [800,3], [1000,5], [1200,7], [1500,10] ]</em></p>
+                    </span>
+                </td>
+            </tr>
+            <tr><td>Speed:</td><td><input type="text" name="speed" value="600"/><span class="values">milliseconds</span></td></tr>
+            <tr><td>Step:</td><td><input type="text" name="step" value="auto"/>
+                    <span class="values">auto | numeric</span>
+                    <span class="values"><p>Use 0 for continuous scroll.</p></span>
+                </td></tr>
+            <tr><td>Autoplay:</td><td><input type="text" name="autoplay" value="0"/><span class="values">milliseconds</span></td></tr>
+            <tr><td>Loop:</td><td>
+                <select name="loop">
+                    <option selected value="infinite">infinite</option>
+                    <option value="rewind">rewind</option>
+                    <option value="off">off</option>
+                </select>
+            </td></tr>
+            <tr><td>Arrows:</td><td>
+                <select name="arrows">
+                    <option selected value="outside">outside</option>
+                    <option value="inside">inside</option>
+                    <option value="off">off</option>
+                </select>
+            </td></tr>
+            <tr><td>Pagination:</td><td>
+                <select name="pagination">
+                    <option selected value="false">false</option>
+                    <option value="true">true</option>
+                </select>
+            </td></tr>
+            <tr><td>Scroll on wheel:</td><td>
+                <select name="scrollOnWheel">
+                    <option value="auto" selected>auto</option>
+                    <option value="true">true</option>
+                    <option value="false">false</option>
+                </select>
+            </td></tr>
+            <tr><td>Draggable:</td><td>
+                <select name="draggable">
+                    <option value="true">true</option>
+                    <option value="false">false</option>
+                </select>
+            </td></tr>
+            <tr><td>Keyboard:</td><td>
+                <select name="keyboard">
+                    <option selected value="false">false</option>
+                    <option value="true">true</option>
+                </select>
+            </td></tr>
+            <tr><td>Easing:</td><td><input type="text" name="easing" value="cubic-bezier(.8, 0, .5, 1)"/>
+                <span class="values"><p>The <a href="https://developer.mozilla.org/en/docs/Web/CSS/timing-function" target="_blank">&lt;easing function&gt;</a> that describes an acceleration curve, so the speed of the transition can vary over its duration.</p></span>
+                <span class="values"><p>You can model your own acceleration curve (Bezier curve) here:</p> <a href="http://cubic-bezier.com">http://cubic-bezier.com</a></span>
+            </td></tr>
+            <tr><td>Lazy load:</td><td>
+                <select name="lazyLoad">
+                    <option selected value="false">false</option>
+                    <option value="true">true</option>
+                </select>
+            </td></tr>
+            <tr><td>Autostart:</td><td>
+                <select name="autostart">
+                    <option selected value="true">true</option>
+                    <option value="false">false</option>
+                </select>
+            </td></tr>
+        </table>
+        </form>
+    </div>
+    <div class="footer">&copy; <a href="https://www.magictoolbox.com">Magic Toolbox</a></div>
+</div>
+<div id="code-to-copy"></div>
+<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/prettify/r298/prettify.min.css">
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/prettify/188.0.0/prettify.min.js"></script>
+<script>try { prettyPrint(); } catch(e) {}</script>
+</body></html>

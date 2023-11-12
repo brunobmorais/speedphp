@@ -1,0 +1,10 @@
+language: node_js
+node_js:
+  - "10"
+install:
+  - yarn install
+before_script:
+  - sleep 5
+script:
+  - prettier-check src/js/*.js test/*.js
+  - yarn test

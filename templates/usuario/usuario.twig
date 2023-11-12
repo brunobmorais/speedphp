@@ -1,0 +1,57 @@
+<main id="app">
+    <section class="section">
+        <div class="container my-container">
+            <div class="row pb-2 pt-2">
+                <div class="col-12">
+                    <h5 class="d-inline h1-title">Conta</h5>
+                    <h6 class="font-weight-light">Olá, <?= $data['SESSAO']['PRIMEIRONOME'] ?></h6>
+                </div>
+            </div>
+
+            <div class="row m-2">
+                <div class="col-xl-3 col-lg-3 col-md-4 col-6 pr-2 pl-2 pb-2 "
+                     onclick="clickProgress('usuarioIndexCardInformacoesPessoais','/usuario/informacoes')">
+                    <div class="card card-menu nao-seleciona-texto cursor-pointer mb-2 ">
+                        <div class="card-body flex-column justify-content-center align-items-center text-center pt-3" >
+                            <div style="min-height: 50px"><i class="zwicon-user display-4"></i></div>
+                            <div id="usuarioIndexCardInformacoesPessoais"><h6 class="cardUsuarioTexto">Informações pessoais</h6></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-lg-3 col-md-4 col-6 pr-2 pl-2 pb-2"
+                     onclick="clickProgress('usuarioIndexCardSeguranca','/usuario/seguranca')">
+                    <div class="card card-menu nao-seleciona-texto cursor-pointer mb-2 ">
+                        <div class="card-body flex-column justify-content-center align-items-center text-center pt-3">
+                            <div style="min-height: 50px"><i class="zwicon-password display-4"></i></div>
+                            <div id="usuarioIndexCardSeguranca"><h6 class="cardUsuarioTexto">Login e segurança</h6></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-lg-3 col-md-4 col-6 pr-2 pl-2 pb-2 d-none"
+                     onclick="clickProgress('usuarioIndexCardPreferencias','/usuario/preferencias')">
+                    <div class="card card-menu nao-seleciona-texto cursor-pointer mb-2 ">
+                        <div class="card-body flex-column justify-content-center align-items-center text-center pt-3">
+                            <div style="min-height: 50px"><i class="zwicon-cog display-4"></i></div>
+                            <div id="usuarioIndexCardPreferencias"><h6 class="cardUsuarioTexto">Preferências globais</h6></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-lg-3 col-md-4 col-6 pr-2 pl-2 pb-2 d-none"
+                     onclick="clickProgress('usuarioIndexCardPlano','/usuario/plano')">
+                    <div class="card card-menu nao-seleciona-texto cursor-pointer mb-2 ">
+                        <div class="card-body flex-column justify-content-center align-items-center text-center pt-3">
+                            <div style="min-height: 50px"><i class="zwicon-diamond display-4"></i></div>
+                            <div id="usuarioIndexCardPlano"><h6 class="cardUsuarioTexto">Meu plano</h6></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row mt-5 d-none">
+                <div class="col-12 text-center">Precisa desativar sua conta?<br> <a href="">Faça isso agora</a></div>
+            </div>
+        </div>
+    </section>
+</main>
+
+
+

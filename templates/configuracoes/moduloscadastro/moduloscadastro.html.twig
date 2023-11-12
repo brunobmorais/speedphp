@@ -1,0 +1,123 @@
+<main>
+    <section class="section">
+        <div class="container my-container">
+            <div class="row">
+                <div class="col-12 p-0">
+                    <div class="card sombra-1">
+                        <div class="card-header">
+                            <h4>{{ titleCardComponent }}</h4>
+                        </div>
+                        <div class="card-body pt-4">
+                            <form id="formCadastro" class="needs-validation" novalidate
+                                  action="/{{ SERVICO.url }}-action/"
+                                  method="post" enctype='multipart/form-data'>
+                                <div class="row">
+                                    <div class="form-group col-12 col-md-12 ">
+                                        <label>Nome</label>
+                                        <input name="TITULO" id="titulo" type="text" class="form-control" required
+                                               placeholder="Nome do módulo"
+                                               value="{{ MODULO.TITULO }}">
+                                        <div class="invalid-feedback">
+                                            Preencha o campo corretamente
+                                        </div>
+                                    </div>
+                                    <div class="form-group col-12 col-md-12 ">
+                                        <label>Descrição</label>
+                                        <input name="DESCRICAO" id="descricao" type="text" class="form-control"
+                                               placeholder="Descrição do módulo" required
+                                               value="{{ MODULO.DESCRICAO }}">
+                                        <div class="invalid-feedback">
+                                            Preencha o campo corretamente
+                                        </div>
+                                    </div>
+                                    <div class="form-group col-12 col-md-4 ">
+                                        <label>Controller</label>
+                                        <input name="CONTROLLER" id="controller" type="text" class="form-control"
+                                               required
+                                               placeholder="Nome do controller"
+                                               value="{{ MODULO.CONTROLLER }}">
+                                        <div class="invalid-feedback">
+                                            Preencha o campo corretamente
+                                        </div>
+                                    </div>
+                                    <div class="form-group col-12 col-md-4 ">
+                                        <label>Ícone</label>
+                                        <input name="ICONE" id="icone" type="text" class="form-control" required
+                                               placeholder="Nome do módulo"
+                                               value="{{ MODULO.ICONE }}">
+                                        <div class="invalid-feedback">
+                                            Preencha o campo corretamente
+                                        </div>
+                                    </div>
+                                    <div class="form-group col-12 col-md-4 ">
+                                        <label>Ordem</label>
+                                        <input name="ORDEM" id="ordem" type="text" class="form-control" required
+                                               placeholder="Ordem"
+                                               value="{{ MODULO.ORDEM??1 }}">
+                                        <div class="invalid-feedback">
+                                            Preencha o campo corretamente
+                                        </div>
+                                    </div>
+                                    <div class="form-group col-12">
+                                        <div class="control-label">Situação</div>
+                                        <label class="custom-switch mt-2" style="padding-left: 0px">
+                                            <input type="checkbox" name="SITUACAO"
+                                                   class="custom-switch-input" {{ MODULO.sts!=""?(MODULO.sts == "A"?"checked":""):"checked" }}
+                                                   value="1">
+                                            <span class="custom-switch-indicator"></span>
+                                            <span class="custom-switch-description-right">Ativo</span>
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <input type="hidden" name="pg" value="{{ GETPARAMS.pg }}">
+                                    <input type="hidden" name="buscar" value="{{ GETPARAMS.buscar }}">
+                                    {% if(MODULO.CODMODULO!="") %}
+                                        <input type="hidden" name="CODMODULO" value="{{ MODULO.CODMODULO }}">
+                                        <input type="hidden" name="action" value="update">
+                                    {% else %}
+                                        <input type="hidden" name="action" value="insert">
+                                    {% endif %}
+
+                                    <div class="">
+                                        {% if(SERVICO.EXCLUIR=="1" and MODULO.CODMODULO!="") %}
+                                            <button type="button" onclick="excluirItemTabela('{{ MODULO.CODMODULO }}')"
+                                                    class="btn btn-outline-secondary btn-round btn-lg col-md-3 col-lg-2 col-12 mt-2">
+                                                <span class="mdi mdi-trash-can-outline"></span> Excluir
+                                            </button>
+                                        {% endif %}
+
+                                        {% if(SERVICO.ALTERAR=="1" or SERVICO.SALVAR=="1") %}
+                                            <button type="button" id="btnSalvar"
+                                                    onclick="submitForm('btnSalvar','formCadastro')"
+                                                    class="btn btn-lg btn-primary btn-round col-md-3 col-lg-2 col-12 float-right mt-2 float-end">
+                                                <span class="mdi mdi-check-outline"></span> Salvar
+                                            </button>
+                                        {% endif %}
+                                        <button type="button"
+                                                onclick="window.location.href='/{{ SERVICO.url }}/?pg={{ GETPARAMS.pg }}&buscar={{ GETPARAMS.buscar }}'"
+                                                class="btn btn-lg btn-outline-secondary btn-round col-md-3 col-12 col-lg-2 float-right mt-2 me-md-2 me-0 float-end">
+                                            <span class="mdi mdi-close"></span> Voltar
+                                        </button>
+
+                                    </div>
+                                </div>
+                            </form>
+                            <form action="/{{ SERVICO.url }}-action" name="formExcluir" id="formExcluir" method="post">
+                                <input type="hidden" name="pg" value="{{ GETPARAMS.pg }}">
+                                <input type="hidden" name="buscar" value="{{ GETPARAMS.buscar }}">
+                                <input type="hidden" name="action" value="delete">
+                                <input type="hidden" name="idExcluir" id="idExcluir" value="">
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
+
+<script>
+
+</script>
