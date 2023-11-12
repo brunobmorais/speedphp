@@ -29,7 +29,7 @@ class LoggedTemplate implements TemplateInterface
             $data['javascript'] = $this->javascript($view);
             $data['css'] = $this->addCssJsPage($css, "css");
             $data['js'] = $this->addCssJsPage($js, "js");
-            $this->build("components/theme", $data);
+            $this->render("components/theme", $data);
 
         } catch (\Error $e) {
             return $e;

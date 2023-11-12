@@ -41,6 +41,8 @@ Trait TemplateTrait
      */
     private $titlePage;
 
+    private $levelDirectory = 3;
+
     public function __construct(){
         $this->controller = new ControllerCore();
 
@@ -120,17 +122,17 @@ Trait TemplateTrait
 
         $this->setView($view);
 
-        if (file_exists(dirname(__DIR__, 2) . "/templates/{$this->viewDirectory}/{$this->viewDirectory}.js")) {
+        if (file_exists(dirname(__DIR__, 3) . "/templates/{$this->viewDirectory}/{$this->viewDirectory}.js")) {
             $result .= "<!--SCRIPT CONTROLLER-->\n";
             $result .= "<script>";
-            $result .= file_get_contents(dirname(__DIR__,2)."/templates/{$this->viewDirectory}/{$this->viewDirectory}.js");
+            $result .= file_get_contents(dirname(__DIR__, 3)."/templates/{$this->viewDirectory}/{$this->viewDirectory}.js");
             $result .= "</script>";
         }
 
-        if (file_exists(dirname(__DIR__, 2) . "/templates/{$this->viewUrl}/{$this->viewFile}.js")) {
+        if (file_exists(dirname(__DIR__, 3) . "/templates/{$this->viewUrl}/{$this->viewFile}.js")) {
             $result .= "<!--SCRIPT VIEW-->\n";
             $result .= "<script>";
-            $result .= file_get_contents(dirname(__DIR__,2)."/templates/{$this->viewUrl}/{$this->viewFile}.js");
+            $result .= file_get_contents(dirname(__DIR__, 3)."/templates/{$this->viewUrl}/{$this->viewFile}.js");
             $result .= "</script>";
         }
 

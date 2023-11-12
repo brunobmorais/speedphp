@@ -30,7 +30,7 @@ class ModuloTemplate implements TemplateInterface
             // $data['menu'] = $this->navigationBottom($data['MENU'] ?? 0, $data); // ADICIONAR MENU NA PARTE DEBAIXO DA TELA NO MOBILE
             $data['footer'] = $this->footer();
             $data['javascript'] = $this->javascript($view);
-            $this->build("components/theme", $data);
+            $this->render("components/theme", $data);
 
         } catch (\Error $e) {
             return $e;

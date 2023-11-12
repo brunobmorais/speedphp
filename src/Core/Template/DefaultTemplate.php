@@ -26,7 +26,7 @@ class DefaultTemplate implements TemplateInterface
             $data['css'] = $this->addCssJsPage($css, "css");
             $data['js'] = $this->addCssJsPage($js, "js");
 
-            return $this->build("components/theme", $data);
+            return $this->render("components/theme", $data);
 
         } catch (\Error $e) {
             return $e;
