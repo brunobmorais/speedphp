@@ -186,7 +186,9 @@ class ControllerCore
         exit();
     }
 
-    public function render(TemplateInterface $template, string $view = "", array $data = [], array $css = [], array $js = []) {
+    public function render(string $template, string $view = "", array $data = [], array $css = [], array $js = []) {
+        $template = 'App\\Core\\Template\\' . $template . "Template";
+        $template = new $template;
         return $template->build($view, $data, $css, $js);
     }
 

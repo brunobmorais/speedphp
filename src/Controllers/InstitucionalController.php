@@ -22,7 +22,7 @@ class InstitucionalController extends ControllerCore implements ControllerInterf
         try {
             // CARREGA VIEW
             return $this->render(
-                new LoggedTemplate(),
+                "Logged",
                 'institucional/privacidade',
                 ['TITLE' => "Termo de uso e privacidade",
                     "configSiteName" => CONFIG_SITE['name'],

@@ -41,8 +41,7 @@ class UsuarioController extends ControllerCore implements ControllerInterface
             $data["TITLEBREADCRUMB"] = "<li class='breadcrumb-item-custom '><a href='/'>Inicio</a></li><i class='mdi mdi-chevron-right mx-1' aria-hidden='true'></i></li><li class='breadcrumb-item-custom '><a href='./'>Meus Dados</a></li>";
 
             return $this->render(
-                new LoggedTemplate(),
-
+                "Logged",
                 'usuario/meusdados',
                 $data
             );
@@ -98,7 +97,7 @@ class UsuarioController extends ControllerCore implements ControllerInterface
         try {
             $data['TITLE'] = "Login";
             return $this->render(
-                new DefaultTemplate(),
+                "Default",
                 'usuario/login',$data);
         } catch (\Error $e) {
             return $e;
@@ -111,7 +110,7 @@ class UsuarioController extends ControllerCore implements ControllerInterface
         try {
             $head['TITLE'] = "Esqueci senha";
             return $this->render(
-                new DefaultTemplate(),
+                "Default",
                 'usuario/esquecisenha', $head);
         } catch (\Error $e) {
             return $e;
@@ -135,7 +134,7 @@ class UsuarioController extends ControllerCore implements ControllerInterface
                         $data['TITLE'] = "Nova senha";
                         // CARREGA VIEW
                         return $this->render(
-            new DefaultTemplate(),
+            "Default",
                 'usuario/novasenha', $data);
                     } else {
                         (new AlertLib())->warning("Token não encontrado", "/usuario/login");

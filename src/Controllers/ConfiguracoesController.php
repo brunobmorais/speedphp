@@ -26,7 +26,7 @@ class ConfiguracoesController extends ControllerCore implements ControllerInterf
     public function index($args = [])
     {
         try {
-            return $this->render(new ModuloTemplate());
+            return $this->render("Modulo");
         } catch (\Error $e) {
             return $e;
         }
@@ -68,7 +68,7 @@ class ConfiguracoesController extends ControllerCore implements ControllerInterf
             $data["tablebuttonComponent"] = (new PageCore)->render("components/button_table", $data, false);
 
             return $this->render(
-                new LoggedTemplate(),
+                "Logged",
                 "components/page_table_default",
                 $data,
             );
@@ -96,7 +96,7 @@ class ConfiguracoesController extends ControllerCore implements ControllerInterf
             }
 
             return $this->render(
-                new LoggedTemplate(),
+                "Logged",
                 $data["SERVICO"]["url"] . "cadastro",
                 $data,
             );
@@ -210,7 +210,7 @@ class ConfiguracoesController extends ControllerCore implements ControllerInterf
             $data["tablebuttonComponent"] = (new PageCore)->render("components/button_table", $data, false);
 
             return $this->render(
-                new LoggedTemplate(),
+                "Logged",
                 "components/page_table_default",
                 $data,
             );
@@ -238,7 +238,7 @@ class ConfiguracoesController extends ControllerCore implements ControllerInterf
             $data["DATAMODULOS"] = $sisModuloDao->select("*", "WHERE EXCLUIDO!='1'");
 
             return $this->render(
-                new LoggedTemplate(),
+                "Logged",
                 $data["SERVICO"]["url"] . 'cadastro',
                 $data,
             );
@@ -335,7 +335,7 @@ class ConfiguracoesController extends ControllerCore implements ControllerInterf
 
             $data["USUARIOS"] = $pessoaDao->buscarTodosFuncionarios();
             return $this->render(
-                new LoggedTemplate(),
+                "Logged",
                 $data["SERVICO"]["url"],
                 $data,
             );
@@ -370,7 +370,7 @@ class ConfiguracoesController extends ControllerCore implements ControllerInterf
                 }
 
                 return $this->render(
-                new LoggedTemplate(),
+                "Logged",
                 $data["SERVICO"]["url"] . 'cadastro',
                     $data,
                 );

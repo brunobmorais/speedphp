@@ -23,7 +23,7 @@ class HomeController extends ControllerCore implements ControllerInterface
             $modulos = (new ModuloDao())->buscaModulosUsuario(SessionLib::getValue("CODUSUARIO"));
 
             return $this->render(
-                new LoggedTemplate(),
+                "Logged",
                 'home/index',
                 array(
                     'MODULOS' => $modulos,
