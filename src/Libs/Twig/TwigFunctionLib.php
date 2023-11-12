@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Libs\twig;
+namespace App\Libs\Twig;
 
 use Twig\Environment;
 use Twig\TwigFunction;

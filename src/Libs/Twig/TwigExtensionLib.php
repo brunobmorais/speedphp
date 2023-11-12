@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Libs\twig;
+namespace App\Libs\Twig;
 
 use App\Daos\intranet\BBoletimDao;
 use App\Daos\intranet\FCriterioPromocaoDao;

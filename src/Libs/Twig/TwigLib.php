@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Libs\twig;
+namespace App\Libs\Twig;
 
 use App\Components\NavbarComponents;
 use App\Core\View;
