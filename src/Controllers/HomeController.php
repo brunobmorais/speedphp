@@ -5,6 +5,7 @@ use App\Components\NavbarComponents;
 use App\Core\Controller\ControllerCore;
 use App\Core\Controller\ControllerInterface;
 use App\Core\PageCore;
+use App\Core\Template\LoggedTemplate;
 use App\Daos\ModuloDao;
 use App\Daos\SisModuloDao;
 use App\Libs\SessionLib;
