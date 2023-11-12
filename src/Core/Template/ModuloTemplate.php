@@ -11,7 +11,7 @@ class ModuloTemplate implements TemplateInterface
 
     use TemplateTrait;
 
-    public function render(string $view = "", array $data = [], array $css = [], array $js = [])
+    public function build(string $view = "", array $data = [], array $css = [], array $js = [])
     {
         try {
             $this->controller->isLogged();
@@ -30,7 +30,7 @@ class ModuloTemplate implements TemplateInterface
             // $data['menu'] = $this->navigationBottom($data['MENU'] ?? 0, $data); // ADICIONAR MENU NA PARTE DEBAIXO DA TELA NO MOBILE
             $data['footer'] = $this->footer();
             $data['javascript'] = $this->javascript($view);
-            $this->render("components/theme", $data);
+            $this->build("components/theme", $data);
 
         } catch (\Error $e) {
             return $e;

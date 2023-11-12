@@ -56,7 +56,7 @@ Trait TemplateTrait
         $menuAtivo == 4 ? $menu[4] = "navigation-menu-item-active" : $menu[4] = "";
 
 
-        return (new PageCore)->render("components/navigation_bottom", [
+        return $this->render("components/navigation_bottom", [
             "nomeUsuario" => $dataSessao['PRIMEIRONOME'],
             "emailUsuario" => $dataSessao['EMAIL'],
             "imagemUsuario" => $dataSessao['IMAGEM']??"",
@@ -83,7 +83,7 @@ Trait TemplateTrait
         $urlNavbar = $urlNavbar[0] ?? '';
         $btnVoltarNavbar = $urlNavbar != "" ? "" : "d-none";
 
-        return (new PageCore)->render("components/navbar", [
+        return $this->render("components/navbar", [
             "btnVoltar" => $btnVoltarNavbar,
             "primeiroNome" => $primeiroNome,
             "perfil" => $perfil
@@ -243,30 +243,6 @@ Trait TemplateTrait
                 }
             </script>";
     }
-
-    protected function pageDefault(string $view, $head = [], $data = [], $css = [], $js = [])
-    {
-        try {
-            $this->setHead($head['TITLE'] ?? "");
-
-            $data['SESSAO'] = SessionLib::getDataSession();
-            $data['JWT'] = (new JwtLib())->encode();
-
-            $data['head'] = $this->head();
-            $data['main'] = $this->render($view, $data, false);
-            $data['footer'] = $this->footer();
-            $data['javascript'] = $this->javascript($view);
-            $data['css'] = $this->addCssJsPage($css, "css");
-            $data['js'] = $this->addCssJsPage($js, "js");
-
-            return $this->render("components/theme", $data);
-
-        } catch (\Error $e) {
-            return $e;
-        }
-
-    }
-
     protected function addCssJsPage($cssjs = [], $type = "css"): array
     {
         $data = [];

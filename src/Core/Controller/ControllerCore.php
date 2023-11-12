@@ -187,7 +187,7 @@ class ControllerCore
     }
 
     public function render(TemplateInterface $template, string $view = "", array $data = [], array $css = [], array $js = []) {
-        return $template->render($view, $data, $css, $js);
+        return $template->build($view, $data, $css, $js);
     }
 
 

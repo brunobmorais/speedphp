@@ -98,7 +98,7 @@ class UsuarioController extends ControllerCore implements ControllerInterface
         try {
             $data['TITLE'] = "Login";
             return $this->render(
-            new DefaultTemplate(),
+                new DefaultTemplate(),
                 'usuario/login',$data);
         } catch (\Error $e) {
             return $e;
@@ -111,7 +111,7 @@ class UsuarioController extends ControllerCore implements ControllerInterface
         try {
             $head['TITLE'] = "Esqueci senha";
             return $this->render(
-            new DefaultTemplate(),
+                new DefaultTemplate(),
                 'usuario/esquecisenha', $head);
         } catch (\Error $e) {
             return $e;

@@ -11,7 +11,7 @@ class LoggedTemplate implements TemplateInterface
 
     use TemplateTrait;
 
-    public function render(string $view = "", array $data = [], array $css = [], array $js = [])
+    public function build(string $view = "", array $data = [], array $css = [], array $js = [])
     {
         try {
             $this->controller->isLogged();
@@ -29,7 +29,7 @@ class LoggedTemplate implements TemplateInterface
             $data['javascript'] = $this->javascript($view);
             $data['css'] = $this->addCssJsPage($css, "css");
             $data['js'] = $this->addCssJsPage($js, "js");
-            $this->render("components/theme", $data);
+            $this->build("components/theme", $data);
 
         } catch (\Error $e) {
             return $e;

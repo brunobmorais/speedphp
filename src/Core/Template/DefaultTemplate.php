@@ -11,7 +11,7 @@ class DefaultTemplate implements TemplateInterface
 
     use TemplateTrait;
 
-    public function render(string $view = "", array $data = [], array $css = [], array $js = [])
+    public function build(string $view = "", array $data = [], array $css = [], array $js = [])
     {
         try {
             $this->setHead($head['TITLE'] ?? "");
@@ -26,7 +26,7 @@ class DefaultTemplate implements TemplateInterface
             $data['css'] = $this->addCssJsPage($css, "css");
             $data['js'] = $this->addCssJsPage($js, "js");
 
-            return $this->render("components/theme", $data);
+            return $this->build("components/theme", $data);
 
         } catch (\Error $e) {
             return $e;
