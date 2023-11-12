@@ -5,7 +5,7 @@ namespace App\Core\Template;
 use App\Core\Controller\ControllerCore;
 use App\Libs\AlertLib;
 use App\Libs\FuncoesLib;
-use App\Libs\twig\TwigLib;
+use App\Libs\Twig\TwigLib;
 
 Trait TemplateTrait
 {
