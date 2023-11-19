@@ -4,24 +4,32 @@ namespace App\Daos;
 use BMorais\Database\Crud;
 use App\Libs\FuncoesLib;
 use App\Models\RecuperaSenhaModel;
+use BMorais\Database\CrudBuilder;
 
-class ModuloDao extends Crud{
+class ModuloDao extends CrudBuilder {
 
 
     public function __construct()
     {
-        $this->setTable("MODULO");
+        $this->setTable("MODULO","M");
         $this->setClassModel("moduloModel");
     }
 
     public function buscaModulosUsuario($cpf){
         try {
-            $sql = "SELECT DISTINCT(M.CODMODULO), M.TITULO, M.CONTROLLER, M.ICONE, M.DESCRICAO, M.ORDEM FROM MODULO AS M
-                    iNNER JOIN SERVICO AS s ON s.CODMODULO=M.CODMODULO
-                    INNER JOIN PRIVILEGIO AS p ON p.CODSERVICO=s.CODSERVICO
-                    WHERE p.LER='1' AND s.SITUACAO='1' AND M.SITUACAO='1' AND p.CODUSUARIO=? ORDER BY M.ORDEM, M.TITULO";
-            $result = $this->executeSQL($sql, array($cpf));
-            return $this->fetchArrayAssoc($result);
+            $result =  $this
+                ->select("DISTINCT(M.CODMODULO), M.TITULO, M.CONTROLLER, M.ICONE, M.DESCRICAO, M.ORDEM")
+                ->innerJoin("SERVICO", "S", "S.CODMODULO=M.CODMODULO")
+                ->innerJoin("PRIVILEGIO", "P", "P.CODSERVICO=S.CODSERVICO")
+                ->where("P.LER='1'")
+                ->andWhere("S.SITUACAO='1'")
+                ->andWhere("M.SITUACAO='1'")
+                ->andWhere("P.CODUSUARIO=?", [$cpf])
+                ->orderBy("M.ORDEM")
+                ->addOrderBy("M.TITULO")
+                ->executeQuery()
+                ->fetchArrayAssoc();
+            return $result;
         } catch (\Exception $e) {
             throw new \Error($e->getMessage());
         }
@@ -31,18 +39,18 @@ class ModuloDao extends Crud{
     public function buscaServicosUsuario($id, $controller){
         try {
             if (!empty($controller)) {
-                $sql = "SELECT DISTINCT(s.CODSERVICO), 
-                s.TITULO, s.DESCRICAO, s.ICONE, s.CONTROLLER, s.ORDEM,
-                M.TITULO as TITULOMODULO, M.ICONE AS ICONEMODULO
-                FROM PRIVILEGIO AS p 
-                INNER JOIN USUARIO AS pp ON pp.CODUSUARIO=p.CODUSUARIO
-                INNER JOIN SERVICO AS s ON s.CODSERVICO=p.CODSERVICO
-                INNER JOIN MODULO AS M ON M.CODMODULO=s.CODMODULO 
-                AND p.LER='1' AND s.SITUACAO='1' AND M.SITUACAO='1' 
-                AND p.CODUSUARIO=? AND M.CONTROLLER=?
-                ORDER BY s.ORDEM, s.TITULO";
-                $result = $this->executeSQL($sql, array($id, $controller));
-                $obj = $this->fetchArrayAssoc($result);
+                $obj = $this->query("SELECT DISTINCT(s.CODSERVICO), 
+                    s.TITULO, s.DESCRICAO, s.ICONE, s.CONTROLLER, s.ORDEM,
+                    M.TITULO as TITULOMODULO, M.ICONE AS ICONEMODULO
+                    FROM PRIVILEGIO AS p 
+                    INNER JOIN USUARIO AS pp ON pp.CODUSUARIO=p.CODUSUARIO
+                    INNER JOIN SERVICO AS s ON s.CODSERVICO=p.CODSERVICO
+                    INNER JOIN MODULO AS M ON M.CODMODULO=s.CODMODULO 
+                    AND p.LER='1' AND s.SITUACAO='1' AND M.SITUACAO='1' 
+                    AND p.CODUSUARIO=? AND M.CONTROLLER=?
+                    ORDER BY s.ORDEM, s.TITULO", array($id, $controller))
+                    ->executeQuery()
+                    ->fetchArrayAssoc();
                 if (!empty($obj)) {
                     return $obj;
                 } else {
