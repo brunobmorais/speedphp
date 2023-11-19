@@ -47,7 +47,7 @@ class PessoaDao extends Crud{
             $params = array($cpfcnpj);
             $result = $this->executeSQL($sql, $params);
             if ($this->count($result) > 0) {
-                return $this->fetchOneClass($result, $this->classModel);
+                return $this->fetchOneClass($result, $this->getClassModel());
             } else {
                 return null;
             }
@@ -85,7 +85,7 @@ class PessoaDao extends Crud{
             $params = array($codusuario);
             $result = $this->executeSQL($sql, $params);
             if ($this->count($result) > 0) {
-                return $this->fetchOneClass($result, $this->classModel);
+                return $this->fetchOneClass($result, $this->getClassModel());
             } else {
                 return null;
             }
@@ -189,7 +189,7 @@ class PessoaDao extends Crud{
         $params = array($email);
         $result = $this->executeSQL($sql,$params);
         if ($this->count($result)>0){
-            return $this->fetchOneClass($result,$this->classModel);
+            return $this->fetchOneClass($result,$this->getClassModel());
         } else {
             return null;
         }
@@ -202,7 +202,7 @@ class PessoaDao extends Crud{
         $params = array($cpfcnpj);
         $result = $this->executeSQL($sql,$params);
         if ($this->count($result)>0){
-            return $this->fetchOneClass($result,$this->classModel);
+            return $this->fetchOneClass($result,$this->getClassModel());
         } else {
             return null;
         }
