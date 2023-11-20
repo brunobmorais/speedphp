@@ -51,6 +51,7 @@ class ModuloDao extends CrudBuilder {
                     ORDER BY s.ORDEM, s.TITULO", array($id, $controller))
                     ->executeQuery()
                     ->fetchArrayAssoc();
+
                 if (!empty($obj)) {
                     return $obj;
                 } else {
