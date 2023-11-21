@@ -1,5 +1,5 @@
 <?php
-if (strpos($_SERVER['SERVER_NAME'],"localhost")){
+if (strpos($_SERVER['SERVER_NAME'],"localhost") || $_SERVER['SERVER_NAME'] == "localhost"){
     require_once(dirname(__DIR__,1).'/config/developerConfig.php');
 } else {
     require_once(dirname(__DIR__,1).'/config/productionConfig.php');
