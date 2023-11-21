@@ -8,16 +8,16 @@
     "packages": [
         {
             "name": "bmorais/database",
-            "version": "v1.0.74",
+            "version": "v1.0.75",
             "source": {
                 "type": "git",
                 "url": "https://github.com/brunobmorais/php-database.git",
-                "reference": "99a7ee1cae544e090bb7b9295f64f624efac502f"
+                "reference": "701a870a64c527f47b4dc95e0689dd7094a96e24"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/brunobmorais/php-database/zipball/99a7ee1cae544e090bb7b9295f64f624efac502f",
-                "reference": "99a7ee1cae544e090bb7b9295f64f624efac502f",
+                "url": "https://api.github.com/repos/brunobmorais/php-database/zipball/701a870a64c527f47b4dc95e0689dd7094a96e24",
+                "reference": "701a870a64c527f47b4dc95e0689dd7094a96e24",
                 "shasum": ""
             },
             "require": {
@@ -56,9 +56,9 @@
             ],
             "support": {
                 "issues": "https://github.com/brunobmorais/php-database/issues",
-                "source": "https://github.com/brunobmorais/php-database/tree/v1.0.74"
+                "source": "https://github.com/brunobmorais/php-database/tree/v1.0.75"
             },
-            "time": "2023-11-20T17:55:22+00:00"
+            "time": "2023-11-21T12:20:04+00:00"
         },
         {
             "name": "firebase/php-jwt",
