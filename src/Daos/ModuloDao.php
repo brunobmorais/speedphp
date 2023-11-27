@@ -18,7 +18,7 @@ class ModuloDao extends CrudBuilder {
     public function buscaModulosUsuario($cpf){
         try {
             $result =  $this
-                ->select("DISTINCT(M.CODMODULO), M.TITULO, M.CONTROLLER, M.ICONE, M.DESCRICAO, M.ORDEM")
+                ->selectBuilder("DISTINCT(M.CODMODULO), M.TITULO, M.CONTROLLER, M.ICONE, M.DESCRICAO, M.ORDEM")
                 ->innerJoin("SERVICO", "S", "S.CODMODULO=M.CODMODULO")
                 ->innerJoin("PRIVILEGIO", "P", "P.CODSERVICO=S.CODSERVICO")
                 ->where("P.LER='1'")
