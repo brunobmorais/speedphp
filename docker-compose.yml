@@ -3,10 +3,7 @@ networks:
   mynet:
 services:
   webserver:
-    build:
-      context: ./
-      dockerfile: ./docker/Dockerfile
-    restart: always
+    image: brunobmorais/php8-apache
     volumes:
       - ./:/var/www/html
       - ./docker/config/apache/000-default.conf:/etc/apache2/sites-available/000-default.conf
