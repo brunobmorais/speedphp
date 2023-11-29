@@ -11,7 +11,7 @@ class PessoaDao extends Crud{
 
     public function __construct()
     {
-        $this->setTable("PESSOA");
+        $this->setTableName("PESSOA");
         $this->setClassModel("PessoaModel");
     }
 

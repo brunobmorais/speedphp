@@ -10,7 +10,7 @@ class ModeloDao extends Crud{
 
     public function __construct()
     {
-        $this->setTable("MODELO");
+        $this->setTableName("MODELO");
         $this->setClassModel("modeloModel");
     }
 }

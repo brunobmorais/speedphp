@@ -11,7 +11,7 @@ class ModuloDao extends CrudBuilder {
 
     public function __construct()
     {
-        $this->setTable("MODULO","M");
+        $this->setTableName("MODULO","M");
         $this->setClassModel("moduloModel");
     }
 

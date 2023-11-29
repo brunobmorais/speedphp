@@ -10,7 +10,7 @@ class FuncionarioDao extends Crud{
 
     public function __construct()
     {
-        $this->setTable("FUNCIONARIO");
+        $this->setTableName("FUNCIONARIO");
         $this->setClassModel("FuncionarioModel");
     }
 
