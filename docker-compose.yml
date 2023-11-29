@@ -3,7 +3,8 @@ networks:
   mynet:
 services:
   webserver:
-    image: brunobmorais/php8-apache
+    image: brunobmorais/php8.2-apache
+    #image: brunobmorais/php7.4-apache
     volumes:
       - ./:/var/www/html
       - ./docker/config/apache/000-default.conf:/etc/apache2/sites-available/000-default.conf
