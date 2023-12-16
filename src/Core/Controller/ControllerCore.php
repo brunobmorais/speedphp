@@ -183,9 +183,16 @@ class ControllerCore
 
     public function pageNotFound(){
         (new ErroController())->index();
-        exit();
     }
 
+    /**
+     * @param string $template
+     * @param string $view
+     * @param array $data
+     * @param array $css
+     * @param array $js
+     * @return mixed
+     */
     public function render(string $template, string $view = "", array $data = [], array $css = [], array $js = []) {
         if (file_exists(dirname(__DIR__, 3) . '/src/Core/Template/' . ucfirst($template) . 'Template.php')) {
             $template = "App\\Core\\Template\\" . $template . "Template";
@@ -196,6 +203,15 @@ class ControllerCore
             $template = new $template;
             return $template->build('erro/index',['TITLE' => 'Página não encontrada']);
         }
+    }
+
+    /**
+     * @param array $params
+     * @return void
+     */
+    public function __call(array $params = [])
+    {
+        $this->pageNotFound();
     }
 
 
