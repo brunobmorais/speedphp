@@ -8,16 +8,16 @@
     "packages": [
         {
             "name": "bmorais/database",
-            "version": "v1.0.77",
+            "version": "v1.0.78",
             "source": {
                 "type": "git",
                 "url": "https://github.com/brunobmorais/php-database.git",
-                "reference": "2103d0ad6c9cea440ce234d9e888656d6f85baf1"
+                "reference": "92ecd09c023efb072fd8265d16582cafb8e8d4e3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/brunobmorais/php-database/zipball/2103d0ad6c9cea440ce234d9e888656d6f85baf1",
-                "reference": "2103d0ad6c9cea440ce234d9e888656d6f85baf1",
+                "url": "https://api.github.com/repos/brunobmorais/php-database/zipball/92ecd09c023efb072fd8265d16582cafb8e8d4e3",
+                "reference": "92ecd09c023efb072fd8265d16582cafb8e8d4e3",
                 "shasum": ""
             },
             "require": {
@@ -56,9 +56,9 @@
             ],
             "support": {
                 "issues": "https://github.com/brunobmorais/php-database/issues",
-                "source": "https://github.com/brunobmorais/php-database/tree/v1.0.77"
+                "source": "https://github.com/brunobmorais/php-database/tree/v1.0.78"
             },
-            "time": "2023-11-28T20:57:05+00:00"
+            "time": "2023-12-16T19:46:30+00:00"
         },
         {
             "name": "firebase/php-jwt",
@@ -376,16 +376,16 @@
         },
         {
             "name": "setasign/fpdi",
-            "version": "v2.5.0",
+            "version": "v2.6.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Setasign/FPDI.git",
-                "reference": "ecf0459643ec963febfb9a5d529dcd93656006a4"
+                "reference": "a6db878129ec6c7e141316ee71872923e7f1b7ad"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Setasign/FPDI/zipball/ecf0459643ec963febfb9a5d529dcd93656006a4",
-                "reference": "ecf0459643ec963febfb9a5d529dcd93656006a4",
+                "url": "https://api.github.com/repos/Setasign/FPDI/zipball/a6db878129ec6c7e141316ee71872923e7f1b7ad",
+                "reference": "a6db878129ec6c7e141316ee71872923e7f1b7ad",
                 "shasum": ""
             },
             "require": {
@@ -397,8 +397,8 @@
             },
             "require-dev": {
                 "phpunit/phpunit": "~5.7",
-                "setasign/fpdf": "~1.8",
-                "setasign/tfpdf": "~1.31",
+                "setasign/fpdf": "~1.8.6",
+                "setasign/tfpdf": "~1.33",
                 "squizlabs/php_codesniffer": "^3.5",
                 "tecnickcom/tcpdf": "~6.2"
             },
@@ -436,7 +436,7 @@
             ],
             "support": {
                 "issues": "https://github.com/Setasign/FPDI/issues",
-                "source": "https://github.com/Setasign/FPDI/tree/v2.5.0"
+                "source": "https://github.com/Setasign/FPDI/tree/v2.6.0"
             },
             "funding": [
                 {
@@ -444,7 +444,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2023-09-28T10:46:27+00:00"
+            "time": "2023-12-11T16:03:32+00:00"
         },
         {
             "name": "symfony/polyfill-ctype",
@@ -931,16 +931,16 @@
         },
         {
             "name": "tecnickcom/tc-lib-pdf",
-            "version": "8.0.53",
+            "version": "8.0.55",
             "source": {
                 "type": "git",
                 "url": "https://github.com/tecnickcom/tc-lib-pdf.git",
-                "reference": "ff6a98586d852dc82c9caa4b57a2f1b66c111b8c"
+                "reference": "95a1fa0e0d7372b26e86be8d41f371cded9d2eb9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/tecnickcom/tc-lib-pdf/zipball/ff6a98586d852dc82c9caa4b57a2f1b66c111b8c",
-                "reference": "ff6a98586d852dc82c9caa4b57a2f1b66c111b8c",
+                "url": "https://api.github.com/repos/tecnickcom/tc-lib-pdf/zipball/95a1fa0e0d7372b26e86be8d41f371cded9d2eb9",
+                "reference": "95a1fa0e0d7372b26e86be8d41f371cded9d2eb9",
                 "shasum": ""
             },
             "require": {
@@ -992,7 +992,7 @@
             ],
             "support": {
                 "issues": "https://github.com/tecnickcom/tc-lib-pdf/issues",
-                "source": "https://github.com/tecnickcom/tc-lib-pdf/tree/8.0.53"
+                "source": "https://github.com/tecnickcom/tc-lib-pdf/tree/8.0.55"
             },
             "funding": [
                 {
@@ -1000,7 +1000,7 @@
                     "type": "custom"
                 }
             ],
-            "time": "2023-11-29T11:13:06+00:00"
+            "time": "2023-11-29T18:11:15+00:00"
         },
         {
             "name": "tecnickcom/tc-lib-pdf-encrypt",
@@ -1206,16 +1206,16 @@
         },
         {
             "name": "tecnickcom/tc-lib-pdf-image",
-            "version": "2.0.10",
+            "version": "2.0.11",
             "source": {
                 "type": "git",
                 "url": "https://github.com/tecnickcom/tc-lib-pdf-image.git",
-                "reference": "b532f935ee8eac08b6f94606e105c7e7c5745477"
+                "reference": "df75ca4239e44e6c05d57b9103b39e1f77fbb0f9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/tecnickcom/tc-lib-pdf-image/zipball/b532f935ee8eac08b6f94606e105c7e7c5745477",
-                "reference": "b532f935ee8eac08b6f94606e105c7e7c5745477",
+                "url": "https://api.github.com/repos/tecnickcom/tc-lib-pdf-image/zipball/df75ca4239e44e6c05d57b9103b39e1f77fbb0f9",
+                "reference": "df75ca4239e44e6c05d57b9103b39e1f77fbb0f9",
                 "shasum": ""
             },
             "require": {
@@ -1261,7 +1261,7 @@
             ],
             "support": {
                 "issues": "https://github.com/tecnickcom/tc-lib-pdf-image/issues",
-                "source": "https://github.com/tecnickcom/tc-lib-pdf-image/tree/2.0.10"
+                "source": "https://github.com/tecnickcom/tc-lib-pdf-image/tree/2.0.11"
             },
             "funding": [
                 {
@@ -1269,7 +1269,7 @@
                     "type": "custom"
                 }
             ],
-            "time": "2023-11-29T11:11:24+00:00"
+            "time": "2023-11-29T18:06:22+00:00"
         },
         {
             "name": "tecnickcom/tc-lib-pdf-page",
@@ -1620,5 +1620,5 @@
         "ext-openssl": "*"
     },
     "platform-dev": [],
-    "plugin-api-version": "2.3.0"
+    "plugin-api-version": "2.6.0"
 }

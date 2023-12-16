@@ -209,7 +209,7 @@ class ControllerCore
      * @param array $params
      * @return void
      */
-    public function __call(array $params = [])
+    public function __call($name, $arguments)
     {
         $this->pageNotFound();
     }
