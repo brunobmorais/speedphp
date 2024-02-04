@@ -8,7 +8,9 @@ use App\Core\Controller\ControllerInterface;
 use App\Core\PageCore;
 use App\Core\Template\LoggedTemplate;
 use App\Core\Template\ModuloTemplate;
+use App\Core\Template\TemplateAbstract;
 use App\Daos\ModuloDao;
+use App\Daos\PerfilDao;
 use App\Daos\PessoaDao;
 use App\Daos\PrivilegioDao;
 use App\Daos\ServicoDao;
@@ -16,6 +18,7 @@ use App\Libs\AlertLib;
 use App\Libs\FuncoesLib;
 use App\Libs\TableLib;
 use App\Models\ModuloModel;
+use App\Models\PerfilModel;
 use App\Models\ServicoModel;
 
 class ConfiguracoesController extends ControllerCore implements ControllerInterface
@@ -26,7 +29,7 @@ class ConfiguracoesController extends ControllerCore implements ControllerInterf
     public function index($args = [])
     {
         try {
-            return $this->render("Modulo");
+            return $this->render(TemplateAbstract::MODULE);
         } catch (\Error $e) {
             return $e;
         }
@@ -65,10 +68,10 @@ class ConfiguracoesController extends ControllerCore implements ControllerInterf
             }
             $data["tableComponent"] = $tableComponents->render();
             $data["tableButtonInputPlaceholder"] = "Buscar...";
-            $data["tablebuttonComponent"] = (new PageCore)->render("components/button_table", $data, false);
+            $data["tablebuttonComponent"] = $this->render(TemplateAbstract::COMPONENT, "components/button_table", $data);
 
             return $this->render(
-                "Logged",
+                TemplateAbstract::LOGGED,
                 "components/page_table_default",
                 $data,
             );
@@ -96,7 +99,7 @@ class ConfiguracoesController extends ControllerCore implements ControllerInterf
             }
 
             return $this->render(
-                "Logged",
+                TemplateAbstract::LOGGED,
                 $data["SERVICO"]["url"] . "cadastro",
                 $data,
             );
@@ -207,7 +210,7 @@ class ConfiguracoesController extends ControllerCore implements ControllerInterf
             }
             $data["tableComponent"] = $tableComponents->render();
             $data["tableButtonInputPlaceholder"] = "Buscar...";
-            $data["tablebuttonComponent"] = (new PageCore)->render("components/button_table", $data, false);
+            $data["tablebuttonComponent"] = $this->render("Component","components/button_table", $data);
 
             return $this->render(
                 "Logged",
@@ -329,11 +332,11 @@ class ConfiguracoesController extends ControllerCore implements ControllerInterf
             $this->isLogged();
             $data = $this->getServico();
 
-            $pessoaDao = new PessoaDao();
+            $perfilDao = new PerfilDao();
 
             $data["titleCardComponent"] = "Privilégios";
 
-            $data["USUARIOS"] = $pessoaDao->buscarTodosFuncionarios();
+            $data["PERFIS"] = $perfilDao->buscarPerfis();
             return $this->render(
                 "Logged",
                 $data["SERVICO"]["url"],
@@ -344,46 +347,6 @@ class ConfiguracoesController extends ControllerCore implements ControllerInterf
         }
     }
 
-    public function privilegioscadastro($getParametro = null)
-    {
-        try {
-            $this->isLogged();
-            $data = $this->getServico();
-
-            $sisServicoDao = new ServicoDao();
-            $sisModuloDao = new ModuloDao();
-            $sisPrivilegio = new PrivilegioDao();
-            $pessoaDao = new PessoaDao();
-            $alerta = new AlertLib();
-
-            $data["titleCardComponent"] = "Cadastrar privilégios";
-
-            $id = $this->getParams("id") ?? "";
-
-            $dataPessoa = $pessoaDao->buscarFuncionarioId($id)[0];
-
-            if (!empty($dataPessoa)) {
-                $data["PESSOA"] = $dataPessoa;
-                $data["DATAMODULOS"] = $sisModuloDao->select("*", "WHERE SITUACAO='1' AND EXCLUIDO=0 ORDER BY ORDEM, TITULO");
-                foreach ($data["DATAMODULOS"] as $index => $item) {
-                    $data["DATAMODULOS"][$index]->SERVICOS = $sisServicoDao->buscarServicosPrivilegiosModulo($id, $item->CODMODULO);
-                }
-
-                return $this->render(
-                "Logged",
-                $data["SERVICO"]["url"] . 'cadastro',
-                    $data,
-                );
-            } else {
-                $alerta->warning("Usuário não encontrado!", "/{$data["SERVICO"]["url"]}/");
-            }
-
-
-         } catch (\Error $e) {
-            return $e;
-        }
-
-    }
 
     public function privilegiosaction($getParametro = null)
     {
@@ -427,6 +390,228 @@ class ConfiguracoesController extends ControllerCore implements ControllerInterf
 
          } catch (\Error $e) {
             $alerta->danger("Ops! Aconteceu um erro, tente mais tarde!", $returnAction);
+            return $e;
+        }
+    }
+
+    // ######### PERFIL ###########
+    public function perfil($getParametro = null)
+    {
+        try {
+            $this->isLogged();
+            $data = $this->getServico();
+
+            $perfilDao = new PerfilDao();
+            $tableComponents = new TableLib();
+
+            $data["titleCardComponent"] = "Perfis";
+
+            $objServicos = $perfilDao->buscarPerfis($data["GETPARAMS"]["buscar"]);
+
+            $tableComponents->defineVars($objServicos,
+                array("Perfil", "Nível", ""),
+                array("buscar" => $data['GETPARAMS']['buscar']));
+
+            foreach ($objServicos as $key => $item) {
+                $line = [];
+                if (($key >= $tableComponents->getInicioPg()) and ($key < $tableComponents->getFimPg())) {
+
+                    $line[] = $item->NOME;
+                    $line[] = $item->NIVEL;
+                    $line[] = ($data["SERVICO"]["ALTERAR"] == "1" ? "<a href='/{$data["SERVICO"]["url"]}-cadastro/?id={$item->CODPERFIL}&pg={$data['GETPARAMS']['pg']}&buscar={$data['GETPARAMS']['buscar']}' class='btn btn-outline-secondary btn-sm'><span class='mdi mdi-pencil-outline'></span> Editar</a>" : "").
+                        " <a href='/{$data["SERVICO"]["modulo"]}/perfil-privilegios/?id={$item->CODPERFIL}&pg={$data['GETPARAMS']['pg']}&buscar={$data['GETPARAMS']['buscar']}' class='btn btn-outline-secondary btn-sm'><span class='mdi mdi-pencil-outline'></span> Privilégios</a>";
+                    $tableComponents->addLine($line);
+                }
+            }
+            $data["tableComponent"] = $tableComponents->render();
+            $data["tableButtonInputPlaceholder"] = "Buscar...";
+            $data["tablebuttonComponent"] = $this->render("Component","components/button_table", $data);
+
+            return $this->render(
+                "Logged",
+                "components/page_table_default",
+                $data,
+            );
+        } catch (\Error $e) {
+            return $e;
+        }
+    }
+
+    public function perfilprivilegios($getParametro = null)
+    {
+        try {
+            $this->isLogged();
+
+            $data = $this->getServico();
+
+            $sisServicoDao = new ServicoDao();
+            $sisModuloDao = new ModuloDao();
+            $sisPrivilegio = new PrivilegioDao();
+            $perfilDao = new PerfilDao();
+            $alerta = new AlertLib();
+
+            $data["titleCardComponent"] = "Cadastrar privilégios";
+
+            $id = $this->getParams("id") ?? "";
+
+            $dataPerfil = $perfilDao->buscarPerfilId($id);
+
+            if (!empty($dataPerfil)) {
+                $data["PERFIL"] = $dataPerfil;
+                $data["DATAMODULOS"] = $sisModuloDao->select("*", "WHERE SITUACAO='1' AND EXCLUIDO=0 ORDER BY ORDEM, TITULO");
+                foreach ($data["DATAMODULOS"] as $index => $item) {
+                    $data["DATAMODULOS"][$index]->SERVICOS = $sisServicoDao->buscarServicosPrivilegiosModulo($id, $item->CODMODULO);
+                }
+
+                return $this->render(
+                    TemplateAbstract::LOGGED,
+                    $data["SERVICO"]["url"] . 'privilegio',
+                    $data,
+                );
+            } else {
+                $alerta->warning("Usuário não encontrado!", "/{$data["SERVICO"]["url"]}/");
+            }
+
+
+        } catch (\Error $e) {
+            return $e;
+        }
+
+    }
+
+    public function perfilcadastro($getParametro = null)
+    {
+        try {
+            $this->isLogged();
+            $data = $this->getServico();
+
+            $sisServicoDao = new ServicoDao();
+            $perfilDao = new PerfilDao();
+
+            $data["titleCardComponent"] = "Cadastrar";
+
+            $id = $this->getParams("id") ?? "";
+
+            $data["PERFIL"] = $perfilDao->buscarPerfilId($id);
+
+            return $this->render(
+                "Logged",
+                $data["SERVICO"]["url"] . 'cadastro',
+                $data,
+            );
+
+
+        } catch (\Error $e) {
+            return $e;
+        }
+
+    }
+
+    public function perfilaction($getParametro = null)
+    {
+        try {
+            $this->isLogged();
+            $this->validateRequestMethod("POST");
+            $data = $this->getServico();
+            $returnParams = ($this->postParams("pg") != "" ? "?pg=" . $this->postParams("pg") : "") . ($this->postParams("buscar") != "" ? "&buscar=" . $this->postParams("buscar") : "");
+            $returnAction = "/{$data["SERVICO"]["url"]}/" . $returnParams;
+
+            $alerta = new AlertLib();
+            $perfilModel = new PerfilModel($_POST);
+            $perfilDao = new PerfilDao();
+
+            $action = $this->postParams("action") ?? "";
+
+            if ($action == "insert") {
+                if ($data["SERVICO"]["SALVAR"] == "1") {
+                    $parametros = array($perfilModel->getNOME(), $perfilModel->getNIVEL(), 0);
+                    $atributos = "NOME, NIVEL, EXCLUIDO";
+                    $result = $perfilDao->insert($atributos, $parametros);
+                    if ($result) {
+                        $alerta->success("Inserido com sucesso!", $returnAction);
+                    } else {
+                        $alerta->danger("Ops! Aconteceu um erro, tente mais tarde.", $returnAction);
+                    }
+                } else {
+                    $alerta->warning("Você não tem privilégio para executar essa ação!", $returnAction);
+                }
+            } elseif ($action == "update") {
+
+                if ($data["SERVICO"]["ALTERAR"] == "1") {
+                    $parametros = array($perfilModel->getNOME(), $perfilModel->getNIVEL(), $perfilModel->getCODPERFIL());
+                    $atributos = "NOME, NIVEL";
+                    $result = $perfilDao->update($atributos, $parametros, "CODPERFIL=?");
+                    if ($result) {
+                        $alerta->success("Alerado com sucesso!", $returnAction);
+                    } else {
+                        $alerta->danger("Ops! Aconteceu um erro, tente mais tarde.", $returnAction);
+                    }
+                } else {
+                    $alerta->warning("Você não tem privilégio para executar essa ação!", $returnAction);
+                }
+            } elseif ($action == "delete") {
+                if ($data["SERVICO"]["EXCLUIR"] == "1") {
+                    $id = $this->postParams("idExcluir");
+                    $parametros = array(1, $id);
+                    $atributos = "EXCLUIDO";
+                    $result = $perfilDao->update($atributos, $parametros, "CODPERFIL=?");
+                    if ($result) {
+                        $alerta->success("Excluido com sucesso!", $returnAction);
+                    } else {
+                        $alerta->danger("Ops! Aconteceu um erro, tente mais tarde.", $returnAction);
+                    }
+                } else {
+                    $alerta->warning("Você não tem privilégio para executar essa ação!", $returnAction);
+                }
+            } else {
+                $alerta->warning("Você não tem privilégio para executar essa ação!", $returnAction);
+            }
+
+        } catch (\Error $e) {
+            return $e;
+        }
+    }
+
+    // ######### USUÁRIOS ###########
+    public function usuarios($getParametro = null)
+    {
+        try {
+            $this->isLogged();
+            $data = $this->getServico();
+
+            $usuariosDao = new PessoaDao();
+            $tableComponents = new TableLib();
+
+            $data["titleCardComponent"] = "Usuários";
+
+            $objServicos = $usuariosDao->buscarTodosFuncionarios($data["GETPARAMS"]["buscar"]);
+
+            $tableComponents->defineVars($objServicos,
+                array("Nome", "Email", ""),
+                array("buscar" => $data['GETPARAMS']['buscar']));
+
+            foreach ($objServicos as $key => $item) {
+                $line = [];
+                if (($key >= $tableComponents->getInicioPg()) and ($key < $tableComponents->getFimPg())) {
+
+                    $line[] = $item->NOME;
+                    $line[] = $item->EMAIL;
+                    $line[] = "<a href='/{$data["SERVICO"]["modulo"]}/alterarsenha/?id={$item->CODUSUARIO}&pg={$data['GETPARAMS']['pg']}&buscar={$data['GETPARAMS']['buscar']}' class='btn btn-outline-secondary btn-sm'><span class='mdi mdi-pencil-outline'></span> Alterar Senha</a>".
+                        " <a href='/{$data["SERVICO"]["modulo"]}/trocarusuario/?id={$item->CODUSUARIO}&pg={$data['GETPARAMS']['pg']}&buscar={$data['GETPARAMS']['buscar']}' class='btn btn-outline-secondary btn-sm'><span class='mdi mdi-pencil-outline'></span> Trocar Usuário</a>";
+
+                    $tableComponents->addLine($line);
+                }
+            }
+            $data["tableComponent"] = $tableComponents->render();
+            $data["tableButtonInputPlaceholder"] = "Buscar...";
+            $data["tablebuttonComponent"] = $this->render(TemplateAbstract::COMPONENT,"components/button_table", $data);
+
+            return $this->render(
+                TemplateAbstract::LOGGED,
+                "components/page_table_default",
+                $data,
+            );
+        } catch (\Error $e) {
             return $e;
         }
     }

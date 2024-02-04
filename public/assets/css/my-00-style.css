@@ -1,20 +1,18 @@
 /*@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200;0,300;0,400;0,600;0,700;0,800;0,900;1,200;1,300;1,400;1,600;1,700;1,800;1,900&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');*/
-@import url(https://fonts.googleapis.com/css??lang=pt-BR&family=Google+Sans:400,500,600,700%7CRoboto:400,500600,700%7CProduct+Sans:400,700%7C&subset=cyrillic,cyrillic-ext,greek,greek-ext,latin-ext,vietnamese);
-@import url(https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap);/**
-
+@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;0,1000;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900;1,1000&display=swap');
 /*FONTE DOS TEXTOS*/
 * {
-    font-family: 'Google Sans',Roboto,RobotoDraft,Helvetica,Arial,sans-serif !important;
+    font-family: 'Nunito', sans-serif !important;
 }
 button {
-    font-family: 'Google Sans',Roboto,RobotoDraft,Helvetica,Arial,sans-serif !important;
+    font-family: 'Nunito', sans-serif !important;
 
 }
 a {
-    font-family: 'Google Sans',Roboto,RobotoDraft,Helvetica,Arial,sans-serif !important;
+    font-family: 'Nunito', sans-serif !important;
 }
 
 
@@ -1163,7 +1161,7 @@ table.gridb {
 }
 
 .title-page{
-    font-family: 'Poppins', sans-serif !important;
+    font-family: 'Nunito', sans-serif !important;
     color: #000000;
     font-weight: 600;
     letter-spacing: 1.3px;
@@ -1194,7 +1192,7 @@ table.gridb {
     display: inline;
 }
 .breadcrumb-item-custom a{
-    font-family: 'Poppins', sans-serif !important;
+    font-family: 'Nunito', sans-serif !important;
     color: #757575;
     vertical-align: middle;
     text-transform: none;
@@ -1202,14 +1200,14 @@ table.gridb {
     font-weight: 600;
 }
 .breadcrumb-item-custom-active a{
-    font-family: 'Poppins', sans-serif !important;
+    font-family: 'Nunito', sans-serif !important;
     color: #757575 ;
     font-weight: 600;
     vertical-align: middle;
     /*line-height: 0px;*/
 }
 .breadcrumb-custom{
-    font-family: 'Poppins', sans-serif !important;
+    font-family: 'Nunito', sans-serif !important;
     margin-bottom: 0px;
     margin-top: 0px;
     padding-bottom: 0px;
@@ -1220,7 +1218,7 @@ table.gridb {
 }
 
 .h1-title {
-    font-family: 'Poppins',sans-serif!important;
+    font-family: 'Nunito', sans-serif !important;
     font-weight: 600;
     color: #000000!important;
     font-size: 22px;
@@ -1246,7 +1244,7 @@ table.gridb {
     }
 
     .h1-title {
-        font-family: 'Poppins',sans-serif!important;
+        font-family: 'Nunito', sans-serif !important;
         font-weight: 600;
         color: #000000!important;
         font-size: 20px !important;

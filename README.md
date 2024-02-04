@@ -95,11 +95,14 @@ https://www.favicon-generator.org/
     Configure php como variavel de ambiente e execute o comando abaixo
         php -S localhost:8080 -t ./public
 
-## GERAR ARQUIVOS MINIFICADOS CSS E JS
+## GERAR ARQUIVOS MINIFICADOS CSS, JS
     Acesse seu site http://seusite.com/config/build
 
+## CRIAR CLASSE E SERVICO
+    Acesse seu site http://seusite.com/config/create/NOME_CONTROLLER/NOME_SERVICO
+
 ## FRAMEWORK FRONT-END
-    https://getbootstrap.com/ -> versão 5.2
+    https://getbootstrap.com/ -> versão 5.3
 
 ## COMANDOS
     Otimizar autoloader para produção

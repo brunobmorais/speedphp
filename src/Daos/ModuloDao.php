@@ -15,16 +15,17 @@ class ModuloDao extends CrudBuilder {
         $this->setClassModel("moduloModel");
     }
 
-    public function buscaModulosUsuario($cpf){
+    public function buscaModulosUsuario($codusuario){
         try {
             $result =  $this
                 ->selectBuilder("DISTINCT(M.CODMODULO), M.TITULO, M.CONTROLLER, M.ICONE, M.DESCRICAO, M.ORDEM")
                 ->innerJoin("SERVICO", "S", "S.CODMODULO=M.CODMODULO")
                 ->innerJoin("PRIVILEGIO", "P", "P.CODSERVICO=S.CODSERVICO")
+                ->innerJoin("PERFIL_USUARIO", "PU", "PU.CODPERFIL=P.CODPERFIL")
                 ->where("P.LER='1'")
                 ->andWhere("S.SITUACAO='1'")
                 ->andWhere("M.SITUACAO='1'")
-                ->andWhere("P.CODUSUARIO=?", [$cpf])
+                ->andWhere("PU.CODUSUARIO=?", [$codusuario])
                 ->orderBy("M.ORDEM")
                 ->addOrderBy("M.TITULO")
                 ->executeQuery()
@@ -42,12 +43,12 @@ class ModuloDao extends CrudBuilder {
                 $obj = $this->query("SELECT DISTINCT(s.CODSERVICO), 
                     s.TITULO, s.DESCRICAO, s.ICONE, s.CONTROLLER, s.ORDEM,
                     M.TITULO as TITULOMODULO, M.ICONE AS ICONEMODULO
-                    FROM PRIVILEGIO AS p 
-                    INNER JOIN USUARIO AS pp ON pp.CODUSUARIO=p.CODUSUARIO
+                    FROM PRIVILEGIO AS p
+                    INNER JOIN PERFIL_USUARIO AS pu ON pu.CODPERFIL=p.CODPERFIL
                     INNER JOIN SERVICO AS s ON s.CODSERVICO=p.CODSERVICO
                     INNER JOIN MODULO AS M ON M.CODMODULO=s.CODMODULO 
                     AND p.LER='1' AND s.SITUACAO='1' AND M.SITUACAO='1' 
-                    AND p.CODUSUARIO=? AND M.CONTROLLER=?
+                    AND pu.CODUSUARIO=? AND M.CONTROLLER=?
                     ORDER BY s.ORDEM, s.TITULO", array($id, $controller))
                     ->executeQuery()
                     ->fetchArrayAssoc();
@@ -88,15 +89,15 @@ class ModuloDao extends CrudBuilder {
                 M.TITULO AS TITULOMODULO, M.ICONE AS ICONEMODULO,
                 p.LER, p.ALTERAR, p.EXCLUIR, p.SALVAR, p.OUTROS
                 FROM PRIVILEGIO AS p 
-                INNER JOIN USUARIO AS pp ON pp.CODUSUARIO=p.CODUSUARIO
+                INNER JOIN PERFIL_USUARIO AS pu ON pu.CODPERFIL=p.CODPERFIL
                 INNER JOIN SERVICO AS s ON s.CODSERVICO=p.CODSERVICO
                 INNER JOIN MODULO AS M ON M.CODMODULO=s.CODMODULO 
                 AND p.LER='1' AND s.SITUACAO='1' AND M.SITUACAO='1' 
-                AND p.CODUSUARIO=? AND M.controller=? AND s.controller=?";
+                AND pu.CODUSUARIO=? AND M.controller=? AND s.controller=?";
                 $result = $this->executeSQL($sql, array($id, $modulo, $servico));
                 $obj = $this->fetchArrayAssoc($result);
                 if (!empty($obj)) {
-                    return $obj;
+                    return $obj[0];
                 } else {
                     return false;
                 }

@@ -1,0 +1,82 @@
+<main>
+    <section class="section">
+        <div class="container my-container">
+            <div class="row">
+                <div class="col-12 p-0">
+                    <div class="card sombra-1">
+                        <div class="card-header">
+                            <h4>Cadastro</h4>
+                        </div>
+                        <div class="card-body pt-4">
+                            <form id="formCadastro" class="needs-validation" novalidate
+                                  action="/{{ SERVICO.url }}-action/"
+                                  method="post" enctype='multipart/form-data'>
+                                <div class="row">
+                                    <div class="form-group col-12 col-md-12 ">
+                                        <label>Nome</label>
+                                        <input name="NOME" id="nome" type="text" class="form-control" required
+                                               placeholder="Nome"
+                                               value="{{ PERFIL.NOME }}">
+                                        <div class="invalid-feedback">
+                                            Preencha o campo corretamente
+                                        </div>
+                                    </div>
+                                    <div class="form-group col-12 col-md-12 ">
+                                        <label>Nível</label>
+                                        <input name="NIVEL" id="nivel" type="text" class="form-control"
+                                               placeholder="Nível" required
+                                               value="{{ PERFIL.NIVEL }}">
+                                        <div class="invalid-feedback">
+                                            Preencha o campo corretamente
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col">
+                                        <input type="hidden" name="pg" value="{{ GETPARAMS.pg }}">
+                                        <input type="hidden" name="buscar" value="{{ GETPARAMS.buscar }}">
+                                        {% if(SERVICO.EXCLUIR=="1" and PERFIL.CODPERFIL!="") %}
+                                            <button type="button" onclick="excluirItemTabela('{{ PERFIL.CODPERFIL }}')" class="btn btn-outline-secondary btn-round btn-lg col-md-3 col-lg-2 col-12 mt-2"><span class="mdi mdi-trash-can-outline"></span> Excluir</button>
+                                        {% endif %}
+
+                                            {% if(SERVICO.ALTERAR=="1" or SERVICO.SALVAR=="1") %}
+                                                <button type="button" id="btnSalvar"
+                                                        onclick="submitForm('btnSalvar','formCadastro')"
+                                                        class="btn btn-lg btn-primary btn-round col-md-3 col-lg-2 col-12 float-end mt-2">
+                                                    <span class="mdi mdi-check-outline"></span> Salvar
+                                                </button>
+                                            {% endif %}
+                                            <button type="button"
+                                                    onclick="window.location.href='/{{ SERVICO.url }}/?pg={{ GETPARAMS.pg }}&buscar={{ GETPARAMS.buscar }}'"
+
+                                                    class="btn btn-lg btn-outline-secondary btn-round col-md-3 col-lg-2 col-12 float-end mt-2 me-md-2 me-0">
+                                                <span class="mdi mdi-close"></span> Voltar
+                                            </button>
+
+                                        {% if(PERFIL.CODPERFIL!="") %}
+                                            <input type="hidden" name="CODPERFIL" value="{{ PERFIL.CODPERFIL}}">
+                                            <input type="hidden" name="action" value="update">
+                                        {% else %}
+                                            <input type="hidden" name="action" value="insert">
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </form>
+                            <form action="/{{ SERVICO.url }}-action" name="formExcluir" id="formExcluir" method="post">
+                                <input type="hidden" name="pg" value="{{ GETPARAMS.pg }}">
+                                <input type="hidden" name="buscar" value="{{ GETPARAMS.buscar }}">
+                                <input type="hidden" name="action" value="delete">
+                                <input type="hidden" name="idExcluir" id="idExcluir" value="">
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
+
+<script>
+
+</script>

@@ -130,7 +130,7 @@ class ControllerCore
         $servicoUrl = $servicoParams[0]??"";
         $codusuario = SessionLib::getValue("CODUSUARIO");
         if (!empty($servicoUrl)) {
-            $servico = $sisModuloDao->buscaServicoUsuario($codusuario,$moduloUrl, $servicoUrl)[0];
+            $servico = $sisModuloDao->buscaServicoUsuario($codusuario,$moduloUrl, $servicoUrl);
             if (empty($servico)){
                 $alertaDao->danger("Sem privilégio de acesso!","/");
                 exit();
@@ -143,6 +143,9 @@ class ControllerCore
                 $data["GETPARAMS"]["buscar"] = $this->getParams("buscar") ?: "";
                 $data["GETPARAMS"]["pg"] = $this->getParams("pg") ?: "1";
                 $data["SERVICO"]["url"] = "{$moduloUrl}/{$servicoUrl}";
+                $data["SERVICO"]["modulo"] = $moduloUrl;
+                $data["SERVICO"]["servico"] = $servico;
+
 
                 return $data;
             }

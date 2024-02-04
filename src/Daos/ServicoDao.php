@@ -52,15 +52,15 @@ class ServicoDao extends Crud{
 
     }
 
-    public function buscarServicosPrivilegiosModulo($codusuario, $codmodulo){
+    public function buscarServicosPrivilegiosModulo($codperfil, $codmodulo){
         try {
             $sql = "SELECT s.CODSERVICO, s.CODMODULO, s.CONTROLLER, s.TITULO, 
                     s.ICONE, s.DESCRICAO, s.ORDEM,
                     sp.CODPRIVILEGIO, sp.EXCLUIR, sp.LER, sp.SALVAR, sp.ALTERAR, sp.OUTROS
                     FROM SERVICO as s
-                    LEFT JOIN PRIVILEGIO sp on s.CODSERVICO = sp.CODSERVICO AND sp.CODUSUARIO=?
+                    LEFT JOIN PRIVILEGIO sp on s.CODSERVICO = sp.CODSERVICO AND sp.CODPERFIL=?
                     WHERE s.CODMODULO=? AND s.SITUACAO=1 AND s.EXCLUIDO=0";
-            $result = $this->executeSQL($sql, [$codusuario, $codmodulo]);
+            $result = $this->executeSQL($sql, [$codperfil, $codmodulo]);
             return $this->fetchArrayObj($result);
         } catch (\Exception $e) {
             throw new \Error($e->getMessage());

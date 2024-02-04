@@ -17,3 +17,58 @@ table:not(.table-sm) thead th {
 .table-striped>tbody>tr:nth-of-type(odd)>* {
     --bs-table-accent-bg: #FAFAFA;
 }
+
+@media screen and (max-width: 600px) {
+    table {
+        width: 100%;
+    }
+
+    table thead {
+        display: none;
+    }
+
+    table td {
+        border-bottom: 1px solid #efefef;
+    }
+
+    table tr{
+        border-bottom: 1px solid #b7b7b7;
+    }
+
+    table tr {
+        margin-bottom: 8px;
+    }
+
+    table td {
+        display: flex;
+    }
+
+    table td::before {
+        content: attr(data-title);
+        font-weight: 600;
+        width: 120px;
+        font-size: 0.85em;
+    }
+
+    table td.semtitle {
+        text-align: center;
+    }
+
+    table td.semtitle::before {
+        width: auto;
+    }
+
+    table a {
+        width: 100%;
+        margin-top: 5px;
+    }
+
+    .table:not(.table-sm):not(.table-md):not(.dataTable) td, .table:not(.table-sm):not(.table-md):not(.dataTable) th {
+        padding: 0.75rem;
+        vertical-align: middle;
+    }
+
+    .table-responsive table {
+        min-width: 0px;
+    }
+}
