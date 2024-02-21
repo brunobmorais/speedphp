@@ -56,7 +56,16 @@ class AppCore
                 }
             }
         } catch (\Exception $e) {
-            (new ErroController())->database();
+            $message = "<h4>Erro ao acessar essa página</h5><hr>";
+            $message .= "<p><b>Arquivo:</b>  " . $e->getFile() . "<br/>";
+            $message .= "<b>Linha:</b>  " . $e->getLine() . "<br/>";
+            $message .= "<b>Mensagem:</b>  " . $e->getMessage() . "<br/></p>";
+
+            if (CONFIG_DISPLAY_ERROR_DETAILS) {
+                echo $message;
+            } else {
+                (new ErroController())->database();
+            }
         }
     }
 

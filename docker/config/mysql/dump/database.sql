@@ -190,7 +190,7 @@ CREATE TABLE `SERVICO` (
 
 LOCK TABLES `SERVICO` WRITE;
 /*!40000 ALTER TABLE `SERVICO` DISABLE KEYS */;
-INSERT INTO `SERVICO` VALUES (1,1,'Módulos','modulos','mdi mdi-archive-plus-outline','modulos',1,1,0),(2,1,'Serviços','Serviços','mdi mdi-archive-plus-outline','servicos',1,1,0),(3,1,'Privilégio Perfil','Privilégios','mdi mdi-archive-plus-outline','privilegios',1,1,0),(4,5,'Funcionários','Cadastro de funcionários','mdi-account','funcionarios',1,1,0),(5,1,'Perfils','Pefil de usuários','mdi mdi-archive-plus-outline','perfil',1,1,0);
+INSERT INTO `SERVICO` VALUES (1,1,'Módulos','modulos','mdi mdi-archive-plus-outline','modulos',1,1,0),(2,1,'Serviços','Serviços','mdi mdi-archive-plus-outline','servicos',1,1,0),(3,1,'Usuários','Usuários do Sistema','mdi mdi-archive-plus-outline','usuarios',1,1,0),(4,5,'Funcionários','Cadastro de funcionários','mdi-account','funcionarios',1,1,0),(5,1,'Perfils','Pefil de usuários','mdi mdi-archive-plus-outline','perfil',1,1,0);
 /*!40000 ALTER TABLE `SERVICO` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -233,4 +233,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-02-03 19:26:39
+-- Dump completed on 2024-02-04 10:34:55
