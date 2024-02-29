@@ -35,6 +35,7 @@
     "bmorais/database": "^1.0",
     "tecnickcom/tcpdf": "^6.6",
     "tecnickcom/tc-lib-pdf": "^8.0",
-    "setasign/fpdi": "^2.3"
+    "setasign/fpdi": "^2.3",
+    "performing/twig-components": "^0.5.3"
   }
 }
