@@ -35,7 +35,7 @@ class TwigLib
 
             //componentes
             Configuration::make($twig)
-                ->setTemplatesExtension('twig')
+                ->setTemplatesExtension('html.twig')
                 ->useCustomTags()
                 ->setup();
 
