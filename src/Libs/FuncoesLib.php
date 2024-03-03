@@ -277,6 +277,8 @@ class FuncoesLib
         $texto = str_replace(" ", "", $texto);
         $texto = str_replace("(", "", $texto);
         $texto = str_replace(")", "", $texto);
+        $texto = str_replace("_", "", $texto);
+
 
         return $texto;
     }
@@ -882,6 +884,12 @@ class FuncoesLib
     public static function debug($value){
         echo "<pre>";print_r($value);echo "</pre>"; exit;
 
+    }
+
+    /** Busca por um valor em uma matriz com base na coluna e retorna o index do array */
+    public static function searchArray($value, array $array, string $column_name) {
+        $key =  array_search($value, array_column(json_decode(json_encode($array),TRUE), $column_name ));  
+        return $key ; 
     }
 
 }

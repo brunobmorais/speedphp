@@ -19,6 +19,9 @@ use App\Libs\SessionLib;
 class ControllerCore
 {
 
+    private $arrayComponentTop = [];
+    private $arrayComponentBottom = [];
+
     public function __construct()
     {
     }
@@ -58,7 +61,11 @@ class ControllerCore
         return $_GET[$valor]??'';
     }
 
-    public function postParams($valor): string{
+    /**
+     * @param $valor
+     * @return array|string
+     */
+    public function postParams($valor){
         return $_POST[$valor]??'';
     }
 
@@ -162,6 +169,7 @@ class ControllerCore
         $jwtTokenClass = new JwtLib();
 
         $codusuarioSessao = SessionLib::getValue("CODUSUARIO");
+        $tokenuser = "";
         if (empty($codusuarioSessao)) {
             if (empty($tokenuser)) {
                 SessionLib::setValue("REDIRECIONA", $funcoes->pegarUrlAtual());
@@ -198,6 +206,8 @@ class ControllerCore
      */
     public function render(string $template, string $view = "", array $data = [], array $css = [], array $js = []) {
         if (file_exists(dirname(__DIR__, 3) . '/src/Core/Template/' . ucfirst($template) . 'Template.php')) {
+            $data["components"]["top"] = $this->arrayComponentTop;
+            $data["components"]["bottom"] = $this->arrayComponentBottom;
             $template = "App\\Core\\Template\\" . $template . "Template";
             $template = new $template;
             return $template->build($view, $data, $css, $js);
@@ -215,6 +225,16 @@ class ControllerCore
     public function __call($name, $arguments)
     {
         $this->pageNotFound();
+    }
+
+    public function addComponentTop(string $component)
+    {
+        $this->arrayComponentTop[] = $component;
+    }
+
+    public function addComponentBottom(string $component)
+    {
+        $this->arrayComponentBottom[] = $component;
     }
 
 

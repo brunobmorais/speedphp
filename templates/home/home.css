@@ -9,6 +9,7 @@
 
 .card-menu-icone {
     min-height: 32px;
+    color: #6c757d;
 }
 
 .mdi-36px.mdi-set, .mdi-36px.mdi::before
@@ -18,14 +19,14 @@
 }
 
 .card-menu-titulo {
-    font-size: 1rem !important;
-    font-weight: 500 !important;
+    font-size: 0.9rem !important;
+    font-weight: 600 !important;
     line-height: 1.25rem !important;
     color: rgb(72, 72, 72) !important;
 }
 
 .card-menu-subtitulo {
-    font-size: 12px !important;
+    font-size: 0.775rem !important;
     font-weight: 300 !important;
     line-height: 1.125rem !important;
     color: rgb(113, 113, 113) !important;
@@ -34,19 +35,25 @@
 /*MOBILE*/
 @media (max-width: 959px) {
 
+    .mdi-36px.mdi-set, .mdi-36px.mdi::before
+    {
+        font-size: 23px;
+        color: #484848;
+    }
+
     .card-menu{
-        max-height: 130px;
-        min-height: 130px;
+        max-height: 90px;
+        min-height: 90px;
     }
 
     .card-menu-titulo{
-        font-size: 14px !important;
+        font-size: 13px !important;
         font-weight: 600 !important;
         line-height: 1.28571em !important;
     }
 
     .card-menu-subtitulo{
-        font-size: 12px !important;
+        font-size: 11px !important;
         line-height: 1.28571em !important;
     }
 

@@ -247,7 +247,6 @@ input[type="number"] {
     transform: translate(-50%, -50%) rotate(90deg);
 }
 .number-input input[type=number] {
-    font-family: sans-serif;
     max-width: 3rem;
     padding: .5rem;
     border-width: 0 2px;
@@ -450,7 +449,6 @@ input[type="number"] {
     transform: translate(-50%, -50%) rotate(90deg);
 }
 .number-input input[type=number] {
-    font-family: sans-serif;
     max-width: 3rem;
     padding: .5rem;
     border-width: 0 2px;

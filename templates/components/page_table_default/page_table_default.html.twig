@@ -1,19 +1,6 @@
-<main>
-    <section class="section">
-        <div class="container my-container">
-            <div class="col-12 p-0">
-                <div class="card sombra-1">
-                    <div class="card-header">
-                        <h4>{{ titleCardComponent }}</h4>
-                    </div>
-                    <div class="card-body pt-4">
-                        <div class="col p-2">
-                            {{ tablebuttonComponent | raw }}
-                            {{ tableComponent | raw }}
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-</main>
+<x-main.container>
+    <x-div.card title="{{ titleCardComponent }}">
+            {% include topTable|default("components/page/blank.html.twig") %}
+            {{ tableComponent | raw }}
+    </x-div.card>
+</x-main.container>

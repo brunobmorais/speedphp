@@ -30,7 +30,7 @@ class TemplateEmailLib
         $this->buttonLinkEmail = $buttonLink;
         $this->buttonNameEmail = $buttonName;
 
-        $this->colorPrimaryEmail = CONFIG_SITE['color-primary'];
+        $this->colorPrimaryEmail = CONFIG_COLOR['color-primary'];
         $this->urlEmail = CONFIG_SITE['url'];
         $this->nameFullEmail = CONFIG_SITE['nameFull'];
 
@@ -55,7 +55,7 @@ class TemplateEmailLib
         $this->buttonLinkEmail = $buttonLink;
         $this->buttonNameEmail = $buttonName;
 
-        $this->colorPrimaryEmail = CONFIG_SITE['color-primary'];
+        $this->colorPrimaryEmail = CONFIG_COLOR['color-primary'];
         $this->urlEmail = CONFIG_SITE['url'];
         $this->nameFullEmail = CONFIG_SITE['nameFull'];
 
@@ -67,7 +67,7 @@ class TemplateEmailLib
             "nameEmail" => CONFIG_SITE['name'],
             "buttonEmailName" => $buttonName,
             "buttonEmailLink" => $buttonLink,
-            "buttonEmailColor" => CONFIG_SITE['color-primary'],
+            "buttonEmailColor" => CONFIG_COLOR['color-primary'],
             "urlEmail" => CONFIG_SITE['url']
         ],false);
     }
@@ -80,7 +80,7 @@ class TemplateEmailLib
         $this->buttonLinkEmail = $buttonLink;
         $this->buttonNameEmail = $buttonName;
 
-        $this->colorPrimaryEmail = CONFIG_SITE['color-primary'];
+        $this->colorPrimaryEmail = CONFIG_COLOR['color-primary'];
         $this->urlEmail = CONFIG_SITE['url'];
         $this->nameFullEmail = CONFIG_SITE['nameFull'];
 
@@ -92,7 +92,7 @@ class TemplateEmailLib
             "nameEmail" => CONFIG_SITE['name'],
             "buttonEmailName" => $buttonName,
             "buttonEmailLink" => $buttonLink,
-            "buttonEmailColor" => CONFIG_SITE['color-primary'],
+            "buttonEmailColor" => CONFIG_COLOR['color-primary'],
             "urlEmail" => CONFIG_SITE['url']
         ],false);
     }

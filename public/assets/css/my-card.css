@@ -10,7 +10,6 @@
     border-radius: 15px;
     border: none;
     position: relative;
-    margin-bottom: 10px;
 }
 
 .card .card-header {
@@ -88,12 +87,13 @@
 }
 
 .servico-card {
-    box-shadow: 0 0 40px rgb(0 0 0 / 5%);
     background-color: #fff;
     border-radius: 15px;
-    border: 1px solid #dedede;
+    /*border: 1px solid #dedede;*/
     position: relative;
     margin-bottom: 0;
+    box-shadow: rgba(0, 0, 0, 0.12) 0px 6px 16px !important;
+
 }
 
 .card-radius {

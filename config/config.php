@@ -16,10 +16,15 @@ const CONFIG_SECURITY = [
     "permission_domains" => ['dev.seudominio.com', 'seudominio.com', 'www.seudominio.com']
 ];
 
-const CONFIG_SITE = [
-    "color-primary" => "#035E96",
-    "color-primary-hover" => "#024670",
+const CONFIG_COLOR = [
+    "color-navbar" => "#039050",
+    "color-primary" => "#039050",
+    "color-primary-hover" => "#039050", //#039050 verde
     "color-secondary" => "#676767",
+    "color-link" => "#039050",
+];
+
+const CONFIG_SITE = [
     "name" => "App",
     "nameFull" => "Nome Site Completo",
     "email" => "naoresponda@framework.bmorais.com",

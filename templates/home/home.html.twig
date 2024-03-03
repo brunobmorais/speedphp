@@ -3,8 +3,8 @@
         <div class="container my-container">
             <div class="row">
                 {% for item in MODULOS %}
-                    <div class="col-xl-3 col-lg-4 col-md-4 col-12 pr-3 pl-1 pb-1 "
-                         onclick="window.location.href = '/{{ item.CONTROLLER}}/'">
+                    <div class="col-xl-3 col-lg-4 col-md-4 col-6 pr-1 pl-1 pb-1"
+                         onclick="window.location.href = '/{{ item.CONTROLLER}}/'" style="padding-right: 7px; padding-left: 7px">
                         <div class="card card-menu nao-seleciona-texto cursor-pointer mb-2 ">
                             <div class="card-body flex-column justify-content-center align-items-start text-start" style="padding-left: 20px; padding-right: 20px !important;">
                                 <div class="card-menu-icone pb-2">
@@ -12,7 +12,7 @@
                                 </div>
                                 <div id="div{{ item.CONTROLLER}}">
                                     <h6 class="card-menu-titulo mb-0">{{ item.TITULO}}</h6>
-                                    <p class="card-menu-subtitulo pt-1">{{ item.DESCRICAO}}</p>
+                                    <p class="card-menu-subtitulo pt-1 d-none d-md-block">{{ item.DESCRICAO}}</p>
                                 </div>
                             </div>
                         </div>

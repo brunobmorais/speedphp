@@ -3,22 +3,19 @@ namespace App\Controllers;
 
 use App\Core\Controller\ControllerCore;
 use App\Core\Controller\ControllerInterface;
+use App\Daos\BuildDao;
+use App\Daos\PessoaDao;
+use App\Libs\FuncoesLib;
 use MatthiasMullie\Minify\CSS;
 use MatthiasMullie\Minify\JS;
 
 class ConfigController extends ControllerCore implements ControllerInterface
 {
-    /*
-    * chama a view index.php do  /menu   ou somente   /
-    */
     public function index($args = [])
     {
         $this->redirect("/");
     }
 
-    /*
-   * chama a view index.php do  /menu   ou somente   /
-   */
     public function build()
     {
         try {
@@ -29,9 +26,11 @@ class ConfigController extends ControllerCore implements ControllerInterface
                 unlink(dirname(__DIR__,2)."/public/assets/js/script.min.js");
 
                 $cssString = ":root {
-                --cor-bg-principal: ".CONFIG_SITE['color-primary'].";
-                --cor-bg-principal-hover: ".CONFIG_SITE['color-primary-hover'].";
-                --cor-bg-secodary: ".CONFIG_SITE['color-secondary'].";
+                --cor-bg-principal: ".CONFIG_COLOR['color-primary'].";
+                --cor-bg-principal-hover: ".CONFIG_COLOR['color-primary-hover'].";
+                --cor-bg-secodary: ".CONFIG_COLOR['color-secondary'].";
+                --cor-bg-link: ".CONFIG_COLOR['color-link'].";
+                --cor-bg-navbar: ".CONFIG_COLOR['color-navbar'].";
                 }";
                 file_put_contents(dirname(__DIR__,2)."/public/assets/css/my-color-root.css", $cssString);
 
@@ -67,8 +66,7 @@ class ConfigController extends ControllerCore implements ControllerInterface
         }
     }
 
-
-    public function create($args = [])
+    public function createpage($args = [])
     {
 
         try {
@@ -111,7 +109,9 @@ class ConfigController extends ControllerCore implements ControllerInterface
                 file_put_contents(dirname(__DIR__, 2) . "/src/Controllers/{$nomeClass}Controller.php", $conteudoClass);
                 echo "Classe controller gerada em: /src/Controllers/{$nomeClass}Controller.php<br/>";
 
-                @mkdir(dirname(__DIR__, 2) . "/templates/{$nomeClassMinusculo}/",0777, true);
+                if (!mkdir($concurrentDirectory = dirname(__DIR__, 2) . "/templates/{$nomeClassMinusculo}/", 0777, true) && !is_dir($concurrentDirectory)) {
+                    throw new \RuntimeException(sprintf('Directory "%s" was not created', $concurrentDirectory));
+                }
 
 
                 if (!file_exists(dirname(__DIR__, 2) . "/templates/{$nomeClassMinusculo}/{$nomeClassMinusculo}.html.twig") && !empty($nomeClass)) {
@@ -121,7 +121,9 @@ class ConfigController extends ControllerCore implements ControllerInterface
                     echo "Arquivos templates controller gerado: /templates/{$nomeClassMinusculo}/{$nomeClassMinusculo}.html.twig<br/>";
                 }
 
-                @mkdir(dirname(__DIR__, 2) . "/templates/{$nomeClassMinusculo}/{$nomeMetodo}/", 0777, true);
+                if (!mkdir($concurrentDirectory = dirname(__DIR__, 2) . "/templates/{$nomeClassMinusculo}/{$nomeMetodo}/", 0777, true) && !is_dir($concurrentDirectory)) {
+                    throw new \RuntimeException(sprintf('Directory "%s" was not created', $concurrentDirectory));
+                }
 
                 if (!file_exists(dirname(__DIR__, 2) . "/templates/{$nomeClassMinusculo}/{$nomeMetodo}/{$nomeMetodo}.html.twig") && !empty($nomeMetodo)) {
                     file_put_contents(dirname(__DIR__, 2) . "/templates/{$nomeClassMinusculo}/{$nomeMetodo}/{$nomeMetodo}.html.twig", "");
@@ -134,10 +136,91 @@ class ConfigController extends ControllerCore implements ControllerInterface
             } else {
                 $this->redirect("/");
             }
-        } catch (\Error $e) {
+        } catch (\Exception $e) {
             return $e;
         }
     }
 
+    public function createmodel($args = [])
+    {
+        try {
+            if (!$this->isModeDeveloper()) {
+                $this->redirect("/");
+                exit();
+            }
+
+            $nomeClassModel = (new FuncoesLib())->removeCaracteres(ucfirst($args[0] ?? ""));
+            $nomeTable = strtoupper($args[0] ?? "");
+
+            if (empty($nomeClassModel)) {
+                echo "Informe o nome da class";
+                exit;
+            }
+
+            $dao = new BuildDao();
+            $columns = $dao->execute("SELECT * FROM $nomeTable");
+            if (empty($columns)) {
+                echo "Nenhuma tabela encontrada";
+                exit;
+            }
+
+            $variavel = "";
+            foreach ($columns as $col) {
+                $variavel .= "Protected $" . $col . ";\n    ";
+            }
+
+            $gets = $this->creategets($columns);
+            $sets = $this->createsets($columns);
+
+
+            $conteudoClass = "<?php
+namespace App\Models;
+use BMorais\Database\ModelAbstract;
+
+class {$nomeClassModel}Model extends ModelAbstract
+{
+    {$variavel}
+    {$gets}
+    {$sets}
+}";
+
+            file_put_contents(dirname(__DIR__, 2) . "/src/Models/{$nomeClassModel}Model.php", $conteudoClass);
+
+            echo "executado com sucesso";
+        } catch (\Exception $e){
+            return $e;
+        }
+    }
+
+    private function createsets($columns){
+        if (empty($columns))
+            return [];
+        $gets = "";
+        foreach ($columns as $col) {
+            $gets .= 'public function set'.$col.'($'.$col.'):self
+    {
+        $this->'.$col.' = $'.$col.';
+        return $this;
+    }
+    
+    ';
+        }
+        return $gets;
+    }
+
+    private function creategets($columns){
+        if (empty($columns))
+            return [];
+        $sets = "";
+        foreach ($columns as $col) {
+            $sets .= 'public function get'.$col.'()
+    {
+        return $this->'.$col.';
+    }
+    
+    ';
+        }
+        return $sets;
+    }
 
 }

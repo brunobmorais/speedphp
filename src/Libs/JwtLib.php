@@ -130,6 +130,7 @@ class JwtLib
 
             // VERIFICA DOMINIO
             if (!in_array($decoded->iss, $this->permission_domains)) {
+                //echo "dominio invalido"; exit();
                 return false;
             }
 
@@ -139,9 +140,11 @@ class JwtLib
                     return $decoded;
                 } else {
                     // TOKEN VENCIDO
+                    //echo "venceu"; exit();
                     return false;
                 }
             } else {
+                //echo "invalido"; exit();
                 // TOKEN INVALIDO
                 return false;
             }
