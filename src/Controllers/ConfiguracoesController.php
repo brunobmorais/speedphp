@@ -213,7 +213,7 @@ class ConfiguracoesController extends ControllerCore implements ControllerInterf
             $data["tablebuttonComponent"] = $this->render("Component","components/button_table", $data);
 
             return $this->render(
-                "Logged",
+                TemplateAbstract::LOGGED,
                 "components/page_table_default",
                 $data,
             );
@@ -241,7 +241,7 @@ class ConfiguracoesController extends ControllerCore implements ControllerInterf
             $data["DATAMODULOS"] = $sisModuloDao->select("*", "WHERE EXCLUIDO!='1'");
 
             return $this->render(
-                "Logged",
+                TemplateAbstract::LOGGED,
                 $data["SERVICO"]["url"] . 'cadastro',
                 $data,
             );
@@ -338,7 +338,7 @@ class ConfiguracoesController extends ControllerCore implements ControllerInterf
 
             $data["PERFIS"] = $perfilDao->buscarPerfis();
             return $this->render(
-                "Logged",
+                TemplateAbstract::LOGGED,
                 $data["SERVICO"]["url"],
                 $data,
             );
@@ -428,7 +428,7 @@ class ConfiguracoesController extends ControllerCore implements ControllerInterf
             $data["tablebuttonComponent"] = $this->render("Component","components/button_table", $data);
 
             return $this->render(
-                "Logged",
+                TemplateAbstract::LOGGED,
                 "components/page_table_default",
                 $data,
             );
@@ -495,7 +495,7 @@ class ConfiguracoesController extends ControllerCore implements ControllerInterf
             $data["PERFIL"] = $perfilDao->buscarPerfilId($id);
 
             return $this->render(
-                "Logged",
+                TemplateAbstract::LOGGED,
                 $data["SERVICO"]["url"] . 'cadastro',
                 $data,
             );
