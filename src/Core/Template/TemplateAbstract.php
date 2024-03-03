@@ -4,9 +4,10 @@ namespace App\Core\Template;
 
 abstract class TemplateAbstract
 {
-    const DEFAULT = 'Default';
+    const BLANK = 'Blank';
     const COMPONENT = 'Component';
     const LOGGED = 'Logged';
+    const NOT_LOGGED = 'NotLogged';
     const MODULE = 'Modulo';
 
 }

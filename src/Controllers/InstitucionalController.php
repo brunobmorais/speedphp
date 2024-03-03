@@ -6,6 +6,7 @@ use App\Core\Controller\ControllerCore;
 use App\Core\Controller\ControllerInterface;
 use App\Core\PageCore;
 use App\Core\Template\LoggedTemplate;
+use App\Core\Template\TemplateAbstract;
 
 class InstitucionalController extends ControllerCore implements ControllerInterface
 {
@@ -22,7 +23,7 @@ class InstitucionalController extends ControllerCore implements ControllerInterf
         try {
             // CARREGA VIEW
             return $this->render(
-                "Logged",
+                TemplateAbstract::LOGGED,
                 'institucional/privacidade',
                 ['TITLE' => "Termo de uso e privacidade",
                     "configSiteName" => CONFIG_SITE['name'],

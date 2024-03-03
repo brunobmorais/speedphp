@@ -7,6 +7,7 @@ use App\Core\Controller\ControllerCore;
 use App\Core\Controller\ControllerInterface;
 use App\Core\PageCore;
 use App\Core\Template\DefaultTemplate;
+use App\Core\Template\TemplateAbstract;
 use App\Daos\PessoaDao;
 use App\Libs\AlertLib;
 use App\Libs\CookieLib;
@@ -41,7 +42,7 @@ class UsuarioController extends ControllerCore implements ControllerInterface
             $data["TITLEBREADCRUMB"] = "<li class='breadcrumb-item-custom '><a href='/'>Inicio</a></li><i class='mdi mdi-chevron-right mx-1' aria-hidden='true'></i></li><li class='breadcrumb-item-custom '><a href='./'>Meus Dados</a></li>";
 
             return $this->render(
-                "Logged",
+                TemplateAbstract::LOGGED,
                 'usuario/meusdados',
                 $data
             );
@@ -85,7 +86,7 @@ class UsuarioController extends ControllerCore implements ControllerInterface
         try {
             $cookie = new CookieLib();
             SessionLib::apagaSessao();
-            $cookie->deleteValue("TOKEN_USER");
+            $cookie::deleteValue("TOKEN_USER");
             $this->redirect("/usuario/login");
         } catch (\Error $e) {
             return $e;
@@ -97,7 +98,7 @@ class UsuarioController extends ControllerCore implements ControllerInterface
         try {
             $data['TITLE'] = "Login";
             return $this->render(
-                "Default",
+                TemplateAbstract::BLANK,
                 'usuario/login',$data);
         } catch (\Error $e) {
             return $e;
@@ -110,7 +111,7 @@ class UsuarioController extends ControllerCore implements ControllerInterface
         try {
             $head['TITLE'] = "Esqueci senha";
             return $this->render(
-                "Default",
+                TemplateAbstract::BLANK,
                 'usuario/esquecisenha', $head);
         } catch (\Error $e) {
             return $e;
@@ -134,7 +135,7 @@ class UsuarioController extends ControllerCore implements ControllerInterface
                         $data['TITLE'] = "Nova senha";
                         // CARREGA VIEW
                         return $this->render(
-            "Default",
+                            TemplateAbstract::BLANK,
                 'usuario/novasenha', $data);
                     } else {
                         (new AlertLib())->warning("Token não encontrado", "/usuario/login");
