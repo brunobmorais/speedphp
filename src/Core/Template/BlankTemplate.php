@@ -5,7 +5,7 @@ namespace App\Core\Template;
 use App\Libs\JwtLib;
 use App\Libs\SessionLib;
 
-class DefaultTemplate implements TemplateInterface
+class BlankTemplate implements TemplateInterface
 {
 
     use TemplateTrait;

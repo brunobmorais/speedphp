@@ -6,7 +6,7 @@ namespace App\Controllers;
 use App\Core\Controller\ControllerCore;
 use App\Core\Controller\ControllerInterface;
 use App\Core\PageCore;
-use App\Core\Template\DefaultTemplate;
+use App\Core\Template\BlankTemplate;
 use App\Core\Template\TemplateAbstract;
 use App\Daos\PessoaDao;
 use App\Libs\AlertLib;
