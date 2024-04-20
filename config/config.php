@@ -20,9 +20,9 @@ const CONFIG_SECURITY = [
 const CONFIG_COLOR = [
     "color-navbar" => "#F46434",
     "color-primary" => "#F46434",
-    "color-primary-hover" => "#124694", //#039050 verde
+    "color-primary-hover" => "#d83600", //#039050 verde
     "color-secondary" => "#676767",
-    "color-link" => "#1A6CDD",
+    "color-link" => "#F46434",
 ];
 
 const CONFIG_SITE = [
