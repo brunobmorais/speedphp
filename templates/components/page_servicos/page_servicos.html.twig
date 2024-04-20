@@ -5,7 +5,7 @@
                     title="{{ item.TITULO}}"
                     icon="{{ item.ICONE}}"
                     description="{{ item.DESCRICAO}}"
-                    onclick="{{ (SERVICO.url|length>0?'/'~SERVICO.url~'-':'./')~item.CONTROLLER}}">
+                    onclick="{{ (SERVICO.URL|length>0?SERVICO.URL~'-':'./')~item.CONTROLLER}}">
             </x-div.list_item_card>
         {% endfor %}
     </div>

@@ -1,0 +1,196 @@
+{% extends "gestaopessoas/modal-skeleton.twig" %}
+
+
+{% block content_modal %}
+						<input  id='secao' value='cargo' hidden>
+						<input name="CODFUNCIONARIO_CARGO" id='codfuncionario_cargo' hidden>
+
+						<input type='text' name="acao" id='acao' hidden>
+						<div class="row">
+							<div class="form-group col-12 col-md-12 float-left">
+								<label>Cargo</label>
+								<div class="float-end">
+									<a href="/gestaopessoas/gerenciamento-cargos/" class="small" target="_blank">Não encontrei</a>
+								</div>
+								<select name="CODCARGO" id="codcargo" class="select2 form-control" required>
+									<option value="" disabled selected>Selecione um cargo</option>
+									{% for carg in  getDaos('GpCargoDao', 'buscarAtivos')  %}
+										<option value="{{carg.CODCARGO}}">{{carg.NOME}}
+											-
+											{{carg.SIGLA}}</option>
+									{% endfor %}
+
+								</select>
+								<div class="invalid-feedback">
+									Preencha o campo corretamente
+								</div>
+							</div>
+
+
+						</div>
+
+						<div class="row p-0">
+
+							<div class="form-group col-12 col-md-6 float-left">
+								<label class="form-label">Data de Início</label>
+								<input name="DATAADMISSAO" id="dataadmissao" type="date" class="form-control" autocomplete="nope" required/>
+								<div class="invalid-feedback">
+									Preencha o campo corretamente
+								</div>
+							</div>
+
+							<div class="form-group col-12 col-md-6 float-left">
+								<label class="form-label">Data de Término</label>
+								<input name="DATADEMISSAO" id="datademissao" type="date" class="form-control" />
+								<div class="invalid-feedback">
+									Preencha o campo corretamente
+								</div>
+							</div>
+
+						</div>
+
+						<div class="row p-0">
+
+							<div class="form-group col-12 col-md-4 float-left">
+								<label class="form-label">Matrícula</label>
+								<input name="MATRICULA" id="matricula" class="form-control" autocomplete="nope" required/>
+								<div class="invalid-feedback">
+									Preencha o campo corretamente
+								</div>
+							</div>
+
+							<div class="form-group col-12 col-md-4 float-left">
+								<label class="form-label">Categoria eSocial</label>
+								<input name="CATEGORIA_ESOCIAL" id="categoria_esocial" class="form-control" autocomplete="nope" required />
+								<div class="invalid-feedback">
+									Preencha o campo corretamente
+								</div>
+							</div>
+
+
+							<div class="form-group col-12 col-md-4 float-left">
+								<label class="form-label">Tipo previdência</label>
+								<select name="TIPOPREVIDENCIA" id="tipoprevidencia" class="form-control" autocomplete="nope" required>
+									<option value="RGPS">RGPS</option>
+									<option value="RGPS">RPPS</option>
+								</select>
+
+								<div class="invalid-feedback">
+									Preencha o campo corretamente
+								</div>
+							</div>
+
+						</div>
+
+						<div class="row p-0">
+							<div class="form-group col-12 col-md-4 float-left">
+								<label>Insalubridade</label>
+								<select name="INSALUBRIDADE" id="insalubridade" class=" form-control" required>
+									<option value="0.00">Sem insalubridade</option>
+									<option value="10.00">10%</option>
+									<option value="20.00">20%</option>
+									<option value="30.00">30%</option>
+
+								</select>
+								<div class="invalid-feedback">
+									Preencha o campo corretamente
+								</div>
+							</div>
+							<div class="form-group col-12 col-md-4 float-left">
+								<label class="form-label">Salário</label>
+								<input name="SALARIO" id="salario" type="number"  class="form-control" autocomplete="nope" required />
+								<div class="invalid-feedback">
+									Preencha o campo corretamente
+								</div>
+							</div>
+
+							<div class="form-group col-12 col-md-4 float-left">
+								<label class="form-label">Carga Horária Mensal</label>
+								<input name="CARGAHORARIA" id="cargahoraria" type="number" class="form-control" autocomplete="nope" required/>
+								<div class="invalid-feedback">
+									Preencha o campo corretamente
+								</div>
+							</div>
+
+						</div>
+
+						
+
+						<div class="row p-0 mt-3">
+							
+
+							<div class="form-group col-12 col-md-4 float-left">
+								<label class="custom-switch me-3">
+									<input type="checkbox" class="custom-switch-input" name="ADICIONALNOTURNO" id="adicionalnoturno">
+									<span class="custom-switch-indicator"></span>
+									<span class="custom-switch-description-right">Adicional Noturno</span>
+								</label>
+							</div>
+
+							<div class="form-group col-12 col-md-4 float-left">
+								<label class="custom-switch me-3">
+									<input type="checkbox" class="custom-switch-input" name="PCD" id="pcd">
+									<span class="custom-switch-indicator"></span>
+									<span class="custom-switch-description-right">PCD</span>
+								</label>
+							</div>
+
+						</div>
+
+{% endblock %}
+
+
+{% block script_modal %}
+	<script>
+
+
+		// Limpar Modal para Cadastro
+function abrirModalCadastro(){
+	$("#formFuncionarios").trigger("reset");
+	$('#acao').val('cadastrar_cargo');
+	$('#situacao').attr('checked', true);
+	$('#tituloModalGP').html('Cadastrar Cargo');
+	$('#btnSubmit').html('Cadastrar');
+
+	{% if (SERVICO.ALTERAR=="1") %}
+		$("#btnExcluir").attr("hidden", true);
+	{% endif %}
+		$('#codcargo').val(null);
+		updateSelect2('Selecione um cargo')
+		$("#modalFuncionarios").modal('show');
+}
+
+// Abrir modal preenchido
+function fillModal(data){
+	console.log(data);
+	$('#btnSubmit').html('Salvar');
+	$("#formFuncionarios").trigger("reset");
+	$('#tituloModalGP').html('Editar Cargo');
+	var dependente = data;
+	$('#codfuncionario').val(data.CODFUNCIONARIO);
+	$('#codfuncionario_cargo').val(data.CODFUNCIONARIO_CARGO);
+	$('#acao').val('editar_cargo');
+	$('#dataadmissao').val(data.DATAADMISSAO);
+	$('#datademissao').val(data.DATADEMISSAO);
+	$('#codcargo').val(data.CODCARGO);
+	$('#salario').val(data.SALARIO);
+	$('#cargahoraria').val(data.CARGAHORARIA);
+	$('#insalubridade').val(data.INSALUBRIDADE);
+	$('#adicionalnoturno').val(data.ADICIONALNOTURNO);
+	$('#categoria_esocial').val(data.CATEGORIA_ESOCIAL);
+	$('#tipoprevidencia').val(data.TIPOPREVIDENCIA);
+	$('#matricula').val(data.MATRICULA);
+	$('#adicionalnoturno').attr('checked', (data.ADICIONALNOTURNO == '1.00' ? true : false) );
+	$('#pcd').attr('checked', (data.PCD == '1' ? true : false) );
+
+
+	updateSelect2('Selecione um cargo');
+	{% if (SERVICO.ALTERAR=="1") %}
+		$("#btnExcluir").attr("hidden", false);
+	{% endif %}
+
+}
+
+	</script>
+
+{% endblock %}

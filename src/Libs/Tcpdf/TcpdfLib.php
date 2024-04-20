@@ -72,7 +72,7 @@ class TcpdfLib
                 $pdf->AddPage($orientation, array($size['width'], $size['height'] + 25));
                 $pdf->useTemplate($tplidx);
             }
-        } catch (\Exception $exception) {
+        } catch (\Error $exception) {
             $outputName = md5(uniqid()) . ".pdf";
             $cmd = "gs -dNOPAUSE -dBATCH -sDEVICE=pdfwrite -dCompatibilityLevel=1.4 -dPDFSETTINGS=/screen -sOutputFile={$outputName} {$this->array['arquivopdf']}";
             shell_exec($cmd);
@@ -129,7 +129,7 @@ class TcpdfLib
                 $pdf->MultiCell($larguraQrcode, $tamanhoFont, $this->array['codigovalidadorarquivo'], 0, 'C', 0, 1, $posicaoX, $posicaoY - 20, true, 0, true, true, '0');
                 $pdf->useTemplate($pageId);
             }
-        } catch (\Exception $exception) {
+        } catch (\Error $exception) {
             $outputName = md5(uniqid()) . ".pdf";
             $cmd = "gs -dNOPAUSE -dBATCH -sDEVICE=pdfwrite -dCompatibilityLevel=1.4 -dPDFSETTINGS=/screen -sOutputFile={$outputName} {$this->array['arquivopdf']}";
             shell_exec($cmd);
@@ -168,7 +168,7 @@ class TcpdfLib
                         //$pdf->setPageFormatFromTemplatePage($i, $orientation);
                         $pdf->useTemplate($tplidx);
                     }
-                } catch (\Exception $exception) {
+                } catch (\Error $exception) {
                     $outputName = md5(uniqid()) . ".pdf";
                     $cmd = "gs -dNOPAUSE -dBATCH -sDEVICE=pdfwrite -dCompatibilityLevel=1.4 -dPDFSETTINGS=/screen -sOutputFile={$outputName} {$arquivo}";
                     shell_exec($cmd);

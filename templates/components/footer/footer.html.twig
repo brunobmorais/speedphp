@@ -1,21 +1,21 @@
 <footer class='d-none d-lg-block pt-3'>
     <div class='col-12 text-center'>
     Desenvolvido por {{ nameFull }}<br>
-    <a href='/institucional/privacidade' class='btn btn-sm btn-link'>Termo de Uso e Privacidade</a>
+    <a href='/sistema/privacidade' class='btn btn-sm btn-link'>Termo de Uso e Privacidade</a>
     </div>
 </footer>
 
-<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/cookieconsent@3/build/cookieconsent.min.css" />
-<script src="https://cdn.jsdelivr.net/npm/cookieconsent@3/build/cookieconsent.min.js" data-cfasync="false"></script>
+<link rel="stylesheet" type="text/css" href="/assets/plugin/cookieconset/cookieconsent.min.css" />
+<script src="/assets/plugin/cookieconset/cookieconsent.min.js" data-cfasync="false"></script>
 <script>
     window.cookieconsent.initialise({
         "palette": {
             "popup": {
-                "background": "#edeff5",
-                "text": "#838391"
+                "background": "#fff",
+                "text": "#66666e"
             },
             "button": {
-                "background": "#3B9B49"
+                "background": "{{ CONFIG_COLOR["color-primary"] }}"
             }
         },
         /*"position": "bottom-right",*/
@@ -23,7 +23,7 @@
             "message": "Usamos cookies para garantir que você obtenha a melhor experiência no nosso site.",
             "dismiss": "Entendi!",
             "link": "Termos de uso e privacidade",
-            "href": "/institucional/privacidade"
+            "href": "/sistema/privacidade"
         }
     });
 </script>

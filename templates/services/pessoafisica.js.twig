@@ -1,0 +1,11 @@
+async function buscaPessoaFisicaService(cpf) {
+
+    let headers = {'Authorization': 'Bearer ' + getCookie("TOKEN_USER")};
+    return await requisicaoHttp("/api/pessoa/pessoafisica/"+cpf,"GET", null, headers).then(async (retorno) => {
+        return retorno;
+    }).catch(() => {
+        return false;
+        //console.log("Aconteceu um erro ao buscar")
+    });
+
+}

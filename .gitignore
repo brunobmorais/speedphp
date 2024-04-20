@@ -39,8 +39,14 @@ testem.log
 .DS_Store
 Thumbs.db
 
-/templates/tmp
+# PASTAS
+/public/assets/upload/img/pessoa/*
+/public/assets/upload/files/funcionario/*
 /vendor
+/node_modules
+/templates/tmp
 /docker/volumes/mysql
-/config/productionConfig.php
 
+# ARQUIVOS
+/config/developerConfig.php
+!/public/assets/upload/img/pessoa/default.png

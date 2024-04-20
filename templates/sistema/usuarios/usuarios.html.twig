@@ -1,0 +1,91 @@
+
+{% include "components/page_table_default/page_table_default.html.twig" %}
+
+<form id="formSituacaoUsuario" action="{{ SERVICO.URL }}-situacao-action/"
+      method="post" enctype='multipart/form-data'>
+    <input type="hidden" name="SITUACAO" id="situacao" value=""/>
+    <input type="hidden" name="CODUSUARIO" id="codusuarioSituacao" value=""/>
+</form>
+
+{# MODAL ALTERAR SENHA #}
+<x-div.modal id="modalSenha" title="Redefinir Senha">
+    <form id="formUsuarioNovaSenha" class="needs-validation" novalidate action="{{ SERVICO.URL }}-senha-action/"
+          method="post" enctype='multipart/form-data'>
+        <div class="row">
+            <x-div.alert title="Atenção" type="info">A nova senha será enviada via e-mail!</x-div.alert>
+            <div class="col-12 p-0">
+                <div class="form-group col-12 col-md-12 float-left">
+                    <label class="mb-0">Usuário</label>
+                    <p id="nomeModal"></p>
+                </div>
+                <div class="form-group col-12 col-md-12 float-left">
+                    <label class="mb-0">Email</label>
+                    <p id="emailModalText"></p>
+                </div>
+                <div class="form-group col-12 col-md-12 float-left">
+                    <label>Nova senha</label>
+                    <div class="input-group">
+                        <input type="text" class="form-control" placeholder="nova senha" aria-label="nova senha" aria-describedby="button-addon2" name="SENHA" id="novaSenhaModal">
+                        <button class="btn btn-outline-secondary" type="button" id="button-addon2" onclick="copyValue('novaSenhaModal')"><span class="mdi mdi-content-copy"></span> Copiar</button>
+                        <button class="btn btn-outline-secondary" type="button" id="button-addon2" onclick="gerarSenha()"><span class="mdi mdi-refresh"></span> Gerar</button>
+                    </div>
+                    <div class="invalid-feedback">
+                        Preencha o campo corretamente
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row pt-5">
+            <input type="hidden" name="EMAIL" id="emailModal" value=""/>
+            <input type="hidden" name="CODUSUARIO" id="codusuarioModal" value=""/>
+            <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                <a href="javascript:void(0)"
+                   class="btn btn-lg btn-link btn-round col-md-3 col-lg-2 float-right mr-md-2 mt-2" data-bs-dismiss="modal" data-bs-target="#my-modal" aria-label="Close">
+                    Voltar
+                </a>
+                <button type="submit" id="btnAlterarSenha"
+                        class="btn btn-lg btn-primary btn-round col-md-3 col-lg-2 float-right mt-2">
+                    Salvar
+                </button>
+            </div>
+        </div>
+    </form>
+</x-div.modal>
+
+{# MODAL TROCAR USUARIO #}
+<x-div.modal id="modalTrocarUsuario" title="Logar como">
+    <form id="formTrocarUsuario" class="needs-validation" novalidate action="{{ SERVICO.URL }}-trocar-action/"
+          method="post" enctype='multipart/form-data'>
+        <div class="row">
+            <div class="col-12 p-0">
+                <div class="form-group col-12 col-md-12 float-left">
+                    <label class="mb-0">Usuário</label>
+                    <p id="nomeTrocarUsuarioModal"></p>
+                </div>
+                <div class="form-group col-12 col-md-12 float-left">
+                    <label class="mb-0">Email</label>
+                    <p id="emailTrocarUsuarioModal"></p>
+                </div>
+            </div>
+        </div>
+
+        <div class="row pt-5">
+            <input type="hidden" name="CODUSUARIO" id="codusuarioTrocarUsuarioModal" value=""/>
+            <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                <a href="javascript:void(0)"
+                   class="btn btn-lg btn-link btn-round col-md-3 col-lg-2 float-right mr-md-2 mt-2" data-bs-dismiss="modal" data-bs-target="#my-modal" aria-label="Close">
+                    Voltar
+                </a>
+                <button type="submit" id="btnTrocarUsuario"
+                        class="btn btn-lg btn-primary btn-round col-md-3 col-lg-2 float-right mt-2">
+                    Confirmar
+                </button>
+            </div>
+        </div>
+    </form>
+</x-div.modal>
+
+<script>
+
+</script>

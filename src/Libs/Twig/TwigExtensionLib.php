@@ -48,9 +48,12 @@ class TwigExtensionLib extends \Twig\Extension\AbstractExtension implements \Twi
     public function getGlobals(): array
     {
         return [
-            'SESSION' => $_SESSION,
-            'GET'=>$_GET,
-            'POST'=>$_POST
+            "URL" => CONFIG_URL,
+            'SESSION' => $_SESSION??[],
+            'GET'=>$_GET??[],
+            'POST'=>$_POST??[],
+            'SERVER'=>$_SERVER??[],
+            'CONFIG_COLOR'=>CONFIG_COLOR??[]
         ];
     }
 

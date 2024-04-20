@@ -1,0 +1,64 @@
+/*### ANDAMENTOS ####*/
+.step {
+    position: relative;
+    min-height: 32px /* circle-size */;
+}
+
+.step > div:first-child {
+    position: static;
+    height: 0;
+}
+
+.step > div:last-child {
+    margin-left: 32px;
+    padding-left: 16px;
+}
+
+.stepcircle {
+    background: #acacac;
+    width: 33px;
+    height: 33px;
+    line-height: 28px;
+    border-radius: 16px;
+    position: relative;
+    color: #fff;
+    font-weight: bold;
+    text-align: center;
+    border-width: 2px;
+    border-style: solid;
+    border-color: #acacac;;
+}
+
+.stepline {
+    position: absolute;
+    border-left: 2px solid #acacac;
+    left: 16px;
+    bottom: 0px;
+    top: 33px;
+}
+
+.step:last-child .stepline {
+    display: none;
+}
+
+.steeptitle {
+    line-height: 28px;
+    font-weight: 600;
+}
+
+.stepdescricoes {
+    font-size: 0.8rem;
+    font-style: italic;
+    padding-left: 7px;
+}
+
+.stepitem {
+    font-size: 0.8rem;
+    padding-left: 7px;
+    color: #98a6ad !important;
+}
+
+.steplink {
+    color: var(--cor-bg-principal);
+    font-size: 0.7rem;
+}

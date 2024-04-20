@@ -1,0 +1,55 @@
+<x-main.container>
+    <x-div.card title="{{ TITLE_CARD_COMPONENT }}">
+        <form id="formCadastro" class="needs-validation" novalidate
+              action="{{ SERVICO.URL }}-perfil-action/"
+              method="post" enctype='multipart/form-data'>
+            <div class="row">
+                <div class="col-12 p-0">
+                    <div class="form-group col-12 col-md-12 float-left">
+                        <label class="mb-0">Usuário</label>
+                        <p>{{ USUARIO.NOME }}</p>
+                    </div>
+                    <div class="form-group col-12 col-md-12 float-left">
+                        <label class="mb-0">Email</label>
+                        <p>{{ USUARIO.EMAIL }}</p>
+                    </div>
+                </div>
+            </div>
+            <p class="h6">Escolhas os perfils de acesso</p>
+            {% for item in PERFIS %}
+                <div class="form-group col-12">
+                    <label class="custom-switch mt-2" style="padding-left: 0px">
+                        <input type="checkbox" name="PERFIS[]" class="custom-switch-input" {{ item.CODPERFIL_USUARIO!=""?"checked":"" }} value="{{ item.CODPERFIL }}">
+                        <span class="custom-switch-indicator"></span>
+                        <span class="custom-switch-description-right">{{ item.NOME }}</span>
+                    </label>
+                </div>
+
+            {% endfor %}
+            <div class="row">
+                <div class="col">
+                    <input type="hidden" name="pg" value="{{ GETPARAMS.pg }}">
+                    <input type="hidden" name="buscar" value="{{ GETPARAMS.buscar }}">
+
+                    {% if(SERVICO.ALTERAR=="1" or SERVICO.SALVAR=="1") %}
+                        <button type="submit" id="btnSalvar"
+                                class="btn btn-lg btn-primary btn-round col-md-3 col-lg-2 col-12 float-end mt-2">
+                            <span class="mdi mdi-check"></span> Salvar
+                        </button>
+                    {% endif %}
+                    <button type="button"
+                            onclick="window.location.href='{{ SERVICO.URL }}/?pg={{ GETPARAMS.pg }}&buscar={{ GETPARAMS.buscar }}'"
+                            class="btn btn-lg btn-outline-secondary btn-round col-md-3 col-lg-2 col-12 float-end mt-2 me-md-2 me-0">
+                        <span class="mdi mdi-close"></span> Voltar
+                    </button>
+                    <input type="hidden" name="CODUSUARIO" value="{{ USUARIO.CODUSUARIO }}">
+                    <input type="hidden" name="action" value="update">
+                </div>
+            </div>
+        </form>
+    </x-div.card>
+</x-main.container>
+
+<script>
+
+</script>

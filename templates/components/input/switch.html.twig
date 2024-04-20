@@ -1,0 +1,9 @@
+<div class="form-group col-12">
+	<label class="ps-2 col-12 mb-0">{{label??""|title}}</label>
+	<label class="custom-switch mt-2 ps-0">
+		<input type="checkbox" name="{{name|upper}}" id="{{name|lower}}" class="custom-switch-input" {{ checked??"" }} value="{{ value??"1" }}">
+		<span class="custom-switch-description-left">{{ left??""|title }}</span>
+		<span class="custom-switch-indicator"></span>
+		<span class="custom-switch-description-right">{{ right??""|title }}</span>
+	</label>
+</div>

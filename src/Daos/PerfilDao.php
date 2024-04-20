@@ -2,15 +2,13 @@
 namespace App\Daos;
 
 use BMorais\Database\Crud;
-use App\Libs\FuncoesLib;
-use App\Models\RecuperaSenhaModel;
 
 class PerfilDao extends Crud{
 
 
     public function __construct()
     {
-        $this->setTableName("PERFIL");
+        $this->setTableName("SI_PERFIL");
         $this->setClassModel("PerfilModel");
     }
 
@@ -18,7 +16,7 @@ class PerfilDao extends Crud{
     {
         try {
             $sql = "SELECT P.CODPERFIL, P.NOME, P.NIVEL, P.EXCLUIDO
-                FROM PERFIL AS P 
+                FROM SI_PERFIL AS P 
                 WHERE P.EXCLUIDO='0'";
             if (!empty($buscar))
                 $sql .= " AND (P.NOME LIKE '%{$buscar}%')";
@@ -26,7 +24,22 @@ class PerfilDao extends Crud{
 
             $result = $this->executeSQL($sql);
             return $this->fetchArrayObj($result);
-        } catch (\Exception $e) {
+        } catch (\Error $e) {
+            throw new \Error($e->getMessage());
+        }
+    }
+
+    public function buscarPerfisUsuario($codusuario)
+    {
+        try {
+            $sql = "SELECT P.CODPERFIL, P.NOME, P.NIVEL, P.EXCLUIDO, PU.CODPERFIL_USUARIO
+                FROM SI_PERFIL AS P
+                LEFT JOIN SI_PERFIL_USUARIO AS PU ON PU.CODPERFIL=P.CODPERFIL AND PU.CODUSUARIO=?
+                WHERE P.EXCLUIDO='0'";
+
+            $result = $this->executeSQL($sql,[$codusuario]);
+            return $this->fetchArrayObj($result);
+        } catch (\Error $e) {
             throw new \Error($e->getMessage());
         }
     }
@@ -35,7 +48,7 @@ class PerfilDao extends Crud{
     {
         try {
             $sql = "SELECT P.CODPERFIL, P.NOME, P.NIVEL
-                    FROM PERFIL AS P 
+                    FROM SI_PERFIL AS P 
                     WHERE P.CODPERFIL=? AND P.EXCLUIDO='0'";
             $params = array($id);
             $result = $this->executeSQL($sql, $params);
@@ -44,7 +57,7 @@ class PerfilDao extends Crud{
             } else {
                 return null;
             }
-        } catch (\Exception $e) {
+        } catch (\Error $e) {
             throw new \Error($e->getMessage());
         }
     }

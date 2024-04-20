@@ -7,7 +7,7 @@ class PrivilegioDao extends Crud{
 
     public function __construct()
     {
-        $this->setTableName("PRIVILEGIO");
+        $this->setTableName("SI_PRIVILEGIO");
         $this->setClassModel("PrivilegioModel");
     }
 }

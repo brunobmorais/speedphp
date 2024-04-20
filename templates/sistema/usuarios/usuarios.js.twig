@@ -1,0 +1,46 @@
+function alterarSenha(id, nome, email) {
+    document.getElementById("nomeModal").innerHTML = nome;
+    document.getElementById("emailModalText").innerHTML = email;
+    document.getElementById("emailModal").value = email;
+    document.getElementById("codusuarioModal").value = id;
+    document.getElementById("novaSenhaModal").value = getPassword();
+
+    showModal('modalSenha');
+}
+
+function trocarUsuario(id, nome, email) {
+    document.getElementById("nomeTrocarUsuarioModal").innerHTML = nome;
+    document.getElementById("emailTrocarUsuarioModal").innerHTML = email;
+    document.getElementById("codusuarioTrocarUsuarioModal").value = id;
+
+    showModal('modalTrocarUsuario');
+}
+
+function alterarPerfilUsuario(id, nome, email) {
+    document.getElementById("nomePerfilUsuarioModal").innerHTML = nome;
+    document.getElementById("emailPerfilUsuarioModal").innerHTML = email;
+    document.getElementById("codusuarioPerfilUsuarioModal").value = id;
+
+    showModal('modalPerfilUsuario');
+}
+
+function alterarSituacaoUsuario(codusuario, situacao) {
+    document.getElementById("codusuarioSituacao").value = codusuario;
+    document.getElementById("situacao").value = situacao;
+    modalTemCerteza("formSituacaoUsuario");
+}
+
+function gerarSenha(){
+    document.getElementById("novaSenhaModal").value = getPassword();
+}
+
+async function copyValue(id){
+    let copyText = document.getElementById(id);
+    // Select the text field
+    copyText.select();
+    copyText.setSelectionRange(0, 99999); // For mobile devices
+
+    navigator.clipboard.writeText(copyText.value);
+    alertSuccess("Copiado com sucesso!")
+
+}

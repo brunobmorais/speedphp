@@ -1,0 +1,29 @@
+var mini = true;
+
+function toggleSidebar() {
+    if (mini) {
+        var elementosTeste = document.getElementsByClassName("sidebar-link");
+        Array.prototype.filter.call(
+            elementosTeste,
+            function (element) {
+                element.classList.toggle("d-none");
+            },
+        );
+        //console.log("opening sidebar");
+        document.getElementById("mySidebar").style.width = "250px";
+        document.getElementById("main").style.marginLeft = "250px";
+        this.mini = false;
+    } else {
+        var elementosTeste = document.getElementsByClassName("sidebar-link");
+        Array.prototype.filter.call(
+            elementosTeste,
+            function (element) {
+                element.classList.toggle("d-none");
+            },
+        );
+        //console.log("closing sidebar");
+        document.getElementById("mySidebar").style.width = "85px";
+        document.getElementById("main").style.marginLeft = "85px";
+        this.mini = true;
+    }
+}

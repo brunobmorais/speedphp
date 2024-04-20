@@ -1,0 +1,14 @@
+<label for="{{name|upper}}">{{label}}</label>
+<select name="{{name}}" id="{{name|lower}}" class="select2 form-control">
+	<option value="" disabled selected>Selecione um
+		{{label}}</option>
+	{% if object %}
+		{% for item in  object  %}
+			<option value="{{attribute(item, optionValue)}}" {% if value %} {{ value == attribute(item, optionValue) ? 'selected' : '' }} {% endif %}>{{attribute(item, optionLabel)}}
+			</option>
+		{% endfor %}
+	{% endif %}
+</select>
+<div class="invalid-feedback">
+	Preencha o campo corretamente
+</div>

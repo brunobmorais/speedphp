@@ -1,0 +1,75 @@
+<input name="CODPESSOA_DEPENDENTE" id='codpessoa_dependente'  hidden>
+
+
+
+<div class="row">
+	<div class="form-group col-12 col-md-6 float-left">
+		<label for="">Nome</label>
+
+		<input type="text" name='NOME' id='nome' class='form-control' >
+		<div class="invalid-feedback">
+			Preencha o campo corretamente
+		</div>
+	</div>
+
+	<div class="form-group col-12 col-md-6 float-left">
+
+		<x-input.selecttwo name="CODDEPENDENTE_TIPO" label="Parentesco" optionValue="CODDEPENDENTE_TIPO" optionLabel="NOME" :object="{{getDaos('GpTipoDependenteDao', 'buscarTodos')}}" required='required'/>
+	</div>
+</div>
+
+<div class="row">
+
+	<div class="form-group col-12 col-md-4 float-left">
+		<label class="form-label">CPF</label>
+		<input name="CPF" id="cpf" type="text" class="form-control" placeholder="000.000.000-00" required onkeydown="mascara(this,mcpf)" minlength='14' maxlength="14">
+		<div class="invalid-feedback">
+			Preencha o campo corretamente
+		</div>
+	</div>
+
+
+
+    <div class="form-group col-12 col-md-4 float-left">
+        <label for="">Data de Nascimento</label>
+        <input required type="date" name='DATANASCIMENTO' id='datanascimento' class='form-control'>
+        <div class="invalid-feedback">
+            Preencha o campo corretamente
+        </div>
+    </div>
+
+
+    <div class="form-group col-12 col-md-4 float-left">
+        <label for="">Certidão</label>
+        <input type="text" name='CERTIDAO' id='certidao' class='form-control'>
+
+    </div>
+</div>
+<div class="row mt-5 justify-content-center">
+    <div class="form-group col-12 col-md-4 float-left">
+
+        <label class="custom-switch me-3">
+            <input type="checkbox" class="custom-switch-input" name="IR" id="ir">
+            <span class="custom-switch-indicator"></span>
+            <span class="custom-switch-description-right">Imposto de Renda</span>
+        </label>
+    </div>
+
+    <div class="form-group col-12 col-md-4 float-left">
+
+        <label class="custom-switch me-3">
+            <input type="checkbox" class="custom-switch-input" name="SF" id="sf">
+            <span class="custom-switch-indicator"></span>
+            <span class="custom-switch-description-right">Salário Família</span>
+        </label>
+    </div>
+
+    <div class="form-group col-12 col-md-4 float-left">
+
+        <label class="custom-switch me-3">
+            <input type="checkbox" class="custom-switch-input" name="PENSAO" id="pensao">
+            <span class="custom-switch-indicator"></span>
+            <span class="custom-switch-description-right">Pensão</span>
+        </label>
+    </div>
+</div>

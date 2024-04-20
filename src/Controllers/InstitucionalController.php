@@ -5,8 +5,7 @@ use App\Components\NavbarComponents;
 use App\Core\Controller\ControllerCore;
 use App\Core\Controller\ControllerInterface;
 use App\Core\PageCore;
-use App\Core\Template\LoggedTemplate;
-use App\Core\Template\TemplateAbstract;
+use App\Libs\Template\TemplateAbstract;
 
 class InstitucionalController extends ControllerCore implements ControllerInterface
 {
@@ -23,8 +22,8 @@ class InstitucionalController extends ControllerCore implements ControllerInterf
         try {
             // CARREGA VIEW
             return $this->render(
-                TemplateAbstract::LOGGED,
-                'institucional/privacidade',
+                TemplateAbstract::NOT_LOGGED,
+                'sistema/privacidade',
                 ['TITLE' => "Termo de uso e privacidade",
                     "configSiteName" => CONFIG_SITE['name'],
                     "configSiteNameFull" => CONFIG_SITE['nameFull'],

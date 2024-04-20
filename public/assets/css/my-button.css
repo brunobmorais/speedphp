@@ -94,39 +94,47 @@
 
 /*ESTILO PARA FORMULARIO - BOTAO DE UPLOAD */
 .btnInputFile {
-    width: 155px;
-    height: 40px;
+    width: auto;
+    height: 35px;
     position: relative;
     overflow: hidden;
-    background: #0E7A7A;
-    padding: 0 .3em;
+    background: var(--cor-bg-principal);
+    padding: 0;
     color: #fff;
-    line-height: 31px;
+    background-color: transparent;
+    color: var(--cor-bg-principal);
+    line-height: 33px;
     border-radius: 14px;
+    border: 1px solid var(--cor-bg-principal);
     font-size: 12px;
 }
 
 .btnInputFile:hover {
-    background: #005050;
+    background: var(--cor-bg-principal);
+    background-color: var(--cor-bg-principal);
+    color: #ffffff;
 }
 
 .btnInputFile div {
-    padding: .4em;
     text-align: center;
     display: block;
     height: 100%;
     width: 100%;
     position: absolute;
+    border-radius: 10px;
+    font-weight: 600;
+
 }
 
 .btnInputFile div {
     cursor: pointer;
+
 }
 
 .btnInputFile input {
     position: absolute;
-    right: 0;
-    z-index: 2;
+    right: 30px;
+    /*z-index: 2;*/
     font-size: 100px; /* Aumenta tamanho do campo */
     opacity: 0;
     filter: alpha(opacity=0);
@@ -135,6 +143,8 @@
 /*LINK*/
 a {
     color: var(--cor-bg-principal);
+    text-decoration: none;
+    font-weight: 500;
 }
 
 a:hover {
@@ -153,8 +163,14 @@ a:hover {
     line-height: 16px;
 }
 
+.btn-check:checked+.btn, .btn.active, .btn.show, .btn:first-child:active, :not(.btn-check)+.btn:active {
+    color: var(--cor-bg-principal);
+    background-color: transparent;
+    border-color: var(--cor-bg-principal);
+    border-radius: 20px;
+}
+
 /* MOBILE */
 @media (max-width: 992px) {
 
 }
-

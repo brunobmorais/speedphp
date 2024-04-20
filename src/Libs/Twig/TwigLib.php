@@ -2,22 +2,17 @@
 
 namespace App\Libs\Twig;
 
-use App\Libs\FuncoesLib;
 use App\Libs\Twig\TwigExtensionLib as LibsTwigExtension;
-use Error;
 use Performing\TwigComponents\Configuration;
-use Psr\Container\ContainerInterface;
-use Symfony\Component\DependencyInjection\Container;
-use Symfony\UX\TwigComponent\ComponentRenderer;
-use Symfony\UX\TwigComponent\ComponentRendererInterface;
-use Symfony\UX\TwigComponent\Twig\ComponentExtension;
 use Twig\Environment;
-use Twig\Extension\EscaperExtension;
+use Twig\Extension\StringLoaderExtension;
 use Twig\Loader\FilesystemLoader;
 
 class TwigLib
 {
-    private $viewDirectory = null;
+    private $viewModule = null;
+    private $viewService = null;
+    private $viewFolder = null;
     private $viewFile = null;
     private $viewUrl = null;
     private $dirName = null;
@@ -27,7 +22,7 @@ class TwigLib
         $this->dirName = dirname(__DIR__, 3);
     }
 
-    public function render(string $view, $data = [], $print = true, $cache = false)
+    public function renderPage(string $view, $data = [], $print = true, $cache = false)
     {
         try {
             $loader = new FilesystemLoader($this->dirName . '/templates');
@@ -43,6 +38,7 @@ class TwigLib
             }
 
             $twig->addExtension(new LibsTwigExtension());
+            $twig->addExtension(new StringLoaderExtension());
             $twig = TwigFunctionLib::getFunctions($twig);
 
             //componentes
@@ -61,54 +57,166 @@ class TwigLib
 
             $this->setView($view);
 
-            if (file_exists($this->dirName . "/templates/{$this->viewDirectory}/{$this->viewDirectory}.css")) {
-                $result = "<!--STYLE CONTROLER-->\n";
-                $result .= "<style>";
-                $result .= file_get_contents($this->dirName . "/templates/{$this->viewDirectory}/{$this->viewDirectory}.css");
-                $result .= "</style>";
-                $retorno = $result;
+            // ARQUIVO CSS
+            if (file_exists($this->dirName . "/templates/{$this->viewModule}/{$this->viewFile}.css.twig")) {
+                $retorno .= "<!--STYLE MODULE-->\n";
+                $retorno .= "<style>";
+                $retorno .= $twig->render("{$this->viewModule}/{$this->viewFile}.css.twig", $data);
+                $retorno .= "</style>";
+            }
+            if (file_exists($this->dirName . "/templates/{$this->viewModule}/{$this->viewService}/{$this->viewFile}.css.twig")) {
+                $retorno .= "<!--STYLE SERVICE-->\n";
+                $retorno .= "<style>";
+                $retorno .= $twig->render("{$this->viewModule}/{$this->viewService}/{$this->viewFile}.css.twig", $data);
+                $retorno .= "</style>";
+            }
+            if (!empty($this->viewFolder) && file_exists($this->dirName . "/templates/{$this->viewModule}/{$this->viewService}/{$this->viewFolder}/{$this->viewFile}.css.twig")) {
+                $retorno .= "<!--STYLE FOLDER-->\n";
+                $retorno .= "<style>";
+                $retorno .= $twig->render("{$this->viewModule}/{$this->viewService}//{$this->viewFolder}/{$this->viewFile}.css.twig", $data);
+                $retorno .= "</style>";
             }
 
-            if (file_exists($this->dirName . "/templates/{$this->viewDirectory}/{$this->viewFile}/{$this->viewFile}.css")) {
-                $result = "<!--STYLE VIEW-->\n";
-                $result .= "<style>";
-                $result .= file_get_contents($this->dirName . "/templates/{$this->viewDirectory}/{$this->viewFile}/{$this->viewFile}.css");
-                $result .= "</style>";
-                $retorno .= $result;
-            }
-
-            if ($this->viewFile === "index") {
-                if (file_exists($this->dirName . "/templates/{$this->viewDirectory}/{$this->viewDirectory}.html.twig")) {
-                    $retorno .= $twig->render("{$this->viewDirectory}/{$this->viewDirectory}.html.twig", $data);
+            // ARQUIVO TWIG
+            if ($this->viewService === "index") {
+                if (file_exists($this->dirName . "/templates/{$this->viewModule}/{$this->viewModule}.html.twig")) {
+                    $retorno .= $twig->render("{$this->viewModule}/{$this->viewModule}.html.twig", $data);
                 } else {
                     $retorno .= $twig->render("erro/erro.html.twig", $data);
                 }
-            } elseif (file_exists($this->dirName . "/templates/{$view}/{$this->viewFile}.html.twig")) {
-                $retorno .= $twig->render("{$view}/{$this->viewFile}.html.twig", $data);
+            } elseif (file_exists($this->dirName . "/templates/{$this->viewUrl}/{$this->viewFile}.html.twig")) {
+                $retorno .= $twig->render("{$this->viewUrl}/{$this->viewFile}.html.twig", $data);
             } elseif (file_exists($this->dirName . "/templates/{$this->viewUrl}.html.twig")) {
-                $directory = $this->dirName . "/templates/" . $this->viewUrl . ".html.twig";
                 $retorno .= $twig->render($this->viewUrl . ".html.twig", $data);
             } else {
                 $retorno .= $twig->render("erro/erro.html.twig", $data);
             }
+
+            // ARQUIVO JS
+            if (file_exists($this->dirName . "/templates/{$this->viewModule}/{$this->viewFile}.js.twig")) {
+                $retorno .= "<!--SCRIPT MODULE-->\n";
+                $retorno .= "<script>";
+                $retorno .= $twig->render("{$this->viewModule}/{$this->viewFile}.js.twig", $data);
+                $retorno .= "</script>";
+
+            }
+            if (file_exists($this->dirName . "/templates/{$this->viewModule}/{$this->viewService}/{$this->viewFile}.js.twig")) {
+                $retorno .= "<!--SCRIPT SERVICE-->\n";
+                $retorno .= "<script>";
+                $retorno .= $twig->render("{$this->viewModule}/{$this->viewService}/{$this->viewFile}.js.twig", $data);
+                $retorno .= "</script>";
+            }
+            if (file_exists($this->dirName . "/templates/{$this->viewModule}/{$this->viewService}/{$this->viewFolder}/{$this->viewFile}.js.twig")) {
+                $retorno .= "<!--SCRIPT FOLDER -->\n";
+                $retorno .= "<script>";
+                $retorno .= $twig->render("{$this->viewModule}/{$this->viewService}/{$this->viewFolder}/{$this->viewFile}.js.twig", $data);
+                $retorno .= "</script>";
+            }
+
 
             if ($print) {
                 echo $retorno;
             } else {
                 return $retorno;
             }
-        } catch (Error $e) {
+        } catch (\Error $e) {
             return $e;
         }
     }
+
+    public function servicesJS($data = [], $print = false)
+    {
+        $retorno = "";
+        $retorno .= "<!--SERVICES-->\n";
+        $types = array( 'twig');
+        if ( $handle = opendir($this->dirName . "/templates/services") ) {
+            while ( $entry = readdir( $handle )) {
+                $ext = strtolower( pathinfo( $entry, PATHINFO_EXTENSION) );
+                if( in_array( $ext, $types )) {
+                    $retorno .= "<script>";
+                    $retorno .= $this->renderComponent("services/{$entry}", $data, $print);
+                    $retorno .= "</script>";
+                }
+            }
+            closedir($handle);
+        }
+
+        if ($print) {
+            echo $retorno;
+        } else {
+            return $retorno;
+        }
+    }
+
+    public function renderComponent(string $view, $data = [], $print = true, $cache = false)
+    {
+        try {
+            $loader = new FilesystemLoader($this->dirName . '/templates');
+            if ($cache) {
+                $twig = new Environment($loader, [
+                    'debug' => CONFIG_DISPLAY_ERROR_DETAILS,
+                    'cache' => $this->dirName . '/templates/cache'
+                ]);
+            } else {
+                $twig = new Environment($loader, [
+                    'debug' => CONFIG_DISPLAY_ERROR_DETAILS
+                ]);
+            }
+
+            $twig->addExtension(new LibsTwigExtension());
+            $twig->addExtension(new StringLoaderExtension());
+            $twig = TwigFunctionLib::getFunctions($twig);
+
+            //componentes
+            Configuration::make($twig)
+                ->setTemplatesExtension('html.twig')
+                ->useCustomTags()
+                ->setup();
+
+            $retorno = '';
+
+            $varsDefault = [
+                "URL" => CONFIG_URL,
+            ];
+
+            $data = array_merge($varsDefault, $data);
+
+            $this->setView($view);
+
+            $retorno .= $twig->render($view, $data);
+
+            if ($print) {
+                echo $retorno;
+            } else {
+                return $retorno;
+            }
+        } catch (\Error $e) {
+            return $e;
+        }
+    }
+
 
     protected function setView($url)
     {
         $controller = explode("/", $url);
 
         $this->viewUrl = $url;
-        $this->viewDirectory = $controller[0];
-        $this->viewFile = $controller[1];
+        $this->viewModule = $controller[0];
+        $this->viewService = $controller[1]??"";
+        $this->viewFolder = $controller[2]??"";
+
+        if ($this->viewService === "index") {
+            $this->viewFile = $this->viewModule;
+            return;
+        }
+
+        if (!empty($this->viewFolder)) {
+            $this->viewFile = $this->viewFolder;
+            return;
+        }
+
+        $this->viewFile = $this->viewService;
+
     }
 
 

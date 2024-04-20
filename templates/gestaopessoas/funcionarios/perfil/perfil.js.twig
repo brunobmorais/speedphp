@@ -1,0 +1,25 @@
+
+
+    var uploadFile = document.getElementById("upload");
+    var fotoImg = document.getElementById("foto");
+
+    if (uploadFile != null && uploadFile.addEventListener) {
+        uploadFile.addEventListener("change", function () {
+            loadFoto(this, fotoImg)
+        });
+    } else if (uploadFile != null && uploadFile.attachEvent) {
+        uploadFile.attachEvent("onchange", function () {
+            loadFoto(this, fotoImg)
+        });
+    }
+
+    function loadFoto(file, img) {
+        if (file.files && file.files[0]) {
+            var reader = new FileReader();
+
+            reader.onload = function (e) {
+                img.src = e.target.result;
+            }
+            reader.readAsDataURL(file.files[0]);
+        }
+    }

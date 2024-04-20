@@ -5,8 +5,8 @@ const CONFIG_DATA_LAYER = [
     "host" => "mysql",
     "port" => "3306",
     "dbname" => "database",
-    "username" => "user",
-    "passwd" => "user",
+    "username" => "root",
+    "passwd" => "root",
     "options" => [
         PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES UTF8, lc_time_names = 'pt_BR'",
         PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
@@ -23,7 +23,7 @@ const CONFIG_DATA_LAYER = [
 
 const CONFIG_DISPLAY_ERROR_DETAILS = true;
 
-const CONFIG_URL = "http://seusite.localhost";
+const CONFIG_URL = "http://speedphp.localhost";
 
 
 

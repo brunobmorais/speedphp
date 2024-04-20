@@ -6,15 +6,18 @@ namespace App\Controllers;
 use App\Core\Controller\ControllerCore;
 use App\Core\Controller\ControllerInterface;
 use App\Core\PageCore;
-use App\Core\Template\BlankTemplate;
-use App\Core\Template\TemplateAbstract;
+use App\Core\Template\DefaultTemplate;
 use App\Daos\PessoaDao;
+use App\Daos\SICodigoValidadorDao;
+use App\Daos\UsuarioDao;
 use App\Libs\AlertLib;
 use App\Libs\CookieLib;
 use App\Libs\FuncoesLib;
 use App\Libs\JwtLib;
 use App\Libs\SessionLib;
+use App\Libs\Template\TemplateAbstract;
 use App\Models\PessoaModel;
+use App\Models\UsuarioModel;
 
 class UsuarioController extends ControllerCore implements ControllerInterface
 {
@@ -29,7 +32,7 @@ class UsuarioController extends ControllerCore implements ControllerInterface
 
     /**
      * @param $args
-     * @return \Error|\Exception|null
+     * @return \Error|\Error|null
      */
     public function meusdados($args = null)
     {
@@ -72,7 +75,7 @@ class UsuarioController extends ControllerCore implements ControllerInterface
         $result = $pessoaDao->update($atributos, $parametros, "CODPESSOA={$pessoaModel->getCODPESSOA()}");
 
         if ($result) {
-            $resultUsuarioModel = $pessoaDao->buscarFuncionarioModelId($_POST['CODUSUARIO']);
+            $resultUsuarioModel = $pessoaDao->buscarUsuarioModelId($_POST['CODUSUARIO']);
             $sessaoClass->setDataSession($resultUsuarioModel);
 
             $alertaClass->success("Atualização realizada com sucesso!", "/usuario/meusdados");
@@ -81,12 +84,13 @@ class UsuarioController extends ControllerCore implements ControllerInterface
         }
     }
 
-    public function logoff()
+    public function logoff($args = [])
     {
         try {
-            $cookie = new CookieLib();
+            $redireciona = SessionLib::getValue("REDIRECIONA");
             SessionLib::apagaSessao();
-            $cookie::deleteValue("TOKEN_USER");
+            CookieLib::deleteValue("TOKEN_USER");
+            SessionLib::setValue("REDIRECIONA", $redireciona);
             $this->redirect("/usuario/login");
         } catch (\Error $e) {
             return $e;
@@ -97,9 +101,11 @@ class UsuarioController extends ControllerCore implements ControllerInterface
     {
         try {
             $data['TITLE'] = "Login";
+            SessionLib::apagaSessao();
+            SessionLib::setValue("CSRF", bin2hex(random_bytes(32)));
             return $this->render(
                 TemplateAbstract::BLANK,
-                'usuario/login',$data);
+                'usuario/login', $data);
         } catch (\Error $e) {
             return $e;
         }
@@ -121,28 +127,29 @@ class UsuarioController extends ControllerCore implements ControllerInterface
     public function novasenha($args = null)
     {
         try {
+            (new FuncoesLib())->setDisplayError();
+            $siCodigoValidador = new SICodigoValidadorDao();
+
             //PEGANDO PARAMETRO GET
             if (empty($args[0])) {
                 $this->redirect("/usuario/login");
-            } else {
-                $data['TOKEN'] = $args[0];
-                $dataToken = (new JwtLib())->decode($data["TOKEN"]);
-
-                if ($dataToken) {
-                    $pessoaDao = new PessoaDao();
-                    $data["PESSOA"] = $pessoaDao->buscarTokenPessoa($data['TOKEN']);
-                    if (!empty($data["PESSOA"])) {
-                        $data['TITLE'] = "Nova senha";
-                        // CARREGA VIEW
-                        return $this->render(
-                            TemplateAbstract::BLANK,
-                'usuario/novasenha', $data);
-                    } else {
-                        (new AlertLib())->warning("Token não encontrado", "/usuario/login");
-                    }
-                } else {
-                    (new AlertLib())->warning("Token exipirou ou é inválido", "/usuario/login");
+                return;
+            }
+            $data['TOKEN'] = $args[0];
+            $dataToken = (new JwtLib())->decode($data["TOKEN"]);
+            if ($dataToken) {
+                $data["CODIGOVALIDADOR"] = $siCodigoValidador->validarToken($data['TOKEN']);
+                if (!empty($data["CODIGOVALIDADOR"])) {
+                    $data['TITLE'] = "Nova senha";
+                    return $this->render(
+                        TemplateAbstract::BLANK,
+                        'usuario/novasenha',
+                        $data);
                 }
+
+                (new AlertLib())->warning("Token não encontrado ou expirou", "/usuario/login");
+            } else {
+                (new AlertLib())->warning("Token exipirou ou é inválido", "/usuario/login");
             }
         } catch (\Error $e) {
             return $e;
@@ -151,28 +158,35 @@ class UsuarioController extends ControllerCore implements ControllerInterface
 
     public function addnovasenha()
     {
-        $this->validateRequestMethod("POST");
+        try {
+            $this->validateRequestMethod("POST");
 
-        $func = new FuncoesLib();
-        $pessoaModel = new PessoaModel();
-        $pessoaDao = new PessoaDao();
-        $alerta = new AlertLib();
+            $func = new FuncoesLib();
+            $usuarioModel = new UsuarioModel($_POST);
+            $alerta = new AlertLib();
+            $siCodigoTokenDao = new SICodigoValidadorDao();
+            $usuarioDao = new UsuarioDao();
 
-        $pessoaModel->setId($_POST["id"]);
-        $pessoaModel->setIdFuncionario($_POST["idfuncionario"]);
-        $pessoaModel->setToken($_POST["token"]);
-        $pessoaModel->setSenha($func->create_password_hash($_POST['cdsenha']));
+            $usuarioModel->setSenha($func->create_password_hash($usuarioModel->getSENHA()));
 
-        $dados = $pessoaDao->buscarIdToken($pessoaModel);
+            $objCodigoValidador = $siCodigoTokenDao->validarToken($this->postParams("TOKEN"));
 
-        if ($dados == false) {
-            $alerta->warning('Sua solicitação expirou! Tente novamente.', '/usuario/esquecisenha');
-        } else {
-            if ($pessoaDao->updateSenha($pessoaModel) == false) {
-                $alerta->warning('Aconteceu um erro, tente mais tarde', '/usuario/login');
-            } else {
-                $alerta->success("Alteração realizada!", '/usuario/login');
+            // VERIFICA SE É VALIDO
+            if (!$objCodigoValidador) {
+                $alerta->warning('Sua solicitação expirou! Tente novamente.', '/usuario/esquecisenha');
             }
+
+            // ATUALIZA TOKEN COMO UTILIZADO
+            $siCodigoTokenDao->update("SITUACAO", array(0, $objCodigoValidador[0]->CODCODIGOVALIDADOR), "CODCODIGOVALIDADOR=?");
+
+            // ATUALIZA SENHA
+            if (!$usuarioDao->updateSenha($usuarioModel)) {
+                $alerta->warning('Aconteceu um erro, tente mais tarde', '/usuario/login');
+            }
+
+            $alerta->success("Alteração realizada!", '/usuario/login');
+        } catch (\Error $e) {
+            return $e;
         }
 
     }
@@ -191,12 +205,12 @@ class UsuarioController extends ControllerCore implements ControllerInterface
         $usuarioModel->setSENHA($_POST['senhaatual'])
             ->setCODPESSOA($_POST["codpessoa"])->setCODUSUARIO($_POST['codusuario']);
 
-        $resultUsuarioModel = $usuarioDao->buscarFuncionarioModelId($_POST["codusuario"]);
+        $resultUsuarioModel = $usuarioDao->buscarUsuarioModelId($_POST["codusuario"]);
 
         if (!empty($resultUsuarioModel)) {
             if ($func->verify_password_hash($usuarioModel->getSENHA(), $resultUsuarioModel->getSENHA())) {
                 $usuarioModel->setSENHA($func->create_password_hash($_POST['novasenha']));
-                if ($usuarioDao->updateSenha($usuarioModel) == false) {
+                if (!$usuarioDao->updateSenha($usuarioModel)) {
                     $alerta->warning('Aconteceu um erro, tente mais tarde', '/usuario/meusdados');
                 } else {
                     $alerta->success("Alteração realizada!", '/usuario/meusdados');

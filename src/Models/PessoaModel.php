@@ -1,15 +1,18 @@
 <?php
 namespace App\Models;
 
-use App\Libs\FuncoesLib;
 use BMorais\Database\ModelAbstract;
 
 class PessoaModel extends ModelAbstract {
 
 
     protected $CODUSUARIO;
+    protected $CODENDERECO ;
+    protected $IMAGEM;
+    protected $TIPOPESSOA; 
     protected $CODPESSOA;
     protected $CPF;
+    protected $TELEFONE ; 
     protected $NOME;
     protected $SENHA;
     protected $EMAIL;
@@ -30,6 +33,60 @@ class PessoaModel extends ModelAbstract {
     public function setCODUSUARIO($CODUSUARIO)
     {
         $this->CODUSUARIO = $CODUSUARIO;
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getCODENDERECO()
+    {
+        return $this->CODENDERECO;
+    }
+
+    /**
+     * @param mixed $CODENDERECO
+     * @return PessoaModel
+     */
+    public function setCODENDERECO($CODENDERECO)
+    {
+        $this->CODENDERECO = $CODENDERECO;
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getIMAGEM()
+    {
+        return $this->IMAGEM;
+    }
+
+    /**
+     * @param mixed $IMAGEM
+     * @return PessoaModel
+     */
+    public function setIMAGEM($IMAGEM)
+    {
+        $this->IMAGEM = $IMAGEM;
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getTIPOPESSOA()
+    {
+        return $this->TIPOPESSOA;
+    }
+
+    /**
+     * @param mixed $TIPOPESSOA
+     * @return PessoaModel
+     */
+    public function setTIPOPESSOA($TIPOPESSOA)
+    {
+        $this->TIPOPESSOA = $TIPOPESSOA;
         return $this;
     }
 
@@ -66,6 +123,24 @@ class PessoaModel extends ModelAbstract {
     public function setCPF($CPF)
     {
         $this->CPF = $CPF;
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getTELEFONE()
+    {
+        return $this->TELEFONE;
+    }
+
+    /**
+     * @param mixed $TELEFONE
+     * @return PessoaModel
+     */
+    public function setTELEFONE($TELEFONE)
+    {
+        $this->TELEFONE = $TELEFONE;
         return $this;
     }
 

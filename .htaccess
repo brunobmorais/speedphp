@@ -15,6 +15,7 @@
   # RewriteBase /
 
 RewriteEngine on
+RewriteRule \.(pdf)$ - [F]
 RewriteRule ^$ public/ [L]
 RewriteRule (.*) public/$1 [L]
 </IfModule>

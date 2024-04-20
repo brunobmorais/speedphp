@@ -1,3 +1,10 @@
+.custom-switch-label {
+    font-weight: 600;
+    color: #34395e;
+    font-size: 12px;
+    letter-spacing: .5px;
+    margin-bottom: 0.5rem;
+}
 
 .custom-switch {
     -webkit-user-select: none;

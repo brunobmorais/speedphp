@@ -1,7 +1,6 @@
 <?php
 namespace App\Models;
 
-use App\Libs\FuncoesLib;
 use BMorais\Database\ModelAbstract;
 
 class PerfilModel extends ModelAbstract {

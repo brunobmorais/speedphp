@@ -3,8 +3,8 @@ if (strpos($_SERVER['SERVER_NAME'],"localhost") || $_SERVER['SERVER_NAME'] == "l
     require_once(dirname(__DIR__,1).'/config/developerConfig.php');
 } else {
     require_once(dirname(__DIR__,1).'/config/productionConfig.php');
-
 }
+
 /*ALTERE ESSA VARIAVEL TODA VEZ QUE QUISER ATUALIZAR O CSS E JAVASCRIPT*/
 const CONFIG_VERSION_CODE = "1.0.0";
 
@@ -13,15 +13,16 @@ const CONFIG_MAINTENANCE = false;
 const CONFIG_SECURITY = [
     "domain" => 'seudominio.com',
     "token" => 'suaChavetoken',
-    "permission_domains" => ['dev.seudominio.com', 'seudominio.com', 'www.seudominio.com']
+    "permission_domains" => ['speedphp.bmorais.com', 'bmorais.com', 'www.seudominio.com']
 ];
 
+// PALETA DE CORES DO SITE
 const CONFIG_COLOR = [
-    "color-navbar" => "#039050",
-    "color-primary" => "#039050",
-    "color-primary-hover" => "#039050", //#039050 verde
+    "color-navbar" => "#F46434",
+    "color-primary" => "#F46434",
+    "color-primary-hover" => "#124694", //#039050 verde
     "color-secondary" => "#676767",
-    "color-link" => "#039050",
+    "color-link" => "#1A6CDD",
 ];
 
 const CONFIG_SITE = [
@@ -29,8 +30,8 @@ const CONFIG_SITE = [
     "nameFull" => "Nome Site Completo",
     "email" => "naoresponda@framework.bmorais.com",
     "phone" => "+55 63 0000-00000",
-    "url" => "https://framework.bmorais.com",
-    "domain" => "https://framework.bmorais.com",
+    "url" => "https://speedphp.bmorais.com",
+    "domain" => "https://speedphp.bmorais.com",
     "andress" => "Cidade-ESTADO",
     "cnpj" => ""
 ];
@@ -47,7 +48,7 @@ const CONFIG_HEADER = [
     "author" => 'bmorais.com',
     "title" => 'Framework',
     "description" => 'Descricao completa do site',
-    "image" => 'https://framework.bmorais.com/assets/img/ic_logosocial.png',
+    "image" => 'https://speedphp.bmorais.com/assets/img/ic_logosocial.png',
     "keywords" => "palavras, chaves, site",
     "color" => CONFIG_SITE['color-primary'],
     "fbAppId" => "0"
@@ -56,7 +57,7 @@ const CONFIG_HEADER = [
 // CONFIGURAÇÃO EMAIL
 const CONFIG_EMAIL = [
     "host" => 'smtp.gmail.com',
-    "userName" => "BM Tecnlogia",
+    "userName" => "BM Tecnologia",
     "password" => '',
     "port" => '465',
     "smtpAuth" => true,

@@ -1,0 +1,207 @@
+<style>
+    /*SIDEBAR*/
+    #sidebarCollapse {
+        width: 27px;
+        height: 27px;
+        background: #ffffff;
+        border: 0;
+    }
+
+    #sidebarCollapse span {
+        width: 100%;
+        height: 2px;
+        margin: 0 auto;
+        display: block;
+        background: #555;
+        transition: all 0.1s cubic-bezier(0.810, -0.330, 0.345, 1.375);
+    }
+
+    #sidebarCollapse span:first-of-type {
+        /* rotate first one */
+        transform: rotate(45deg) translate(2px, 2px);
+    }
+
+    #sidebarCollapse span:nth-of-type(2) {
+        /* second one is not visible */
+        opacity: 0;
+    }
+
+    #sidebarCollapse span:last-of-type {
+        /* rotate third one */
+        transform: rotate(-45deg) translate(1px, -1px);
+    }
+
+    #sidebarCollapse.active span {
+        /* no rotation */
+        transform: none;
+        /* all bars are visible */
+        opacity: 1;
+        margin: 5px auto;
+    }
+
+    .wrapper {
+        display: flex;
+        flex: 1;
+        width: 100%;
+        align-items: stretch;
+        perspective: 1500px;
+
+    }
+
+    #sidebar {
+        height: 100%;
+        padding-top: 10px;
+        min-width: 250px;
+        max-width: 250px;
+        background: #FFF;
+        color: #666;
+        transition: all 0.5s cubic-bezier(0.945, 0.020, 0.270, 0.665);
+        transform-origin: center left; /* Set the transformed position of sidebar to center left side. */
+        -webkit-box-shadow: 0 2px 2px 0 rgba(0, 0, 0, .14), 0 3px 1px -2px rgba(0, 0, 0, .12), 0 1px 5px 0 rgba(0, 0, 0, .2) !important;
+        box-shadow: 0 2px 2px 0 rgba(0, 0, 0, .14), 0 3px 1px -2px rgba(0, 0, 0, .12), 0 1px 5px 0 rgba(0, 0, 0, .2) !important;
+        border-radius: 20px;
+    }
+
+    #sidebar.active {
+        margin-left: -250px;
+        transform: rotateY(90deg); /* Rotate sidebar vertically by 100 degrees. */
+        -moz-transform: rotateY(90deg);
+        -webkit-transform: rotateY(90deg);
+    }
+
+    @media (min-width: 769px) {
+        #sidebarCollapse-card {
+            display: none;
+        }
+    }
+
+    @media (max-width: 768px) {
+
+        #content {
+            padding: 0;
+        }
+
+        /* Reversing the behavior of the sidebar:
+       it'll be rotated vertically and off canvas by default,
+       collapsing in on toggle button click with removal of
+       the vertical rotation.   */
+        #sidebarCollapse-card {
+            display: block;
+        }
+
+        #sidebar {
+            margin-left: -250px;
+            transform: rotateY(100deg);
+            position: fixed;
+            z-index: 1000;
+            -webkit-box-shadow: 0 8px 17px 2px rgba(0, 0, 0, .14), 0 3px 14px 2px rgba(0, 0, 0, .12), 0 5px 5px -3px rgba(0, 0, 0, .2) !important;
+            box-shadow: 0 8px 17px 2px rgba(0, 0, 0, .14), 0 3px 14px 2px rgba(0, 0, 0, .12), 0 5px 5px -3px rgba(0, 0, 0, .2) !important;
+        }
+
+        #sidebar.active {
+            margin-left: 0;
+            transform: none;
+            position: fixed;
+            z-index: 1000;
+        }
+
+        /* Reversing the behavior of the bars:
+       Removing the rotation from the first,
+       last bars and reappear the second bar on default state,
+       and giving them a vertical margin */
+        #sidebarCollapse span:first-of-type,
+        #sidebarCollapse span:nth-of-type(2),
+        #sidebarCollapse span:last-of-type {
+            transform: none;
+            opacity: 1;
+            margin: 5px auto;
+        }
+
+        /* Removing the vertical margin and make the first and last bars rotate again when the sidebar is open, hiding the second bar */
+        #sidebarCollapse.active span {
+            margin: 0 auto;
+        }
+
+        #sidebarCollapse.active span:first-of-type {
+            transform: rotate(45deg) translate(2px, 2px);
+        }
+
+        #sidebarCollapse.active span:nth-of-type(2) {
+            opacity: 0;
+        }
+
+        #sidebarCollapse.active span:last-of-type {
+            transform: rotate(-45deg) translate(1px, -1px);
+        }
+    }
+
+    .nav li a:hover {
+        background: #e9ecef;
+        color: #000000 !important;
+        font-weight: 500;
+    }
+
+    .nav li a.active-sidebar {
+        background: #e9ecef;
+        color: var(--cor-bg-principal) !important;
+        font-weight: 500;
+    }
+
+    /*FIM CONFIGURAÇÕES PROTOCOLO*/
+</style>
+
+{% import "gestaopessoas/components/macro_fichafuncionario.twig" as macros %}
+<nav id="sidebar" class="mb-3">
+    <!-- Sidebar Header -->
+    <div class="d-flex flex-column flex-shrink-0 p-3 bg-white sidebar-menu">
+        <div class="sidebar-header" style="padding-left: 10px;">
+            <h6>Cadastro
+                <div id="sidebarCollapse-menu" class="d-md-none d-block" style="float: right;">
+                    <span class="mdi mdi-24px mdi-close"></span>
+                </div>
+            </h6>
+        </div>
+        <div class='meuMenu pt-2'>
+            <ul class="nav nav-pills flex-column  mb-auto text-center justify-content-center align-items-center">
+                <img src="/assets/upload/img/pessoa/{{ PESSOA.IMAGEM }}" alt="foto_funcionario_perfil"
+                     class='img-fluid rounded-2 shadow-2 text-center mdi-history' style='max-width: 160px; max-height: 300px'>
+                <li class='mt-2 mb-1'>
+                    <h6>{{ FUNCIONARIO.NOMESOCIAL ? FUNCIONARIO.NOMESOCIAL : PESSOA.NOME }}</h6>
+                </li>
+                <li class=''>
+
+                </li>
+            </ul>
+            <hr>
+            <ul class="nav flex-column mb-auto">
+                {{ macros.menu_sidebar("perfil", 'mdi-18px mdi-account-outline', 'Dados Principais') }}
+                {{ macros.menu_sidebar('funcionais', 'mdi-18px mdi-account-check-outline', 'Dados Funcionais') }}
+                {{ macros.menu_sidebar('historico', 'mdi-18px mdi-history', 'Histórico') }}
+                {{ macros.menu_sidebar('arquivos', 'mdi-18px mdi-file-outline', 'Arquivos') }}
+                {{ macros.menu_sidebar('banco', 'mdi-18px mdi-account-cash-outline', 'Dados Bancários') }}
+                {{ macros.menu_sidebar('cargos', 'mdi-18px mdi-account-hard-hat-outline', 'Cargos') }}
+                {{ macros.menu_sidebar('departamentos', 'mdi-18px mdi-account-group-outline', 'Departamentos') }}
+                {{ macros.menu_sidebar('dependentes', 'mdi-18px mdi-account-child-outline', 'Dependentes') }}
+
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<script>
+    document.getElementById("sidebarCollapse-menu").addEventListener("click", function (){
+        //$('#sidebarCollapse-card').fadeIn(500);
+        $('#sidebarCollapse-card').toggleClass("d-block");
+        //$('#divSidebarCollapse-card').toggleClass("d-none");
+
+        /*if ($('#sidebar').hasClass("active"))
+            $('#content').toggleClass('container');
+        else
+            $('#content').addClass('container');*/
+
+        $('#sidebar').toggleClass('active');
+        $(this).toggleClass('active');
+    });
+</script>
+
+

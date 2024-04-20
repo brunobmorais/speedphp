@@ -1,7 +1,6 @@
 <?php
 namespace App\Libs;
 
-use App\Models\PessoaModel;
 use App\Models\UsuarioModel;
 
 /**
@@ -77,7 +76,7 @@ class SessionLib
         }
     }*/
 
-    public static function setDataSession(PessoaModel $dados){
+    public static function setDataSession(UsuarioModel $dados){
 
         self::apagaSessao();
 
@@ -86,6 +85,9 @@ class SessionLib
         self::setValue("CPF", $dados->getCPF());
         self::setValue("NOME", $dados->getNOME());
         self::setValue("EMAIL", $dados->getEMAIL());
+        self::setValue("TELEFONE", $dados->getEMAIL());
+        self::setValue("SEXO", $dados->getSEXO());
+        self::setValue("DATANASCIMENTO", $dados->getDATANASCIMENTO());
         self::setValue("PRIMEIRONOME", explode(" ", $dados->getNOME())[0]);
 
     }
@@ -97,6 +99,8 @@ class SessionLib
         $dados['CPF'] = self::getValue("CPF");
         $dados['NOME'] = self::getValue("NOME");
         $dados['EMAIL'] = self::getValue("EMAIL");
+        $dados['TELEFONE'] = self::getValue("TELEFONE");
+        $dados['DATANASCIMENTO'] = self::getValue("DATANASCIMENTO");
         $dados['PRIMEIRONOME'] = self::getValue("PRIMEIRONOME");
         $dados['REDIRECIONA'] = self::getValue("REDIRECIONA");
 

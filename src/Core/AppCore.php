@@ -21,19 +21,11 @@ class AppCore
     // Método construtor
     public function __construct()
     {
-        try {
-            $URL_ARRAY = $this->parseUrl();
+        $URL_ARRAY = $this->parseUrl();
 
-            if (!empty($URL_ARRAY[0]) && isset($URL_ARRAY[0])) {
-                if ($URL_ARRAY[0] === "api") {
-                    Api::run();
-                } else {
-                    $this->getControllerFromUrl($URL_ARRAY);
-                    $this->getMethodFromUrl($URL_ARRAY);
-                    $this->getParamsFromUrl($URL_ARRAY);
-                    // chama um método de uma classe passando os parâmetros
-                    $response = call_user_func_array([$this->controller, $this->method], $this->params);
-                }
+        if (!empty($URL_ARRAY[0]) && isset($URL_ARRAY[0])) {
+            if ($URL_ARRAY[0] === "api") {
+                Api::run();
             } else {
                 $this->getControllerFromUrl($URL_ARRAY);
                 $this->getMethodFromUrl($URL_ARRAY);
@@ -41,32 +33,26 @@ class AppCore
                 // chama um método de uma classe passando os parâmetros
                 $response = call_user_func_array([$this->controller, $this->method], $this->params);
             }
+        } else {
+            $this->getControllerFromUrl($URL_ARRAY);
+            $this->getMethodFromUrl($URL_ARRAY);
+            $this->getParamsFromUrl($URL_ARRAY);
+            // chama um método de uma classe passando os parâmetros
+            $response = call_user_func_array([$this->controller, $this->method], $this->params);
+        }
 
-            if (!empty($response)) {
-                $e = $response;
-                $message = "<h4>Erro ao acessar essa página</h5><hr>";
-                $message .= "<p><b>Arquivo:</b>  " . $e->getFile() . "<br/>";
-                $message .= "<b>Linha:</b>  " . $e->getLine() . "<br/>";
-                $message .= "<b>Mensagem:</b>  " . $e->getMessage() . "<br/></p>";
-
-                if (CONFIG_DISPLAY_ERROR_DETAILS) {
-                    echo $message;
-                } else {
-                    (new ErroController())->database();
-                }
-            }
-        } catch (\Exception $e) {
-            $message = "<h4>Erro ao acessar essa página</h5><hr>";
-            $message .= "<p><b>Arquivo:</b>  " . $e->getFile() . "<br/>";
-            $message .= "<b>Linha:</b>  " . $e->getLine() . "<br/>";
-            $message .= "<b>Mensagem:</b>  " . $e->getMessage() . "<br/></p>";
-
+        if (!empty($response)) {
+            $e = $response;
             if (CONFIG_DISPLAY_ERROR_DETAILS) {
-                echo $message;
+                if (is_array($e))
+                    throw new \ErrorException($e->getMessage(), $e->getCode(), 1, $e->getFile(), $e->getLine());
+                else
+                    throw new \ErrorException($e);
             } else {
                 (new ErroController())->database();
             }
         }
+
     }
 
     /**
@@ -78,7 +64,7 @@ class AppCore
     {
         $REQUEST_URI = explode('?', $_SERVER['REQUEST_URI']);
         $REQUEST_URI = explode('/', substr($REQUEST_URI[0], 1));
-        return str_replace("-","",$REQUEST_URI);
+        return str_replace("-", "", $REQUEST_URI);
     }
 
     /**
@@ -96,8 +82,8 @@ class AppCore
                 $this->controllerName = ucfirst($url[0]);
             } else {
                 $this->funcaoSemMetodo = true;
-                $this->controller = "Home";
-                $this->controllerName = 'Home';
+                $this->controller = "Erro";
+                $this->controllerName = 'Erro';
                 $this->page404 = true;
             }
         }
@@ -117,7 +103,7 @@ class AppCore
     private function getMethodFromUrl($url)
     {
         if (!empty($url[1]) && isset($url[1])) {
-            $url[1] = str_replace("-","",$url[1]);
+            $url[1] = str_replace("-", "", $url[1]);
             if (method_exists($this->controller, $url[1]) && !$this->page404) {
                 $this->method = strtolower($url[1]);
             } else {

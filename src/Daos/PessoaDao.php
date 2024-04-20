@@ -1,10 +1,13 @@
 <?php
 namespace App\Daos;
 
-use BMorais\Database\Crud;
 use App\Libs\FuncoesLib;
+use App\Models\EnderecoModel;
 use App\Models\FuncionarioModel;
 use App\Models\PessoaModel;
+use App\Models\UsuarioModel;
+use BMorais\Database\Crud;
+use Error;
 
 class PessoaDao extends Crud{
 
@@ -25,14 +28,15 @@ class PessoaDao extends Crud{
         return $this->fetchArrayObj($result)??null;
     }
 
-    public function buscarTodosFuncionarios($buscar = null)
+    public function buscarTodosUsuarios($buscar = null)
     {
-        $sql = "SELECT U.CODUSUARIO, P.CODPESSOA, P.NOME, P.EMAIL, P.CPF
-                    FROM USUARIO AS U
+        $sql = "SELECT U.CODUSUARIO, P.CODPESSOA, P.NOME, P.EMAIL, PF.CPF, U.SITUACAO
+                    FROM SI_USUARIO AS U
                     INNER JOIN PESSOA AS P on P.CODPESSOA=U.CODPESSOA
-                    WHERE P.EXCLUIDO='0' AND U.SITUACAO='1'";
+                    INNER JOIN PESSOA_FISICA PF ON PF.CODPESSOA=P.CODPESSOA
+                    WHERE P.EXCLUIDO='0' ORDER BY P.NOME";
         if (!empty($buscar))
-            $sql .= " AND P.NOME LIKE '%{$buscar}%' OR P.CPF LIKE '%{$buscar}%'";
+            $sql .= " AND P.NOME LIKE '%{$buscar}%' OR PF.CPF LIKE '%{$buscar}%'";
         $result = $this->executeSQL($sql);
         return $this->fetchArrayObj($result)??null;
     }
@@ -40,10 +44,11 @@ class PessoaDao extends Crud{
     public function buscarFuncionarioCpfCnpj($cpfcnpj): ?PessoaModel{
 
         try {
-            $sql = "SELECT P.CODPESSOA, P.NOME, P.CPF, P.EMAIL, U.CODUSUARIO, U.SITUACAO, U.SENHA 
+            $sql = "SELECT P.CODPESSOA, U.CODUSUARIO, P.NOME, P.EMAIL, U.SITUACAO, U.SENHA, P.TELEFONE, PF.DATANASCIMENTO, PF.SEXO, PF.CPF 
                     FROM PESSOA AS P
-                    INNER JOIN USUARIO AS U on U.CODPESSOA=P.CODPESSOA
-                    WHERE P.CPF=? AND U.EXCLUIDO=0";
+                    INNER JOIN PESSOA_FISICA PF ON PF.CODPESSOA=P.CODPESSOA
+                    INNER JOIN SI_USUARIO AS U on U.CODPESSOA=P.CODPESSOA
+                    WHERE PF.CPF=? AND U.EXCLUIDO=0 AND P.EXCLUIDO=0 AND PF.EXCLUIDO=0";
             $params = array($cpfcnpj);
             $result = $this->executeSQL($sql, $params);
             if ($this->count($result) > 0) {
@@ -51,7 +56,7 @@ class PessoaDao extends Crud{
             } else {
                 return null;
             }
-        } catch (\Exception $e) {
+        } catch (\Error $e) {
             throw new \Error($e->getMessage());
         }
 
@@ -60,9 +65,10 @@ class PessoaDao extends Crud{
     public function buscarFuncionarioId($id)
     {
         try {
-            $sql = "SELECT P.CODPESSOA, P.NOME, P.CPF, P.EMAIL, P.EXCLUIDO, U.CODUSUARIO
+            $sql = "SELECT P.CODPESSOA, P.NOME, PF.CPF, P.EMAIL, P.EXCLUIDO, U.CODUSUARIO
                     FROM PESSOA AS P 
-                    INNER JOIN USUARIO AS U on P.CODPESSOA=U.CODPESSOA
+                    INNER JOIN PESSOA_FISICA AS PF ON PF.CODPESSOA=P.CODPESSOA
+                    INNER JOIN SI_USUARIO AS U on P.CODPESSOA=U.CODPESSOA
                     WHERE U.CODUSUARIO=? AND U.EXCLUIDO='0' AND P.EXCLUIDO=0";
             $params = array($id);
             $result = $this->executeSQL($sql, $params);
@@ -71,16 +77,16 @@ class PessoaDao extends Crud{
             } else {
                 return null;
             }
-        } catch (\Exception $e) {
+        } catch (\Error $e) {
             throw new \Error($e->getMessage());
         }
     }
 
-    public function buscarFuncionarioModelId($codusuario):?PessoaModel
+    public function buscarUsuarioModelId($codusuario):?UsuarioModel
     {
         try {
             $sql = "SELECT * FROM PESSOA AS P
-                    INNER JOIN USUARIO U on U.CODPESSOA = P.CODPESSOA
+                    INNER JOIN SI_USUARIO U on U.CODPESSOA = P.CODPESSOA
                     WHERE U.CODUSUARIO=? AND P.EXCLUIDO!='1'";
             $params = array($codusuario);
             $result = $this->executeSQL($sql, $params);
@@ -89,10 +95,11 @@ class PessoaDao extends Crud{
             } else {
                 return null;
             }
-        } catch (\Exception $e) {
+        } catch (\Error $e) {
             throw new \Error($e->getMessage());
         }
     }
+
 
     public function inserirFuncionario(PessoaModel $pessoaModel, EnderecoModel $enderecoModel, FuncionarioModel $funcionarioModel){
 
@@ -221,16 +228,14 @@ class PessoaDao extends Crud{
         }
     }
 
-    public function buscarPessoaId($codusuario)
+    public function buscarPessoa($codpessoa)
     {
-        $sql = "SELECT * FROM pessoa AS U WHERE U.id=? AND U.sts!='X'";
-        $params = array($codusuario);
-        $result = $this->executeSQL($sql,$params);
-        if ($this->count($result) > 0) {
-            return $this->fetchArrayObj($result);
-        } else {
-            return null;
-        }
+      try{
+        return $this->select('*', 'WHERE CODPESSOA = ?', [$codpessoa]);
+
+      }catch(Error $e){
+        return $e; 
+      }
     }
 
     public function buscarTokenPessoa($token): ?array{

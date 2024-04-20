@@ -2,6 +2,7 @@
 namespace App\Api\Routers;
 
 
+use App\Api\Controllers\PessoaApiController;
 use App\Api\Controllers\PrevisaoDoTempoApiController;
 use App\Api\Controllers\UsuarioApiController;
 use App\Api\Lib\ResponseClass;
@@ -33,13 +34,14 @@ class DefaultRouter
             }
         ]);
 
-        $router->post('/buscarestoque', [
+        $router->get('/pessoa/pessoafisica/{cpf}', [
             "middlewares" => [
                 "origin",
                 "bearer-auth"
             ],
-            function ($request) {
-                return new ResponseClass(200, (new UsuarioApiController())->buscarEstoqueId($request));
+            function ($request, $cpf) {
+                $args['cpf'] = $cpf;
+                return new ResponseClass(200, (new PessoaApiController())->pessoafisica($request,$args));
             }
         ]);
 

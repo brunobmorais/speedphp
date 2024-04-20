@@ -6,7 +6,7 @@ class Firebase {
     public function send($registration_ids, $message) {
         $fields = array(
             'registration_ids' => $registration_ids,
-            'data' => $message,
+            'notification' => $message,
         );
         return $this->sendPushNotification($fields);
     }
@@ -17,8 +17,7 @@ class Firebase {
     */
     private function sendPushNotification($fields) {
 
-        define('FIREBASE_API_KEY', 'AAAAGVFXy4k:APA91bGNJ2bSoVaqQPnYucquzMEfTQDgCHvTd4nytPuZtc4vjkC5XOFgWiGkVpxZ_VXnCY1t5FI6pPcGZmodiA-vXSrYLzTmjBTZ8e1UJ56jspL4-If-NtOp34aMnpc6XABy478Y4I3W');
-
+        define('FIREBASE_API_KEY', 'AAAADQJu17k:APA91bEsyfZoG_bVEhi-krgqABlEe-zB6HU1xJU2BtUeav_PlZYNKNoVdm-zkszZ3I-i-e7SnlrU3DCosEX3xxsAWiizROubY6cs_fNh9I1h0m6yHarfVKpnzOSSAUSl3o7Mal7IoKME');
 
         //firebase server url to send the curl request
         $url = 'https://fcm.googleapis.com/fcm/send';

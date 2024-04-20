@@ -161,6 +161,19 @@ class FuncoesLib
         return date("m/d/Y", $dataformatada);;
     }
 
+        /**
+     * FUNÇÃO PARA FORMATAR A DATA RECEBIDA PARA FORMATO BRASILEIRO
+     *
+     * @param $data
+     * @return string
+     */
+    function formatDataUsuarioAmigavel($data)
+    {
+        date_default_timezone_set("America/Araguaina");
+        $dataformatada = strtotime($data);
+        return date("d/m/Y", $dataformatada);;
+    }
+
     /**
      * FUNÇÃO PARA FORMATAR A DATA E HORA NO FORMATO DO USUÁRIO
      *
@@ -879,11 +892,6 @@ class FuncoesLib
         $qtd = strlen($texto)-$inicio-$final;
         $asc = str_repeat('*', $qtd);
         return substr_replace($texto, $asc, $inicio, $qtd);
-    }
-
-    public static function debug($value){
-        echo "<pre>";print_r($value);echo "</pre>"; exit;
-
     }
 
     /** Busca por um valor em uma matriz com base na coluna e retorna o index do array */

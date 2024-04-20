@@ -38,28 +38,9 @@ function hasScrolled() {
 }
 
 //MUDAR NOME DO ARQUIVO
-$("#edtarquivo").change(function () {
-    $(this).prev().html("<span class=\"mdi mdi-18px mdi-file-outline\"></span> "+$(this).val().replace(/^.*\\/, "")+"<span class=\"mdi mdi-check\"></span>"+"");
+$("#upload").change(function () {
+    document.getElementById("fotoText").innerHTML = "<span class=\"mdi mdi-18px mdi-file-outline\"></span> "+$(this).val().replace(/^.*\\/, "")+"<span class=\"mdi mdi-check\"></span>"+"";
 });
-
-/*VALIDAÇÃO DE FORMULARIOS*/
-(function() {
-    'use strict';
-    window.addEventListener('load', function() {
-        // Fetch all the forms we want to apply custom Bootstrap validation styles to
-        var forms = document.getElementsByClassName('needs-validation');
-        // Loop over them and prevent submission
-        var validation = Array.prototype.filter.call(forms, function(form) {
-            form.addEventListener('submit', function(event) {
-                if (form.checkValidity() === false) {
-                    event.preventDefault();
-                    event.stopPropagation();
-                }
-                form.classList.add('was-validated');
-            }, false);
-        });
-    }, false);
-})();
 
 /*FUNÇÃO VOLTAR NO NAVEGADO*/
 function goBack() {
@@ -235,6 +216,40 @@ function mascaraMoedaValor(i) {
 }
 //FIM DE MASCARAS
 
+function validaData(data) {
+    var expReg = /^(([0-2]\d|[3][0-1])\/([0]\d|[1][0-2])\/[1-2][0-9]\d{2})$/;
+
+    var msgErro = 'Formato inválido de data.';
+
+    if ((data.match(expReg)) && (data!='')) {
+        var dia = data.substring(0,2);
+        var mes = data.substring(3,5);
+        var ano = data.substring(6,10);
+
+        if (((mes == 4) || (mes == 6) || (mes == 9) || (mes == 11)) && (dia > 30)) {
+            //alert("Dia incorreto!!! O mês especificado contém no máximo 30 dias.");
+            return false;
+        } else {
+            if ( (ano%4!=0) && (mes == 2) && (dia > 28)) {
+                //alert("Data incorreta!!! O mês especificado contém no máximo 28 dias.");
+                return false;
+            } else {
+                if ((ano%4 == 0) && (mes == 2) && (dia > 29)) {
+                    //alert("Data incorreta!!! O mês especificado contém no máximo 29 dias.");
+                    return false;
+                } else {
+                    //alert ("Data correta!");
+                    return true;
+                }
+            }
+        }
+    } else {
+        //alert(msgErro);
+        //campo.focus();
+        return false;
+    }
+}
+
 //REMOVE OQUE NÃO FOR DIGITO
 function removeCaracteres(str) {
     return str.replace(/[^\d]+/g,'')
@@ -253,6 +268,7 @@ function formatFloat(str) {
 }
 
 // MÁSCARA DE VALORES
+// onkeyup="return txtBoxFormat(this, '99/99/9999', event);"
 function txtBoxFormat(objeto, sMask, evtKeyPress) {
     var i, nCount, sValue, fldLen, mskLen,bolMask, sCod, nTecla;
 
@@ -352,12 +368,24 @@ function removerAcentos(s){
     return s.replace(/[\W\[\] ]/g,function(a){return map[a]||a})
 }
 
-
-function excluirItemTabela(id) {
+/**
+ * @example
+ *  <form action="{{ SERVICO.URL }}-action" name="formExcluir" id="formExcluir" method="post">
+ *      <input type="hidden" name="pg" value="{{ GETPARAMS.pg }}">
+ *      <input type="hidden" name="buscar" value="{{ GETPARAMS.buscar }}">
+ *      <input type="hidden" name="action" value="delete">
+ *      <input type="hidden" name="idExcluir" id="idExcluir" value="">
+ *  </form>
+ * @param idValue
+ * @param id
+ * @param form
+ * @param action
+ */
+function excluirItemTabela(idValue, id = 'idExcluir', form = 'formExcluir', action = 'delete') {
     Swal.fire({
         title: 'Deseja excluir esse item?',
         text: 'Uma vez deletado, você não poderá recuperar este arquivo!',
-        type: 'question',
+        icon: 'question',
         showCancelButton: true,
         confirmButtonColor: '#2AB164',
         confirmButtonText: 'Sim',
@@ -365,8 +393,9 @@ function excluirItemTabela(id) {
     })
         .then((result) => {
             if (result.value) {
-                document.getElementById('idExcluir').value = id;
-                document.getElementById('formExcluir').submit();
+                document.getElementById("action").value = action
+                document.getElementById(id).value = idValue;
+                document.getElementById(form).submit();
             }
         });
 }
@@ -438,59 +467,6 @@ function minuscula(texto) {
 function maiuscula(texto) {
     return texto.toUpperCase();
 }
-
-
-
-
-/*
-//Global variable for starting page
-var currentPageId = "page-home";
-var currentSelectorId = "home";
-
-//Function for getting the button ids
-function getButtons(){
-    //List of button ids
-    var list = ["home", "buscar", "promocoes", "perfil"];
-    return list;
-}
-
-//Make sure the window is loaded before we add listeners
-window.onload = function(){
-    var pageIdList = getButtons();
-    //Add an event listener to each button
-    pageIdList.forEach(function(page){
-        document.getElementById(page).addEventListener("click", changePage, false);
-    });
-};
-
-function changePage(){
-    var currentSelector = document.getElementById(currentSelectorId);
-    var currentPage = document.getElementById(currentPageId);
-    var pageId = "page-"+this.id;
-    var page = document.getElementById(pageId);
-    var pageSelector = document.getElementById(this.id);
-
-    if(page.classList.contains("active")){
-        return;
-    }
-
-    currentSelector.classList.remove("button-active");
-    currentSelector.classList.add("button-inactive");
-    currentPage.classList.remove("active");
-    currentPage.classList.add("inactive");
-
-    pageSelector.classList.remove("button-inactive");
-    pageSelector.classList.add("button-active");
-
-    page.classList.remove("inactive");
-    page.classList.add("active");
-
-    //Need to reset the scroll
-    window.scrollTo(0,0);
-
-    currentSelectorId = this.id;
-    currentPageId = pageId;
-}*/
 
 function copyToClipboard(url) {
 
@@ -585,13 +561,6 @@ function antiXss(s) {
     });
 }
 
-function gravarcep(cidade) {
-    document.getElementById('cidadeGravarCep').value = cidade;
-    document.getElementById('progressGravarCep').style.display = "block";
-    document.getElementById('scrollGravarCep').classList.add('d-none');
-    document.getElementById('formGravarCep').submit();
-}
-
 // Add hash to the URL on open modal event
 $('.modal').on('shown.bs.modal', function() {
     if (typeof(this.dataset.hash) !== 'undefined') {
@@ -607,25 +576,7 @@ $('.modal').on('hide.bs.modal', function(event) {
     this.dataset.pushback = ''
 });
 
-// CHOCOLAT PLUGIN
-/*var linkChocolat = false;
-var chocolat = Chocolat(document.querySelectorAll('.linkChocolat'), {
-    loop: true,
-    imageSize: 'scale-down',
-});*/
-
-/*function carregaImagem() {
-    window.history.pushState('forward', null, '#imagem');
-    linkChocolat = true;
-}*/
-
 window.onpopstate = function(event) {
-    //console.log(linkChocolat);
-    /*if (linkChocolat){
-        linkChocolat = false;
-        chocolat.close();
-        return false;
-    }*/
     let open_modal = document.querySelector('.modal.show')
     if (open_modal) {
         open_modal.dataset.pushback = 'true';
@@ -633,61 +584,17 @@ window.onpopstate = function(event) {
     }
 }
 
-function pegarLocalização() {
+function getLocation() {
     if (navigator.geolocation)
     {
-        navigator.geolocation.getCurrentPosition(showPosition,showError, {maximumAge: 50000, timeout: 20000, enableHighAccuracy: true});
+        navigator.geolocation.getCurrentPosition(showPosition,showErrorLocation, {maximumAge: 50000, timeout: 20000, enableHighAccuracy: true});
     }
     else{
         iziToast.warning({title: 'Erro!', message: "Seu browser não suporta Geolocalização.", position: 'bottomRight'});
     }
 }
 
-function showPosition(position) {
-    document.getElementById('progressGravarCep').style.display = "block";
-    document.getElementById('scrollGravarCep').classList.add('d-none');
-
-    let latitude = position.coords.latitude;
-    let longitude = position.coords.longitude;
-    //console.log(latitude+" "+longitude);
-
-    var token = getCookie('TOKEN_API');
-
-    // HEADER
-    var header = {'Authorization': 'Bearer ' + token};
-
-    $.ajax({
-        type: "GET",
-        url: "/wsendereco/enderecoporgps/"+latitude+"/"+longitude+"/",
-        dataType: "json",
-        headers: header,
-        cache: false
-    }).done(function (data) {
-        //console.log(data);
-        if (!data.error) {
-            var endereco = [
-                {
-                    'cep': data.cep,
-                    'logradouro': data.logradouro,
-                    'lote': data.lote,
-                    'bairro': data.bairro,
-                    'complemento': '',
-                    'cidade': data.cidade,
-                    'estado': data.uf
-
-                }
-            ];
-
-            localStorage.removeItem("endereco");
-            localStorage.setItem("endereco", JSON.stringify(endereco));
-            buscarCidadeCookie(data.estado, data.cidade);
-        }
-    }).fail(function (data) {
-        console.info("Erro na busca");
-    });
-}
-
-function showError(error) {
+function showErrorLocation(error) {
     switch(error.code)
     {
         case error.PERMISSION_DENIED:
@@ -706,37 +613,6 @@ function showError(error) {
     }
 }
 
-function buscarCidadeCookie(uf, nomecidade) {
-
-    //console.log(uf+nomecidade);
-
-    $.ajax({
-        type: "POST",
-        url: "/endereco/buscarcidadecookie",
-        data: "estado=" + uf+"&cidade="+nomecidade,
-        dataType: "json",
-        cache: false
-    }).done(function (data) {
-        //console.log(data);
-        if (!data.error) {
-            gravarcep(data.data[0].CODCIDADE);
-        } else {
-            $("#alteraCep").modal({show: false});
-            document.getElementById('progressGravarCep').style.display = "d-none";
-            document.getElementById('scrollGravarCep').classList.add('d-block');
-            $("#naoAcheiCidade").modal({show: true});
-        }
-
-    }).fail(function (data) {
-        console.info("Erro na busca");
-        window.history.back();
-        document.getElementById('progressGravarCep').style.display = "d-none";
-        document.getElementById('scrollGravarCep').classList.add('d-block');
-        $("#naoAcheiCidade").modal({show: true});
-    });
-
-}
-
 function showModal(modal1, modal2) {
 
     if (modal1!==null){
@@ -749,19 +625,19 @@ function showModal(modal1, modal2) {
 
 }
 
-function pegaHoraAtualUsuario() {
+function getHourUser() {
     var dNow = new Date();
     var localdate = dNow.getHours() + ':' + dNow.getMinutes();
     return localdate;
 }
 
-function pegaDataHoraAtualUsuario(){
+function getDateHourUser(){
     var dNow = new Date();
     var localdate = dNow.getDate().toString().padStart(2, '0') + '/' + (dNow.getMonth()+1).toString().padStart(2, '0') + '/' + dNow.getFullYear()+' '+dNow.getHours().toString().padStart(2, '0') + ':' + dNow.getMinutes().toString().padStart(2, '0');
     return localdate;
 }
 
-function pegaDataAtualUsuario(){
+function getDateUser(){
     var dNow = new Date();
     var localdate = dNow.getDate().toString().padStart(2, '0') + '/' + (dNow.getMonth()+1).toString().padStart(2, '0') + '/' + dNow.getFullYear();
     return localdate;
@@ -786,18 +662,20 @@ function clickProgress(elemento, destino = "#", css = "") {
         window.location.href = destino
 }
 
-function clickBotaoProgressAtivo(elemento, destino = null, css = null) {
+async function clickBotaoProgressAtivo(elemento, destino = null, css = null) {
     var temp = document.getElementById(elemento).innerHTML;
     if (css!==null){
-        document.getElementById(elemento).innerHTML = '<span class="spinner-border spinner-border-sm my-1'+css+'" role="status" aria-hidden="true"></span>';
+        document.getElementById(elemento).innerHTML = '<span class="spinner-border spinner-border-sm'+css+'" role="status" aria-hidden="true"></span>';
         document.getElementById(elemento).disabled = true;
     } else {
-        document.getElementById(elemento).innerHTML = '<span class="spinner-border spinner-border-sm my-1" role="status" aria-hidden="true"></span>';
+        document.getElementById(elemento).innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>';
         document.getElementById(elemento).disabled = true;
     }
 
     if (destino!=null)
         window.location.href = destino
+    else
+        return temp
 }
 
 function clickBotaoProgressInativo(elemento, texto) {
@@ -825,66 +703,6 @@ function downloadImagetToBlob(url,divdestino){
 
         }
     });
-}
-
-function gerarJWT($data){
-    // Defining our token parts
-    var header = {
-        "alg": "HS256",
-        "typ": "JWT"
-    };
-
-    var data = {
-        "iss": "detudo.app",
-        "sub": "744adf17cef4f716c3fc2e66fd08bad82a67c2f6",
-        "jti": "32a0ece6f0f28e5fbf0e5e70fc5754d08f946d94",
-        "data": {
-            "json": {data}
-        }
-    };
-
-    var secret = "thmpv77d6f";
-
-    function base64url(source) {
-        // Encode in classical base64
-        encodedSource = CryptoJS.enc.Base64.stringify(source);
-
-        // Remove padding equal characters
-        encodedSource = encodedSource.replace(/=+$/, '');
-
-        // Replace characters according to base64url specifications
-        encodedSource = encodedSource.replace(/\+/g, '-');
-        encodedSource = encodedSource.replace(/\//g, '_');
-
-        return encodedSource;
-    }
-
-    var stringifiedHeader = CryptoJS.enc.Utf8.parse(JSON.stringify(header));
-    var encodedHeader = base64url(stringifiedHeader);
-    document.getElementById("header").innerText = encodedHeader;
-
-    var stringifiedData = CryptoJS.enc.Utf8.parse(JSON.stringify(data));
-    var encodedData = base64url(stringifiedData);
-    document.getElementById("payload").innerText = encodedData;
-
-    var signature = encodedHeader + "." + encodedData;
-    signature = CryptoJS.HmacSHA256(signature, secret);
-    signature = base64url(signature);
-
-    return signature;
-}
-
-function pegaEnderecoLocalStorage() {
-    var endereco = localStorage.getItem("endereco");
-    var textoendereco;
-    if (endereco!=null) {
-        endereco = JSON.parse(endereco);
-        textoendereco = endereco[0]['logradouro'] + ', ' + endereco[0]['lote'] + ', ' + endereco[0]['bairro'] + ', ' + endereco[0]['complemento'] + ', ' + endereco[0]['cidade'] + '-' + endereco[0]['estado'];
-    } else {
-        textoendereco = false;
-    }
-
-    return textoendereco;
 }
 
 // VALIDAÇÃO DE CPF (TESTA O DÍGITO VERIFICADOR)
@@ -950,19 +768,19 @@ function ValidarCNPJ(cnpj){
     return true;
 }
 
-async function alertaSucesso(mensagem){
+async function alertSuccess(mensagem){
     iziToast.success({title: 'Ok!', message: mensagem, position: 'bottomRight'});
 }
 
-async function alertaErro(mensagem){
+async function alertError(mensagem){
     iziToast.error({title: 'Ops!', message: mensagem, position: 'bottomRight'});
 }
 
-async function alertaAtencao(mensagem){
+async function alertWarning(mensagem){
     iziToast.warning({title: 'Atenção!', message: mensagem, position: 'bottomRight'});
 }
 
-async function alertaInfo(mensagem){
+async function alertInfo(mensagem){
     iziToast.info({title: 'Informaçao!', message: mensagem, position: 'bottomRight'});
 }
 
@@ -971,8 +789,10 @@ async function alertaInfo(mensagem){
  * @param nome da modal
  * @returns {Promise<void>}
  */
-async function esconderModal(nome) {
-    $(`#${nome}`).modal('hide');
+async function hideModal(nome) {
+    (new bootstrap.Modal(document.getElementById(nome), {
+        // keyboard: false
+    })).hide();
 }
 
 /**
@@ -981,53 +801,12 @@ async function esconderModal(nome) {
  * @param timeout de espera para mostrar
  * @returns {Promise<void>}
  */
-async function mostrarModal(nome, timeout=500) {
+async function showModal(nome, timeout= 0) {
     await setTimeout(function () {
-        $(`#${nome}`).modal({show: true});
+        (new bootstrap.Modal(document.getElementById(nome), {
+            // keyboard: false
+        })).show();
     }, timeout);
-}
-
-
-
-filterSelection("iniciarAtivo")
-filtrarPorEstado("iniciarAtivo");
-
-function filterSelection(c) {
-    var x, i, idbtn;
-    idbtn = c;
-    x = document.getElementsByClassName("filterDiv");
-    btn = document.getElementsByClassName("btnMenuProduto");
-
-    if (c == "all") c = "";
-    for (i = 0; i < x.length; i++) {
-        w3RemoveClass(x[i], "show");
-        if (x[i].className.indexOf(c) > -1) w3AddClass(x[i], "show");
-    }
-
-    for (i = 0; i < btn.length; i++) {
-        w3RemoveClass(btn[i], "colorVermelho");
-    }
-    if (document.getElementById('btn' + idbtn) != null)
-        document.getElementById('btn' + idbtn).classList.add('colorVermelho');
-}
-
-function filtrarPorEstado(c) {
-    var x, i, idbtn;
-    idbtn = c;
-    x = document.getElementsByClassName("filtroPorEstado");
-    btn = document.getElementsByClassName("btnMenuProduto");
-
-    if (c == "all") c = "";
-    for (i = 0; i < x.length; i++) {
-        w3RemoveClass(x[i], "show");
-        if (x[i].className.indexOf(c) > -1) w3AddClass(x[i], "show");
-    }
-
-    for (i = 0; i < btn.length; i++) {
-        w3RemoveClass(btn[i], "colorVermelho");
-    }
-    if (document.getElementById('btn' + idbtn) != null)
-        document.getElementById('btn' + idbtn).classList.add('colorVermelho');
 }
 
 function w3AddClass(element, name) {
@@ -1076,7 +855,7 @@ function getCookie(name) {
         begin = cookies.indexOf(prefix);
 
         if (begin != 0) {
-            return null;
+            return '';
         }
 
     } else {
@@ -1092,10 +871,10 @@ function getCookie(name) {
     return unescape(cookies.substring(begin + prefix.length, end));
 }
 
-function setCookie(name, value, duration=365) {
+function setCookie(name, value, durationDay=365) {
     var date = new Date();
-    date.setTime(date.getTime()+(duration*24*60*60*1000));
-    var cookie = name + "=" + escape(value) + "; path=/; expires=" + date.toGMTString()+"; domain="+window.location.host;
+    date.setTime(date.getTime()+(durationDay*24*60*60*1000));
+    var cookie = name + "=" + escape(value) + "; path=/; expires=" + date.toGMTString()+"; SameSite=None; domain="+window.location.host;
 
     document.cookie = cookie;
 }
@@ -1128,6 +907,18 @@ function removeValidaForm(){
     });
 }
 
+function submitForm(nameButton, nameForm) {
+    let textButton = document.getElementById(nameButton).innerHTML;
+    clickBotaoProgressAtivo(nameButton);
+    validaForm();
+    if (document.getElementById (nameForm).checkValidity ()) {
+        document.getElementById(nameForm).submit();
+    } else {
+        clickBotaoProgressInativo (nameButton, textButton);
+        alertError("Preencha todos os campos corretamente!")
+    }
+}
+
 function formatMoedaBrasil(value, cifrao=false){
     if (cifrao)
         return value.toLocaleString('pt-br',{style: 'currency', currency: 'BRL'});
@@ -1144,17 +935,6 @@ function adicionaZero(numero){
         return "0" + numero;
     else
         return numero;
-}
-
-function submitForm(nameButton, nameForm) {
-    clickBotaoProgressAtivo(nameButton);
-    validaForm();
-    if (document.getElementById(nameForm).checkValidity()) {
-        document.getElementById(nameForm).submit();
-    }else {
-        alertaErro("Preencha todos os campos corretamente!")
-        clickBotaoProgressInativo(nameButton, "Salvar");
-    }
 }
 
 function getPassword(size=8, number=true, string=true, caracter=false) {
@@ -1190,4 +970,38 @@ $(document).ready(function() {
         theme: 'bootstrap-5'
     });
 });
+
+function updateSelect2(placeholder = " Selecione "){
+    $('.select2').select2({
+        language: "pt-BR",
+        placeholder: placeholder,
+        allowClear: true,
+        theme: 'bootstrap-5'
+    });
+}
+
+function modalTemCerteza(formId){
+    Swal.fire({
+        title: 'Atenção',
+        icon: 'warning',
+        html: 'Tem certeza que deseja executar essa ação!',
+        showCloseButton: true,
+        showCancelButton: true,
+        focusConfirm: true,
+        cancelButtonText: 'Não',
+        cancelButtonAriaLabel: 'nao',
+        confirmButtonText: 'Sim',
+        confirmButtonAriaLabel: 'sim',
+        confirmButtonColor: '#1B6BDD',
+    }).then((result) => {
+        if (result.isConfirmed) {
+            validaForm()
+            if (document.getElementById(formId).checkValidity()){
+                document.getElementById(formId).submit();
+            } else {
+                alertError("Preencha todos os campos corretamente");
+            }
+        }
+    })
+}
 

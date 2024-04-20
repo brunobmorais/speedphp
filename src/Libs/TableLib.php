@@ -15,11 +15,7 @@ namespace App\Libs;
  */
 class TableLib
 {
-    /**
-     * n?mero padr?o de itens por p?gina
-     * @param integer $nitens
-     */
-    protected $qtdItensPagina = 20;
+    protected $qtd = 15;
 
     protected $headers_name;
 
@@ -33,8 +29,6 @@ class TableLib
 
     protected $msg_zero="<i class='mdi mdi-file-search-outline pt-2 pb-2 d-none d-md-block' style='font-size: 48px'></i><br><h6>Nenhuma informação encontrada!</h6>";
 
-    protected $cor = 0;
-
     protected $pg;
 
     protected $npages;
@@ -43,29 +37,34 @@ class TableLib
 
     protected $fimPg;
 
-    public $busca = array();
+    protected $busca = array();
 
-    var $sucess;
+    protected $linhas;
 
-    public $pagegrid = "grid.php";
+    protected $espacos = array("0", "190", "170", "150", "130", "110", "90", "70", "50", "30");
 
-    public $showDeleteButton = true;
+    protected $data = [];
 
-    public $linhas;
+    protected $link = '';
 
-    var $espacos = array("0", "190", "170", "150", "130", "110", "90", "70", "50", "30");
+    protected array $col = [];
 
-    public $data = [];
+    protected $dataTable = "";
 
-    public $link = '';
-
-    public $dataTable = "";
-
-    public function __construct()
+    public function __construct($qtd = 15)
     {
+        $this->qtd = $qtd;
         $this->dataTable = "";
+        return $this;
     }
 
+    public function checkPagination($index)
+    {
+        if (($index >= $this->getInicioPg()) and ($index < $this->getFimPg())) {
+            return true;
+        }
+        return false;
+    }
     public function setHasCheckbox(bool $value)
     {
         $this->has_checkbox = $value;
@@ -76,9 +75,9 @@ class TableLib
         $this->has_img = $value;
     }
 
-    public function setQtdItensPagina(int $qtd)
+    public function setQtd(int $qtd)
     {
-        $this->qtdItensPagina = $qtd;
+        $this->qtd = $qtd;
     }
 
     public function render()
@@ -87,22 +86,22 @@ class TableLib
         return $this->dataTable;
     }
 
-    public function getInicioPg()
+    protected function getInicioPg()
     {
         return $this->inicioPg;
     }
 
-    public function getFimPg()
+    protected function getFimPg()
     {
         return $this->fimPg;
     }
 
 
-    public function defineVars($data, array $header, array $busca = [])
+    public function init($data, array $header, array $getParams = [])
     {
         $header = $header;
         $this->headers_name = $header;
-        $this->busca = $busca;
+        $this->busca = $getParams;
 
         $this->data = $data;
         $this->total = !empty($this->data)?count($this->data):0;
@@ -110,9 +109,9 @@ class TableLib
 
         $this->pg = $_GET['pg'] ?? 1;
 
-        $this->npages = floor($this->total / $this->qtdItensPagina);
+        $this->npages = floor($this->total / $this->qtd);
 
-        if ((($this->total % $this->qtdItensPagina) > 0) or ($this->npages == 0)) {
+        if ((($this->total % $this->qtd) > 0) or ($this->npages == 0)) {
             $this->npages++;
         }
 
@@ -120,11 +119,11 @@ class TableLib
             $this->pg = 1;
         }
 
-        $this->inicioPg = ($this->pg - 1) * $this->qtdItensPagina;
-        $this->fimPg = $this->inicioPg + $this->qtdItensPagina;
+        $this->inicioPg = ($this->pg - 1) * $this->qtd;
+        $this->fimPg = $this->inicioPg + $this->qtd;
 
         $this->addHeader();
-
+        return $this;
     }
 
 
@@ -134,9 +133,6 @@ class TableLib
 
         $this->dataTable .= "<hr/>";
         $this->dataTable .= "<div>\n";
-
-        $this->dataTable .= "<input type='hidden' id='pg' name='pg' value='" . $this->pg . "' />";
-
         $this->dataTable .= "<div class='table-responsive'>\n";
         $this->dataTable .= "<table class='table table-striped' id='table-1'>\n";
         $this->dataTable .= "<thead class='cf'>\n";
@@ -145,7 +141,7 @@ class TableLib
 
         $i = 0;
         if ($this->has_checkbox) {
-            $this->dataTable .= "<td style='width:{$this->headers_width[$i]}%' class='check'> <input type='checkbox' id='ckbselectall' name='ckbselectall' onclick='selectAll(`checkbox`)'></td>\n";
+            $this->dataTable .= "<td style='width:{$this->headers_width[$i]}%' class='form-check'> <input class='form-check-input' type='checkbox' id='ckbselectall' name='ckbselectall' onclick='selectAll(`checkbox`)'></td>\n";
             $i++;
         }
 
@@ -173,7 +169,7 @@ class TableLib
     }
 
 
-    function addNull()
+    private function addNull()
     {
         $this->dataTable .= "<tr>\n";
         $this->dataTable .= "<td class=\"text-center semtitle\" style=\"padding: 60px\" colspan='" . count($this->headers_name) . "'>" . $this->msg_zero . "</td>\n";
@@ -181,17 +177,34 @@ class TableLib
     }
 
 
-    public function addLine($line, $link = "", $style = "")
+    public function addCol(string $col)
     {
-        // VERIFICA SE TEM LINK
-        $linkLine = "";
+        $this->col[] = $col;
+        return $this;
+    }
+
+    /**
+     * @param $link
+     * @param $style
+     * @return $this
+     * @example $table->addRow("/modulo/servico-cadastro/?id=1","nomeFuncaoJS()", "style: css");
+     */
+    public function addRow($link = "", $onclick = "", $style = "")
+    {
         if (!empty($link)) {
             //$this->link = str_replace("'", '', $this->link);
-            $this->link = "onclick='{$this->link}'";
+            $parameter = "&pg={$this->pg}&";
+            foreach ($this->busca as $key => $value) {
+                $parameter .= $key . "=" . str_replace(" ", "+", htmlentities((string)$value??""));
+            }
+            $this->link = "onclick='location.href=`{$link}{$parameter}`'";
             $style = "style='cursor: pointer;{$style}'";
         }
 
-        $class_lines = array(0 => "par", 1 => "impar");
+        if (!empty($onclick)) {
+            $this->link = "onclick='{$onclick}'";
+            $style = "style='cursor: pointer;{$style}'";
+        }
 
         $this->dataTable .= "<tr id='linec" . $this->linhas . "' {$style}>\n";
 
@@ -200,7 +213,7 @@ class TableLib
 
         // escreve o checkbox, com seu nome e valor, caso houver
         if ($this->has_checkbox) {
-            $this->dataTable .= "<td data-title='Selecione' style='width:" . $this->headers_width[$j] . "%'><div class=\"custom-checkbox custom-control\"><input type=\"checkbox\" value='" . $line[$j] . "' id='c" . $this->linhas . "' onclick='changeColor(this, " . $this->linhas . ")' data-checkboxes=\"mygroup\" class=\"custom-control-input\"><label for='c" . $this->linhas . "' class=\"custom-control-label\">&nbsp;</label></div></td>\n";
+            $this->dataTable .= "<td data-title='Selecione' style='width:" . $this->headers_width[$j] . "%'><div class=\"form-check\"><input type=\"checkbox\" value='" . $this->col[$j] . "' id='c" . $this->linhas . "' data-checkboxes=\"mygroup\" class=\"form-check-input\"><label for='c" . $this->linhas . "'>&nbsp;</label></div></td>\n";
             $class = "";
 
             // incrementa o $j para entrar o for a partir do segundo registro
@@ -210,22 +223,22 @@ class TableLib
         }
 
         // escreve os valores, vindos do banco de dados
-        for ($j = $j; $j < count($line); $j++) {
+        for ($j = $j; $j < count($this->col); $j++) {
 
             $classLinha = $class;
 
-            if (($this->has_img) and ($j == count($line) - 1)) {
+            if (($this->has_img) and ($j == count($this->col) - 1)) {
                 if (isset($this->headers_width[$j]))
-                    $this->dataTable .= "<td data-title='".$this->headers_name[$j]."' class='" . $classLinha . "' style='width:" . $this->headers_width[$j] . "%'>" . $line[$j] . "</td>\n";
+                    $this->dataTable .= "<td data-title='".$this->headers_name[$j]."' class='" . $classLinha . "' style='width:" . $this->headers_width[$j] . "%'>" . $this->col[$j] . "</td>\n";
                 else
-                    $this->dataTable .= "<td data-title='".$this->headers_name[$j]."' class='" . $classLinha . "'>" . $line[$j] . "</td>\n";
+                    $this->dataTable .= "<td data-title='".$this->headers_name[$j]."' class='" . $classLinha . "'>" . $this->col[$j] . "</td>\n";
             } else {
                 if (isset($this->headers_width[$j]))
-                    $this->dataTable .= "<td data-title='".$this->headers_name[$j]."' class='" . $classLinha ."' style='width:" . $this->headers_width[$j] . "%' {$this->link}>" . $line[$j] . "</td>\n";
+                    $this->dataTable .= "<td data-title='".$this->headers_name[$j]."' class='" . $classLinha ."' style='width:" . $this->headers_width[$j] . "%' {$this->link}>" . $this->col[$j] . "</td>\n";
                 else {
                     if (empty($this->headers_name[$j]))
                         $classLinha .= " semtitle";
-                    $this->dataTable .= "<td data-title='" . $this->headers_name[$j] . "' class='" . $classLinha . "' {$this->link}>" . $line[$j] . "</td>\n";
+                    $this->dataTable .= "<td data-title='" . ($this->headers_name[$j]??'') . "' class='" . $classLinha . "' {$this->link}>" . $this->col[$j] . "</td>\n";
                 }
 
             }
@@ -234,8 +247,9 @@ class TableLib
         // fecha a linha
         $this->dataTable .= "</tr>";
 
-        $this->cor = 1 - $this->cor;
         $this->linhas++;
+        $this->col = [];
+        return $this;
     }
 
 
@@ -262,24 +276,23 @@ class TableLib
         //$this->dataTable .= "<input type='hidden' name='busca' value=\"".$this->busca2."\" />\n";
         $this->dataTable .= "<input type='hidden' id='pg' name='pg' value='" . $this->pg . "' />";
         foreach ($this->busca as $key => $value) {
-            $this->dataTable .= "<input type='hidden' name='{$key}' value='" . htmlentities(stripslashes($value)) . "' />\n";
-            $this->link .= $key . "=" . str_replace(" ", "+", htmlentities(stripslashes((string)$value??""))) . "&amp;";
+            $this->dataTable .= "<input type='hidden' name='{$key}' value='" . htmlentities($value??"") . "' />\n";
         }
         $this->dataTable .= "<div class=\"row m-0\">\n";
-        $this->dataTable .= "<div class='text-left col-4'><p class=\"fw-bold\">Total: ".$this->total."</p></div>\n";
-        $this->dataTable .= "<div class='text-center col-4'><p class=\"fw-bold\">Pg: ". $this->pg."/".$this->npages."</p></div>\n";
+        $this->dataTable .= "<div class='text-left col-4'><p class=\"fw-medium\">Total: ".$this->total."</p></div>\n";
+        $this->dataTable .= "<div class='text-center col-4'><p class=\"fw-medium\">Pg: ". $this->pg."/".$this->npages."</p></div>\n";
         $this->dataTable .= "<div class='col-4 p-0' style='text-align: right'>\n";
-            $this->dataTable .= "<nav class=\"d-inline-block\">
-                          <ul class=\"pagination pagination-sm\">
-                            <li class='page-item ".($this->pg==1?'disabled':'')."'>
-                              <a class=\"page-link\" href=\"javascript:void(0)\" onclick=formTableAction('".($this->pg - 1)."') tabindex=\"-1\"><i class=\"mdi mdi-chevron-left\"></i></a>
-                            </li>
-                            <li class=\"page-item active\"><a class=\"page-link\" href=\"#\">".$this->pg."</a></li>
-                            <li class='page-item ".($this->pg==$this->npages?'disabled':'')."'>
-                              <a class=\"page-link\" href=\"javascript:void(0)\" onclick=formTableAction('".($this->pg + 1)."')><i class=\"mdi mdi-chevron-right\"></i></a>
-                            </li>
-                          </ul>
-                  </nav>\n";
+        $this->dataTable .= "<nav class=\"d-inline-block\">
+                      <ul class=\"pagination pagination-sm\">
+                        <li class='page-item ".($this->pg==1?'disabled':'')."'>
+                          <a class=\"page-link\" href=\"javascript:void(0)\" onclick=formTableAction('".($this->pg - 1)."') tabindex=\"-1\"><i class=\"mdi mdi-chevron-left\"></i></a>
+                        </li>
+                        <li class=\"page-item active\"><a class=\"page-link\" href=\"#\">".$this->pg."</a></li>
+                        <li class='page-item ".($this->pg==$this->npages?'disabled':'')."'>
+                          <a class=\"page-link\" href=\"javascript:void(0)\" onclick=formTableAction('".($this->pg + 1)."')><i class=\"mdi mdi-chevron-right\"></i></a>
+                        </li>
+                      </ul>
+              </nav>\n";
         $this->dataTable .= "</div>
               </div>\n";
         $this->dataTable .= "</form>\n";

@@ -1,26 +1,45 @@
-<!DOCTYPE html>
-<html lang='pt-BR'>
-    <head>
-        {{ head | raw}}
-        {% for item in css %}
+{% embed "components/theme/page.html.twig" %}
+    {% block main %}
+        <head>
+            {{ head | raw}}
+            {% for item in css %}
+                {{ item | raw }}
+            {% endfor %}
+        </head>
+        <body>
+        {{ sidebar | raw }}
+        <div id="main">
+            {{ navbar | raw }}
+            {{ title | raw }}
+            {% for item in components.top %}
+                {% include item %}
+            {% endfor %}
+            {{ main | raw}}
+            {% for item in components.bottom %}
+                {% include item %}
+            {% endfor %}
+            {{ menu | raw }}
+        </div>
+        {{ footer | raw }}
+        </body>
+        {{ javascript | raw}}
+        {% for item in js %}
             {{ item | raw }}
         {% endfor %}
-    </head>
-    <body>
-        {{ navbar | raw }}
-        {{ title | raw }}
-        {% for item in components.top %}
-            {% include item %}
-        {% endfor %}
-        {{ main | raw}}
-        {% for item in components.bottom %}
-            {% include item %}
-        {% endfor %}
-        {{ menu | raw }}
-        {{ footer | raw }}
-    </body>
-    {{ javascript | raw}}
-    {% for item in js %}
-        {{ item | raw }}
-    {% endfor %}
-</html>
+    {% endblock %}
+{% endembed %}
+
+<script>
+
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('/sw.js', {scope: '/'}).then(function (registration) {
+                    //console.log('ServiceWorker registration successful with scope: ', registration.scope);
+                }, function (err) {
+                    //console.log('ServiceWorker registration failed: ', err);
+                }
+            );
+        });
+    }
+
+</script>

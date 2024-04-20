@@ -1,4 +1,5 @@
 .navbar-bg {
+    height: 60px;
     /*left: 0px;*/
     /*z-index: 999;*/
     background: var(--cor-bg-navbar);

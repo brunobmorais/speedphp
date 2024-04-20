@@ -9,6 +9,7 @@ Options All -Indexes
 #RewriteCond %{HTTP:X-Forwarded-Proto} !https
 #RewriteCond %{HTTPS} off
 #RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+RewriteRule \.(pdf)$ - [F]
 
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteRule ^(.*)$ index.php [QSA,NC]

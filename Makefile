@@ -4,6 +4,7 @@
 # Executar comando: make build | login | tag | push
 
 TAG=$(shell git log -1 --format=%h)
+URL="http://localhost/config"
 
 # PEGAR ARGUMENTOS QUANDO PASSAR GIT
 ifeq (push,$(firstword $(MAKECMDGOALS)))
@@ -13,13 +14,19 @@ ifeq (push,$(firstword $(MAKECMDGOALS)))
   $(eval $(RUN_ARGS):;@:)
 endif
 
-gitadd:
+push:
+	curl ${URL}/build
 	git add .
-gitcommit:
 	git commit -m "$(RUN_ARGS)"
+	git pull origin main
+	git push origin main
 
-gitpull:
-	git pull origin master
+createmodel:
+	@read -p "Digite o nome da tabela do banco (Ex: PESSOA): " servico; \
+	curl ${URL}/createmodel/$$servico
+	echo "Executado"
 
-push: gitadd gitcommit gitpull
-	git push origin master
+createpage:
+	@read -p "Digite o nome do módulo e serviço (Ex: teste/beta): " servico; \
+	curl ${URL}/createpage/$$servico
+	echo "Executado"

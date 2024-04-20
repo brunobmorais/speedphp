@@ -1,0 +1,32 @@
+<div id="mySidebar" class="sidebar d-none d-md-block" onmouseover="toggleSidebar()" onmouseout="toggleSidebar()">
+    <ul class="nav flex-column mb-auto">
+        <li>
+            <a href="/" class="nav-link link-dark">
+                <span class="mdi mdi-home-outline mdi-24px"></span>
+                <span class="sidebar-link d-none fw-semibold ps-1"> Início</span>
+            </a>
+        </li>
+        {% for item in getDaos('ModuloDao', 'buscaModulosUsuario', [SESSION.CODUSUARIO]) %}
+            <li>
+                <div class="{{ SERVICO.CONTROLLERMODULO == item.CONTROLLER and SERVICO.CONTROLLER==''?'active':'' }}">
+                    <a href="#" class="nav-link link-dark" data-bs-toggle="collapse" data-bs-target="#collapse{{ item.CONTROLLER }}" aria-expanded="false" aria-controls="collapse{{ item.CONTROLLER }}">
+                        <span class="mdi {{ item.ICONE }} mdi-24px"></span>
+                        <span class="sidebar-link d-none fw-semibold ps-1"> {{ item.TITULO }} <span class="mdi mdi-chevron-down"><span></span>
+                    </a>
+                </div>
+                <div class="collapse {{ SERVICO.CONTROLLERMODULO == item.CONTROLLER and SERVICO.CONTROLLER!=''?'show':'' }}" id="collapse{{ item.CONTROLLER }}">
+                    <ul class="nav flex-column mb-auto">
+                        {% for servico in getDaos('ModuloDao', 'buscaServicosUsuario', [SESSION.CODUSUARIO,item.CONTROLLER]) %}
+                            <li class="ps-2 sidebar-item {{ SERVICO.CONTROLLER == servico.CONTROLLER ?'active':'' }}">
+                                <a href="/{{ item.CONTROLLER~"/"~servico.CONTROLLER }}" class="nav-link link-dark py-1">
+                                    <span class="mdi {{ servico.ICONE }} mdi-18px"></span>
+                                    <span class="sidebar-link d-none"> {{ servico.TITULO }}</span>
+                                </a>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </li>
+        {% endfor %}
+    </ul>
+</div>

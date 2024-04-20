@@ -23,11 +23,19 @@ class CookieLib
         return $valor;
     }
 
-    public static function setValue($nome, $valor){
-
+    public static function setValue($nome, $valor, $durationDays = 1, $httponly = false){
+        $day = (time()+3600)*24;
+        $day = $day * $durationDays;
         $domain = ($_SERVER['HTTP_HOST'] != 'localhost') ? $_SERVER['HTTP_HOST'] : false;
-        //setcookie('cross-site-cookie', 'name', ['samesite' => 'None', 'secure' => true]);
-        setcookie($nome, $valor , (time()+(365 * 24 * 3600)), "/", $domain);
+        $arr_cookie_options = array (
+            'expires' => $day,
+            'path' => '/',
+            'domain' => $domain, // leading dot for compatibility or use subdomain
+            'secure' => true,     // or false
+            'httponly' => $httponly,    // or false
+            'samesite' => 'None' // None || Lax  || Strict
+        );
+        setcookie($nome, $valor , $arr_cookie_options);
         return true;
 
         //setcookie($nome, $valor , (time()+(365 * 24 * 3600)), "/; SameSite=None; Secure"); // < 7.3

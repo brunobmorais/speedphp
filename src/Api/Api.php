@@ -3,7 +3,6 @@
 
 namespace App\Api;
 
-
 use App\Api\Lib\MiddlewareClass;
 use App\Api\Lib\Middlewares\BearerAuthMiddleware;
 use App\Api\Lib\Middlewares\MaintenanceMiddleware;
@@ -11,9 +10,6 @@ use App\Api\Lib\Middlewares\OriginMiddleware;
 use App\Api\Lib\ResponseClass;
 use App\Api\Lib\RouterClass;
 use App\Api\Routers\DefaultRouter;
-use App\Api\Routers\ExternoRouter;
-use App\Api\Routers\FazendaoRouter;
-
 
 class Api
 {

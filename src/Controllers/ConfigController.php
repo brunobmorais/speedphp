@@ -91,6 +91,8 @@ class ConfigController extends ControllerCore implements ControllerInterface
 
                 if (!file_exists(dirname(__DIR__, 2) . "/src/Controllers/{$nomeClass}Controller.php")) {
                     $conteudoClass = '<?php
+    use App\Core\Controller\ControllerCore;
+    use App\Core\Controller\ControllerInterface;
     namespace App\Controllers;
     
     class ' .$nomeClass.'Controller extends ControllerCore implements ControllerInterface
@@ -109,26 +111,26 @@ class ConfigController extends ControllerCore implements ControllerInterface
                 file_put_contents(dirname(__DIR__, 2) . "/src/Controllers/{$nomeClass}Controller.php", $conteudoClass);
                 echo "Classe controller gerada em: /src/Controllers/{$nomeClass}Controller.php<br/>";
 
-                if (!mkdir($concurrentDirectory = dirname(__DIR__, 2) . "/templates/{$nomeClassMinusculo}/", 0777, true) && !is_dir($concurrentDirectory)) {
-                    throw new \RuntimeException(sprintf('Directory "%s" was not created', $concurrentDirectory));
+                if (!file_exists(dirname(__DIR__, 2) . "/templates/{$nomeClassMinusculo}")) {
+                    mkdir(dirname(__DIR__, 2) . "/templates/{$nomeClassMinusculo}/", 0777, true);
                 }
 
 
                 if (!file_exists(dirname(__DIR__, 2) . "/templates/{$nomeClassMinusculo}/{$nomeClassMinusculo}.html.twig") && !empty($nomeClass)) {
                     file_put_contents(dirname(__DIR__, 2) . "/templates/{$nomeClassMinusculo}/{$nomeClassMinusculo}.html.twig", "");
-                    file_put_contents(dirname(__DIR__, 2) . "/templates/{$nomeClassMinusculo}/{$nomeClassMinusculo}.css", "");
-                    file_put_contents(dirname(__DIR__, 2) . "/templates/{$nomeClassMinusculo}/{$nomeClassMinusculo}.js", "");
+                    file_put_contents(dirname(__DIR__, 2) . "/templates/{$nomeClassMinusculo}/{$nomeClassMinusculo}.css.twig", "");
+                    file_put_contents(dirname(__DIR__, 2) . "/templates/{$nomeClassMinusculo}/{$nomeClassMinusculo}.js.twig", "");
                     echo "Arquivos templates controller gerado: /templates/{$nomeClassMinusculo}/{$nomeClassMinusculo}.html.twig<br/>";
                 }
 
-                if (!mkdir($concurrentDirectory = dirname(__DIR__, 2) . "/templates/{$nomeClassMinusculo}/{$nomeMetodo}/", 0777, true) && !is_dir($concurrentDirectory)) {
-                    throw new \RuntimeException(sprintf('Directory "%s" was not created', $concurrentDirectory));
+                if (!file_exists(dirname(__DIR__, 2) . "/templates/{$nomeClassMinusculo}/{$nomeMetodo}/")) {
+                    mkdir(dirname(__DIR__, 2) . "/templates/{$nomeClassMinusculo}/{$nomeMetodo}/", 0777, true);
                 }
 
                 if (!file_exists(dirname(__DIR__, 2) . "/templates/{$nomeClassMinusculo}/{$nomeMetodo}/{$nomeMetodo}.html.twig") && !empty($nomeMetodo)) {
                     file_put_contents(dirname(__DIR__, 2) . "/templates/{$nomeClassMinusculo}/{$nomeMetodo}/{$nomeMetodo}.html.twig", "");
-                    file_put_contents(dirname(__DIR__, 2) . "/templates/{$nomeClassMinusculo}/{$nomeMetodo}/{$nomeMetodo}.css", "");
-                    file_put_contents(dirname(__DIR__, 2) . "/templates/{$nomeClassMinusculo}/{$nomeMetodo}/{$nomeMetodo}.js", "");
+                    file_put_contents(dirname(__DIR__, 2) . "/templates/{$nomeClassMinusculo}/{$nomeMetodo}/{$nomeMetodo}.css.twig", "");
+                    file_put_contents(dirname(__DIR__, 2) . "/templates/{$nomeClassMinusculo}/{$nomeMetodo}/{$nomeMetodo}.js.twig", "");
                     echo "Arquivos templates método gerado: /templates/{$nomeClassMinusculo}/{$nomeMetodo}/{$nomeMetodo}.html.twig<br/>";
                 }
 
@@ -136,7 +138,7 @@ class ConfigController extends ControllerCore implements ControllerInterface
             } else {
                 $this->redirect("/");
             }
-        } catch (\Exception $e) {
+        } catch (\Error $e) {
             return $e;
         }
     }
@@ -149,12 +151,20 @@ class ConfigController extends ControllerCore implements ControllerInterface
                 exit();
             }
 
+            if (empty($args[0]??"")){
+                echo "Informe o nome da tabela";
+                exit;
+            }
+
             $nomeClassModel = (new FuncoesLib())->removeCaracteres(ucfirst($args[0] ?? ""));
             $nomeTable = strtoupper($args[0] ?? "");
 
-            if (empty($nomeClassModel)) {
-                echo "Informe o nome da class";
-                exit;
+            $nomeQuebrado = explode("_", $args[0]);
+            if (count($nomeQuebrado)>1){
+                $nomeClassModel = "";
+                foreach ($nomeQuebrado as $item){
+                    $nomeClassModel .= ucfirst($item);
+                }
             }
 
             $dao = new BuildDao();
@@ -166,6 +176,7 @@ class ConfigController extends ControllerCore implements ControllerInterface
 
             $variavel = "";
             foreach ($columns as $col) {
+                //$col = (new FuncoesLib())->removeCaracteres($col);
                 $variavel .= "Protected $" . $col . ";\n    ";
             }
 
@@ -184,10 +195,27 @@ class {$nomeClassModel}Model extends ModelAbstract
     {$sets}
 }";
 
-            file_put_contents(dirname(__DIR__, 2) . "/src/Models/{$nomeClassModel}Model.php", $conteudoClass);
+            if (!file_exists(dirname(__DIR__, 2) . "/src/Models/{$nomeClassModel}Model.php"))
+                file_put_contents(dirname(__DIR__, 2) . "/src/Models/{$nomeClassModel}Model.php", $conteudoClass);
+
+            $conteudoClass = '<?php
+namespace App\Daos;
+use BMorais\Database\CrudBuilder;
+
+class '.$nomeClassModel.'Dao extends CrudBuilder
+{
+    public function __construct()
+    {
+        $this->setTableName("'.$nomeTable.'");
+        $this->setClassModel("'.$nomeClassModel.'Model");
+    }
+}';
+
+            if (!file_exists(dirname(__DIR__, 2) . "/src/Daos/{$nomeClassModel}Dao.php"))
+                file_put_contents(dirname(__DIR__, 2) . "/src/Daos/{$nomeClassModel}Dao.php", $conteudoClass);
 
             echo "executado com sucesso";
-        } catch (\Exception $e){
+        } catch (\Error $e){
             return $e;
         }
     }
@@ -197,6 +225,7 @@ class {$nomeClassModel}Model extends ModelAbstract
             return [];
         $gets = "";
         foreach ($columns as $col) {
+            //$colFormat = (new FuncoesLib())->removeCaracteres($col);
             $gets .= 'public function set'.$col.'($'.$col.'):self
     {
         $this->'.$col.' = $'.$col.';
@@ -213,6 +242,7 @@ class {$nomeClassModel}Model extends ModelAbstract
             return [];
         $sets = "";
         foreach ($columns as $col) {
+            //$colFormat = (new FuncoesLib())->removeCaracteres($col);
             $sets .= 'public function get'.$col.'()
     {
         return $this->'.$col.';

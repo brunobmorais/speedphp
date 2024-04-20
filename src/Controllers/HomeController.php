@@ -5,11 +5,11 @@ use App\Components\NavbarComponents;
 use App\Core\Controller\ControllerCore;
 use App\Core\Controller\ControllerInterface;
 use App\Core\PageCore;
-use App\Core\Template\LoggedTemplate;
-use App\Core\Template\TemplateAbstract;
 use App\Daos\ModuloDao;
 use App\Daos\SisModuloDao;
+use App\Libs\Formr\lib\Forms;
 use App\Libs\SessionLib;
+use App\Libs\Template\TemplateAbstract;
 
 class HomeController extends ControllerCore implements ControllerInterface
 {
@@ -26,14 +26,11 @@ class HomeController extends ControllerCore implements ControllerInterface
             return $this->render(
                 TemplateAbstract::LOGGED,
                 'home/index',
-                array(
-                    'MODULOS' => $modulos,
-                    'TITLE' => "Início"
+                array('MODULOS' => $modulos, 'TITLE' => "Início"
                 ),
             );
          } catch (\Error $e) {
             return $e;
         }
     }
-
 }

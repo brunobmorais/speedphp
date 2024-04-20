@@ -1,0 +1,34 @@
+{% if PESSOA.CODPESSOA %}
+    {% set funcionario = getDaos('GpFuncionarioDao', 'buscarPessoa', [PESSOA.CODPESSOA]) %}
+{% endif %}
+
+
+<div class="row">
+    <input type="hidden" name="CODFUNCIONARIO" value='{{ funcionario.CODFUNCIONARIO }}'>
+    <div class="form-group col-12 col-md-8 float-left">
+        <label class="form-label">Nome Social</label>
+        <input name="NOMESOCIAL" id="nomesocial" type="text" class="form-control" required autocomplete="nope"
+               value="{{ funcionario.NOMESOCIAL }}" placeholder=""/>
+        <div class="invalid-feedback">
+            Preencha o campo corretamente
+        </div>
+    </div>
+
+    <div class="form-group col-12 col-md-4 float-left">
+        <label class="form-label">Categoria</label>
+        <select name="CODCATEGORIA" id="categoria" class="form-control" required/>
+        <option value="" disabled selected>Selecione uma opção</option>
+
+        {% set buscaCat = [{'EXCLUIDO' : '0'}] %}
+        {% set buscaCat = buscaCat|merge(['NOME ASC']) %}
+
+        {% for categoriasfuncionais in getDaos('GpCategoriaFuncionarioDao', 'buscar', buscaCat) %}
+            <option value="{{ categoriasfuncionais.CODCATEGORIA }}" {{ categoriasfuncionais.CODCATEGORIA == funcionario.CODCATEGORIA ? 'selected' : '' }}>{{ categoriasfuncionais.NOME }}</option>
+        {% endfor %}
+
+        </select>
+        <div class="invalid-feedback">
+            Preencha o campo corretamente
+        </div>
+    </div>
+</div>

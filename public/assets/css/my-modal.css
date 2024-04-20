@@ -1,0 +1,38 @@
+.modal-content {
+    position: relative;
+    animation: modalAnimationSlideDown 0.4s;
+    border-radius: 20px;
+}
+
+.show .modal-content {
+    position: relative;
+    animation: modalAnimationSlideUp 0.4s;
+}
+
+@keyframes modalAnimationSlideUp {
+    from {
+        bottom: -300px;
+        opacity: 0;
+    }
+
+    to {
+        bottom: 0;
+        opacity: 1;
+    }
+}
+
+@keyframes modalAnimationSlideDown {
+    from {
+        bottom: 0;
+        opacity: 1;
+    }
+
+    to {
+        bottom: -300px;
+        opacity: 0;
+    }
+}
+
+.swal2-popup {
+    border-radius: 20px;
+}

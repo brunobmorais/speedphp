@@ -4,9 +4,8 @@ namespace App\Controllers;
 use App\Core\Controller\ControllerCore;
 use App\Core\Controller\ControllerInterface;
 use App\Core\PageCore;
-use App\Core\Template\BlankTemplate;
-use App\Core\Template\LoggedTemplate;
-use App\Core\Template\TemplateAbstract;
+use App\Core\Template\DefaultTemplate;
+use App\Libs\Template\TemplateAbstract;
 
 class ErroController extends ControllerCore implements ControllerInterface
 {

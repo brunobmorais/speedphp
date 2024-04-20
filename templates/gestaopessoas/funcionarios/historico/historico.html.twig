@@ -1,0 +1,42 @@
+{% extends "gestaopessoas/modal-skeleton.twig" %}
+
+{% block conteudo %}
+    <h6 class="pb-3">{{ tituloPagina }}</h6>
+    {# ANDAMENTO #}
+    <div class="col-12">
+        {% for ANDAMENTO in ANDAMENTOS %}
+            <div class="step mr-1">
+                <div class="btn-shadow">
+                    <div class="stepcircle">{{ ANDAMENTO.NUMERO }}</div>
+                    <div class="stepline"></div>
+                </div>
+                <div class="mr-0 pr-0">
+                    <div class="steeptitle pb-0">{{ ANDAMENTO.TITULO }}</div>
+                    <div class="stepdescricoes"><span
+                                class="mdi mdi-file-document-box-outline"></span> {{ ANDAMENTO.DESCRICAO }}
+                    </div>
+                    <div class="stepitem "><span
+                                class="mdi mdi-clock-outline"></span> {{ ANDAMENTO.DATAANDAMENTO | date('d/m/Y H:i') }}
+                    </div>
+                    <div class="stepitem {{ ANDAMENTO.ARQUIVOS | length>0? "0":"pb-2" }}"><span
+                                class="mdi mdi-account-outline"></span> {{ ANDAMENTO.RESPONSAVEL }}
+                    </div>
+                    {% for arquivo in ANDAMENTO.ARQUIVOS %}
+                        {% if arquivo.ARQUIVO != "" %}
+                            <a href="{{ getLibs('DownloadLib','CreateLink',[arquivo.ARQUIVO,'funcionario']) }}"
+                               class="steplink btn btn-link p-0 pb-2 pe-2"
+                               target="_blank">
+                                <span class="mdi mdi-18px mdi-file-outline "></span> {{ arquivo.NOMETIPOARQUIVO }}
+                            </a>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+            {% else %}
+                <x-div.alert title="Atenção">
+                    <p>Nenhum andamento cadastrado</p>
+                </x-div.alert>
+        {% endfor %}
+    </div>
+
+{% endblock %}

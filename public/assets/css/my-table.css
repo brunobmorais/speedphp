@@ -1,6 +1,12 @@
 .active>.page-link, .page-link.active {
-    background-color: var(--bs-secondary);
+    background-color: #fff;
     border-color: var(--bs-secondary);
+    color: var(--bs-secondary);
+    font-weight: 500;
+}
+
+.pagination {
+    --bs-pagination-color: var(--cor-bg-secodary);
 }
 
 table:not(.table-sm) thead th {
@@ -16,6 +22,10 @@ table:not(.table-sm) thead th {
 
 .table-striped>tbody>tr:nth-of-type(odd)>* {
     --bs-table-accent-bg: #FAFAFA;
+}
+
+.table {
+    --bs-table-striped-bg: rgba(var(--bs-emphasis-color-rgb), 0.02);
 }
 
 @media screen and (max-width: 600px) {
