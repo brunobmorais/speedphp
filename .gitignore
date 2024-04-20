@@ -49,4 +49,5 @@ Thumbs.db
 
 # ARQUIVOS
 /config/developerConfig.php
+/config/productionConfig.php
 !/public/assets/upload/img/pessoa/default.png
