@@ -98,8 +98,11 @@ https://www.favicon-generator.org/
 ## GERAR ARQUIVOS MINIFICADOS CSS, JS
     Acesse seu site http://seusite.com/config/build
 
-## CRIAR CLASSE E SERVICO
-    Acesse seu site http://seusite.com/config/create/NOME_CONTROLLER/NOME_SERVICO
+## CRIAR CONTROLLER E TEMPLATE
+    Acesse seu site http://localhost/config/createpage/NOME_CONTROLLER/NOME_SERVICO
+
+## CRIAR MODEL E DAO
+    Acesse seu site http://localhost/config/createmodel/NOME_TABELA_BANCO
 
 ## FRAMEWORK FRONT-END
     https://getbootstrap.com/ -> versão 5.3
