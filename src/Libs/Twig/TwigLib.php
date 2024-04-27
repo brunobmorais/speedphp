@@ -5,6 +5,7 @@ namespace App\Libs\Twig;
 use App\Libs\Twig\TwigExtensionLib as LibsTwigExtension;
 use Performing\TwigComponents\Configuration;
 use Twig\Environment;
+use Twig\Extension\DebugExtension;
 use Twig\Extension\StringLoaderExtension;
 use Twig\Loader\FilesystemLoader;
 
@@ -39,6 +40,7 @@ class TwigLib
 
             $twig->addExtension(new LibsTwigExtension());
             $twig->addExtension(new StringLoaderExtension());
+            $twig->addExtension(new DebugExtension());
             $twig = TwigFunctionLib::getFunctions($twig);
 
             //componentes
