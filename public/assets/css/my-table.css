@@ -1,4 +1,4 @@
-.active>.page-link, .page-link.active {
+.active > .page-link, .page-link.active {
     background-color: #fff;
     border-color: var(--bs-secondary);
     color: var(--bs-secondary);
@@ -16,11 +16,11 @@ table:not(.table-sm) thead th {
     padding-bottom: 15px;
 }
 
-.table>:not(caption)>*>* {
+.table > :not(caption) > * > * {
     border-bottom-width: 0px;
 }
 
-.table-striped>tbody>tr:nth-of-type(odd)>* {
+.table-striped > tbody > tr:nth-of-type(odd) > * {
     --bs-table-accent-bg: #FAFAFA;
 }
 
@@ -41,7 +41,7 @@ table:not(.table-sm) thead th {
         border-bottom: 1px solid #efefef;
     }
 
-    table tr{
+    table tr {
         border-bottom: 1px solid #b7b7b7;
     }
 
@@ -51,6 +51,7 @@ table:not(.table-sm) thead th {
 
     table td {
         display: flex;
+        flex-wrap: wrap;
     }
 
     table td::before {
@@ -58,6 +59,11 @@ table:not(.table-sm) thead th {
         font-weight: 600;
         width: 120px;
         font-size: 0.85em;
+    }
+
+    table td .td-break {
+        width: 100%;
+        text-align: center;
     }
 
     table td.semtitle {
@@ -81,4 +87,62 @@ table:not(.table-sm) thead th {
     .table-responsive table {
         min-width: 0px;
     }
+}
+
+@media only screen and (max-width: 800px) {
+
+    /* Force table to not be like tables anymore */
+    #no-more-tables table,
+    #no-more-tables thead,
+    #no-more-tables tbody,
+    #no-more-tables th,
+    #no-more-tables td,
+    #no-more-tables tr {
+        display: block;
+    }
+
+    /* Hide table headers (but not display: none;, for accessibility) */
+    #no-more-tables thead tr {
+        position: absolute;
+        top: -9999px;
+        left: -9999px;
+    }
+
+    #no-more-tables tr { border: 1px solid #FAFAFA; }
+
+    #no-more-tables td {
+        /* Behave  like a "row" */
+        border: none;
+        border-bottom: 1px solid #FAFAFA;
+        position: relative;
+        padding-left: 35%;
+        white-space: normal;
+        text-align:left;
+    }
+
+    #no-more-tables td:before {
+        /* Now like a table header */
+        position: absolute;
+        /* Top/left values mimic padding */
+        left: 6px;
+        width: 45%;
+        padding-right: 10px;
+        white-space: nowrap;
+        text-align:left;
+        font-weight: bold;
+    }
+
+    #no-more-tables td:before {
+        content: attr(data-title);}
+
+    #no-more-tables td[data-title]:before {
+        content: attr(data-title);
+        position: absolute;
+        margin-top: 3px;
+        font-size: 0.85em;
+        line-height: 18px;
+    }
+
+    #no-more-tables td.visible-xs {padding-left:10px; padding-right:10px; display:block !important;}
+    #no-more-tables a {width: 100%; margin-top:5px;  }
 }

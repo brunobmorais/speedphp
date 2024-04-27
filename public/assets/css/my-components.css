@@ -1,0 +1,10 @@
+.bullet, .slash {
+    display: inline;
+    margin: 0 4px;
+}
+.bullet:after {
+    content: '\2022';
+}
+.slash:after {
+    content: '/';
+}

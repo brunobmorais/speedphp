@@ -1,5 +1,5 @@
 .text-primary {
-    color: var(--cor-bg-principal);
+    color: var(--cor-bg-principal) !important;
 }
 
 .btn {
