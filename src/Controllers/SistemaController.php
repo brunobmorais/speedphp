@@ -104,7 +104,6 @@ class SistemaController extends ControllerCore implements ControllerInterface
 
             $data["tableButtonInputPlaceholder"] = "Buscar...";
             $data["topTable"] = "components/button_table/button_table.html.twig";
-            $data["breadcrumbComponent"] = "components/header/header_container.html.twig";
 
             return $this->render(
                 TemplateAbstract::LOGGED,

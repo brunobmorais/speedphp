@@ -177,6 +177,13 @@ class TableLib
     }
 
 
+    public function addColLine($content)
+    {
+        return '<div class="td-break">
+                    '.$content.'
+                </div>';
+    }
+
     public function addCol(string $col)
     {
         $this->col[] = $col;
