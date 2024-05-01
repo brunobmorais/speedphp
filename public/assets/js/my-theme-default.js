@@ -368,24 +368,12 @@ function removerAcentos(s){
     return s.replace(/[\W\[\] ]/g,function(a){return map[a]||a})
 }
 
-/**
- * @example
- *  <form action="{{ SERVICO.URL }}-action" name="formExcluir" id="formExcluir" method="post">
- *      <input type="hidden" name="pg" value="{{ GETPARAMS.pg }}">
- *      <input type="hidden" name="buscar" value="{{ GETPARAMS.buscar }}">
- *      <input type="hidden" name="action" value="delete">
- *      <input type="hidden" name="idExcluir" id="idExcluir" value="">
- *  </form>
- * @param idValue
- * @param id
- * @param form
- * @param action
- */
-function excluirItemTabela(idValue, id = 'idExcluir', form = 'formExcluir', action = 'delete') {
+
+function excluirItemTabela(id) {
     Swal.fire({
         title: 'Deseja excluir esse item?',
         text: 'Uma vez deletado, você não poderá recuperar este arquivo!',
-        icon: 'question',
+        type: 'question',
         showCancelButton: true,
         confirmButtonColor: '#2AB164',
         confirmButtonText: 'Sim',
@@ -393,9 +381,8 @@ function excluirItemTabela(idValue, id = 'idExcluir', form = 'formExcluir', acti
     })
         .then((result) => {
             if (result.value) {
-                document.getElementById("action").value = action
-                document.getElementById(id).value = idValue;
-                document.getElementById(form).submit();
+                document.getElementById('idExcluir').value = id;
+                document.getElementById('formExcluir').submit();
             }
         });
 }
@@ -745,7 +732,7 @@ function validaCPF(cpf) {
 }
 
 //valida o CNPJ digitado
-function ValidarCNPJ(cnpj){
+function validaCNPJ(cnpj){
     //var cnpj = ObjCnpj.value;
     var valida = new Array(6,5,4,3,2,9,8,7,6,5,4,3,2);
     var dig1= new Number;
@@ -874,7 +861,7 @@ function getCookie(name) {
 function setCookie(name, value, durationDay=365) {
     var date = new Date();
     date.setTime(date.getTime()+(durationDay*24*60*60*1000));
-    var cookie = name + "=" + escape(value) + "; path=/; expires=" + date.toGMTString()+"; SameSite=None; domain="+window.location.host;
+    var cookie = name + "=" + escape(value) + "; path=/; expires=" + date.toGMTString()+"; SameSite=None; Secure; domain="+window.location.host;
 
     document.cookie = cookie;
 }

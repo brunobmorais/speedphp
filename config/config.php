@@ -23,6 +23,7 @@ const CONFIG_COLOR = [
     "color-primary-hover" => "#d83600", //#039050 verde
     "color-secondary" => "#676767",
     "color-link" => "#F46434",
+    "color-bg" => "#F5F6FA",
 ];
 
 const CONFIG_SITE = [
@@ -50,7 +51,7 @@ const CONFIG_HEADER = [
     "description" => 'Descricao completa do site',
     "image" => 'https://speedphp.bmorais.com/assets/img/ic_logosocial.png',
     "keywords" => "palavras, chaves, site",
-    "color" => CONFIG_SITE['color-primary'],
+    "color" => CONFIG_COLOR['color-primary'],
     "fbAppId" => "0"
 ];
 

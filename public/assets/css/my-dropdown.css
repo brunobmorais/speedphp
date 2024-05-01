@@ -18,5 +18,5 @@
 }
 
 .dropdown-menu {
-    --bs-dropdown-link-active-bg: var(--cor-bg-principal);
+    --bs-dropdown-link-active-bg: var(--mycolor-primary);
 }

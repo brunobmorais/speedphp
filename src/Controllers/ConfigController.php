@@ -26,12 +26,23 @@ class ConfigController extends ControllerCore implements ControllerInterface
                 unlink(dirname(__DIR__,2)."/public/assets/js/script.min.js");
 
                 $cssString = ":root {
-                --cor-bg-principal: ".CONFIG_COLOR['color-primary'].";
-                --cor-bg-principal-hover: ".CONFIG_COLOR['color-primary-hover'].";
-                --cor-bg-secodary: ".CONFIG_COLOR['color-secondary'].";
-                --cor-bg-link: ".CONFIG_COLOR['color-link'].";
-                --cor-bg-navbar: ".CONFIG_COLOR['color-navbar'].";
-                }";
+    --mycolor-primary: ".CONFIG_COLOR['color-primary'].";
+    --mycolor-primary-hover: ".CONFIG_COLOR['color-primary-hover'].";
+    --mycolor-secondary: ".CONFIG_COLOR['color-secondary'].";
+    --mycolor-link: ".CONFIG_COLOR['color-link'].";
+    --mycolor-navbar: ".CONFIG_COLOR['color-navbar'].";
+    --mycolor-bg: ".CONFIG_COLOR['color-bg'].";
+    --mycolor-card: #FFFFFF;
+}    
+.dark-mode:root {
+    --mycolor-primary: #BB86FC;
+    --mycolor-primary-hover: #d4b1fa;
+    --mycolor-secondary: #676767;
+    --mycolor-link: #BB86FC;
+    --mycolor-navbar: #1F252F;
+    --mycolor-bg: #0D111E;
+    --mycolor-card: #1F252F;
+}";
                 file_put_contents(dirname(__DIR__,2)."/public/assets/css/my-color-root.css", $cssString);
 
                 // GERAR ARQUIVOS CSS MINIFICADOS
@@ -72,7 +83,8 @@ class ConfigController extends ControllerCore implements ControllerInterface
         try {
             if ($this->isModeDeveloper()){
 
-                $nomeClass = ucfirst($args[0]??"");
+                $nomeClass = strtolower($args[0]??"");
+                $nomeClass = ucfirst($nomeClass);
                 $nomeClassMinusculo = strtolower($args[0]??"");
                 $nomeMetodo = strtolower($args[1]??"");
 
@@ -84,16 +96,16 @@ class ConfigController extends ControllerCore implements ControllerInterface
 }";
                 if (!empty($nomeMetodo)) {
 
-                        $conteudoMetodo = '
+                    $conteudoMetodo = '
     public function ' . $nomeMetodo . '($args = []){}
 }';
                 }
 
                 if (!file_exists(dirname(__DIR__, 2) . "/src/Controllers/{$nomeClass}Controller.php")) {
                     $conteudoClass = '<?php
+    namespace App\Controllers;
     use App\Core\Controller\ControllerCore;
     use App\Core\Controller\ControllerInterface;
-    namespace App\Controllers;
     
     class ' .$nomeClass.'Controller extends ControllerCore implements ControllerInterface
     {
@@ -156,10 +168,11 @@ class ConfigController extends ControllerCore implements ControllerInterface
                 exit;
             }
 
-            $nomeClassModel = (new FuncoesLib())->removeCaracteres(ucfirst($args[0] ?? ""));
-            $nomeTable = strtoupper($args[0] ?? "");
+            $nomeClass = strtolower($args[0]??"");
+            $nomeClassModel = (new FuncoesLib())->removeCaracteres(ucfirst($nomeClass));
+            $nomeTable = strtoupper($nomeClass ?? "");
 
-            $nomeQuebrado = explode("_", $args[0]);
+            $nomeQuebrado = explode("_", $nomeClass);
             if (count($nomeQuebrado)>1){
                 $nomeClassModel = "";
                 foreach ($nomeQuebrado as $item){

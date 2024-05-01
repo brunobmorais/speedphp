@@ -6,7 +6,7 @@
 .card {
     -webkit-box-shadow: 0 0 40px rgb(0 0 0 / 5%);
     box-shadow: 0 0 40px rgb(0 0 0 / 5%);
-    background-color: #fff;
+    background-color: var(--mycolor-card);
     border-radius: 15px;
     border: none;
     position: relative;
@@ -40,7 +40,7 @@
 }
 
 .card-primary {
-    border-top: 2px solid var(--cor-bg-principal) !important;
+    border-top: 2px solid var(--mycolor-primary) !important;
 }
 
 /*FIM CARD*/
@@ -63,11 +63,19 @@
     font-weight: 500;
 }
 
+.dark-mode .servico-titulo {
+    color: #fff;
+}
+
 .servico-descricao {
     font-weight: 300;
     margin-left: 5px;
     font-size: .75em;
     color: #6b6b6b;
+}
+
+.dark-mode .servico-descricao {
+    color: #cecece !important;
 }
 
 .servico-div {
@@ -87,7 +95,7 @@
 }
 
 .servico-card {
-    background-color: #fff;
+    background-color: var(--mycolor-card);
     border-radius: 15px;
     /*border: 1px solid #dedede;*/
     position: relative;

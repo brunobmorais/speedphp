@@ -2,11 +2,15 @@
     height: 60px;
     /*left: 0px;*/
     /*z-index: 999;*/
-    background: var(--cor-bg-navbar);
+    background: var(--mycolor-navbar);
     /*top: 0;*/
     transition: top 0.3s ease-in-out;
     /*box-shadow: inset 0 -1px 0 #dcdcdc;*/
     box-shadow: -1px 10px 50px 0 rgba(173, 179, 191, .4);
+}
+
+.dark-mode .navbar-bg {
+    box-shadow: none;
 }
 
 .nav-up {

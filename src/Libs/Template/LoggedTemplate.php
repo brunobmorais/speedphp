@@ -2,7 +2,9 @@
 
 namespace App\Libs\Template;
 
+use App\Libs\CookieLib;
 use App\Libs\JwtLib;
+use App\Libs\LocalStorageClass;
 use App\Libs\SessionLib;
 
 class LoggedTemplate implements TemplateInterface
@@ -13,8 +15,8 @@ class LoggedTemplate implements TemplateInterface
     public function build(string $view = "", array $data = [], array $css = [], array $js = [])
     {
         try {
+            $data["THEME"] = empty(CookieLib::getValue("theme")) ? '' : (CookieLib::getValue("theme") == "dark" ? 'data-bs-theme="dark" class="dark-mode"' : '');
             $this->setHead($data['TITLE'] ?? "");
-
             $data['SESSAO'] = SessionLib::getDataSession();
             $data['JWT'] = (new JwtLib())->encode();
 

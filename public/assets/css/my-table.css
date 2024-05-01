@@ -6,7 +6,7 @@
 }
 
 .pagination {
-    --bs-pagination-color: var(--cor-bg-secodary);
+    --bs-pagination-color: var(--mycolor-secondary);
 }
 
 table:not(.table-sm) thead th {

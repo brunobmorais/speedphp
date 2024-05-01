@@ -35,7 +35,7 @@ $(function () {
 
 function verificaAlteracaoInput(text){
     var value = $.trim(text.val());
-    console.log(value);
+    //console.log(value);
     if (value) {
         text.closest(".field-wrapper").addClass("hasValue");
     } else {

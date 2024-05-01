@@ -1,7 +1,18 @@
 :root {
-                --cor-bg-principal: #F46434;
-                --cor-bg-principal-hover: #d83600;
-                --cor-bg-secodary: #676767;
-                --cor-bg-link: #F46434;
-                --cor-bg-navbar: #F46434;
-                }
+    --mycolor-primary: #F46434;
+    --mycolor-primary-hover: #d83600;
+    --mycolor-secondary: #676767;
+    --mycolor-link: #F46434;
+    --mycolor-navbar: #F46434;
+    --mycolor-bg: #F5F6FA;
+    --mycolor-card: #FFFFFF;
+}    
+.dark-mode:root {
+    --mycolor-primary: #BB86FC;
+    --mycolor-primary-hover: #d4b1fa;
+    --mycolor-secondary: #676767;
+    --mycolor-link: #BB86FC;
+    --mycolor-navbar: #1F252F;
+    --mycolor-bg: #0D111E;
+    --mycolor-card: #1F252F;
+}

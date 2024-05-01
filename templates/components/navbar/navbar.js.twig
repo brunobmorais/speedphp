@@ -1,0 +1,42 @@
+async function mensagemPermissao() {
+    if (Notification.permission === "default") {
+        return await Notification.requestPermission().then((permission) => {
+            console.log(permission);
+            if (permission === 'granted') {
+                //console.log('Notification permission granted.');
+                document.getElementById("enableNotification").classList.add("d-none");
+                location.reload();
+                return true;
+            } else {
+                //console.log('Unable to get permission to notify.');
+                return false
+            }
+        });
+    } else if (Notification.permission === "granted"){
+        document.getElementById("enableNotification").classList.add("d-none");
+        location.reload();
+        return true
+    } else {
+        return false
+    }
+}
+
+function verificaModeDark() {
+    let theme = getCookie("theme");
+
+    if (theme === "dark") {
+        document.getElementById("checkboxModeDark").checked = true;
+        return;
+    }
+
+    document.getElementById("checkboxModeDark").checked = false;
+    return;
+}
+
+function modeDark() {
+    const current = document.documentElement.getAttribute('data-bs-theme');
+    const inverted = current == 'dark' ? 'light' : 'dark'
+    setCookie("theme", inverted);
+    document.documentElement.setAttribute('data-bs-theme', inverted)
+    document.documentElement.classList.toggle("dark-mode");
+}

@@ -23,3 +23,7 @@
     position: relative;
     margin: 30px 0 25px 0;
 }
+
+.dark-mode .section .section-title {
+    color: #C1C1C1;
+}

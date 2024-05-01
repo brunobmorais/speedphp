@@ -30,16 +30,53 @@
 {% endembed %}
 
 <script>
+    verificaModeDark();
+</script>
 
-    if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
-            navigator.serviceWorker.register('/sw.js', {scope: '/'}).then(function (registration) {
-                    //console.log('ServiceWorker registration successful with scope: ', registration.scope);
-                }, function (err) {
-                    //console.log('ServiceWorker registration failed: ', err);
-                }
-            );
+<script type="module">
+
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getMessaging, getToken } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-messaging.js";
+
+    navigator.serviceWorker.register("/sw.js").then(async registration => {
+        if (Notification.permission === "granted") {
+            let element = document.getElementById("enableNotification");
+            element ? element.classList.add("d-none"):"";
+            await getTokenPushNotification(registration)
+        }
+    });
+
+    async function getTokenPushNotification(registration) {
+        const firebaseConfig = {
+            apiKey: "AIzaSyDX95F2YYvsC1gw0BXCo0UKnMdOodfWC1U",
+            authDomain: "galileu-3dee4.firebaseapp.com",
+            projectId: "galileu-3dee4",
+            storageBucket: "galileu-3dee4.appspot.com",
+            messagingSenderId: "55875393465",
+            appId: "1:55875393465:web:55168f5338f37fd789c868",
+            measurementId: "G-4SB2QTRR8Z"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const messaging = getMessaging(app);
+
+        let token = await getToken(messaging, {
+            serviceWorkerRegistration: registration,
+            vapidKey: 'BN2lkjojY6fSDaBM2rIrZov18IxmopMv3F5fEh68yUyf3b5Ux_em_mSMRUrb3vW7N5XBC7w6Q4eCTxMtKx_gyEQ'
+        }).then((currentToken) => {
+            if (currentToken) {
+                //console.log("Token is: " + currentToken);
+                return currentToken;
+            } else {
+                //console.log('No registration token available. Request permission to generate one.');
+                return "";
+            }
+        }).catch((err) => {
+            //console.log('An error occurred while retrieving token. ', err);
+            // ...
         });
-    }
 
+        registerTokenPushService(`{{SESSION.CODPESSOA}}`,token)
+        console.log(token);
+    }
 </script>

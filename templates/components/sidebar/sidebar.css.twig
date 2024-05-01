@@ -1,3 +1,15 @@
+:root {
+    --sidebar-item-hover: #e9ecef;
+    --sidebar-active: #e9ecef;
+    --sidebar-item-color: #000000;
+}
+
+.dark-mode:root {
+    --sidebar-item-hover: #000;
+    --sidebar-active: #000;
+    --sidebar-item-color: #fff;
+}
+
 .sidebar {
     height: 100%;
     width: 85px;
@@ -5,7 +17,7 @@
     z-index: 1;
     top: 0;
     left: 0;
-    background-color: #FFFFFF;
+    background-color: var(--mycolor-card);
     transition: 0.5s;
     overflow-x: hidden;
     padding-top: 65px;
@@ -15,18 +27,18 @@
 
 .sidebar li a {
     padding: 8px 8px 8px 32px;
-    color: #000000;
+    color: var(--sidebar-item-color) !important;
     display: block;
 }
 
 .sidebar li .sidebar-item:hover {
-    background: #e9ecef;
-    color: #000000 !important;
+    background: var(--sidebar-item-hover);
+    color: var(--sidebar-item-color) !important;
 }
 
 .sidebar li .active {
-    background: #e9ecef;
-    color: #000000 !important;
+    background: var(--sidebar-item-hover);
+    color: var(--sidebar-item-color) !important;
 }
 
 #main {

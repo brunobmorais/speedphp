@@ -15,7 +15,7 @@ a {
 
 /*FOOTER NO FINAL DA TELA*/
 body {
-    background: #F5F6FA;
+    background: var(--mycolor-bg);
     height:100vh;
     margin:0;
     font-size: 14px;
@@ -31,11 +31,15 @@ footer{margin-top:auto; !important; margin-bottom: 50px !important;
 
 .h1-title {
     font-weight: 600;
-    color: #000000!important;
+    color: #000000 !important;
     font-size: 22px;
     padding-left: 0;
     padding-bottom: 5px;
     padding-top: 10px;
+}
+
+.dark-mode .h1-title {
+    color: #FFF !important;
 }
 
 .view-navbar{
