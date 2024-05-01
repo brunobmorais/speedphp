@@ -37,7 +37,7 @@ class ConfigController extends ControllerCore implements ControllerInterface
 .dark-mode:root {
     --mycolor-primary: #BB86FC;
     --mycolor-primary-hover: #d4b1fa;
-    --mycolor-secondary: #676767;
+    --mycolor-secondary: #aeaeae;
     --mycolor-link: #BB86FC;
     --mycolor-navbar: #1F252F;
     --mycolor-bg: #0D111E;
@@ -96,7 +96,7 @@ class ConfigController extends ControllerCore implements ControllerInterface
 }";
                 if (!empty($nomeMetodo)) {
 
-                    $conteudoMetodo = '
+                        $conteudoMetodo = '
     public function ' . $nomeMetodo . '($args = []){}
 }';
                 }
