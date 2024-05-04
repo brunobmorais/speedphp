@@ -2,7 +2,7 @@ var mini = true;
 
 function toggleSidebar() {
     if (mini) {
-        var elementosTeste = document.getElementsByClassName("sidebar-link");
+        var elementosTeste = document.getElementsByClassName("sidebar-item-link");
         Array.prototype.filter.call(
             elementosTeste,
             function (element) {
@@ -14,7 +14,7 @@ function toggleSidebar() {
         document.getElementById("main").style.marginLeft = "250px";
         this.mini = false;
     } else {
-        var elementosTeste = document.getElementsByClassName("sidebar-link");
+        var elementosTeste = document.getElementsByClassName("sidebar-item-link");
         Array.prototype.filter.call(
             elementosTeste,
             function (element) {

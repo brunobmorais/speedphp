@@ -1,13 +1,15 @@
 :root {
     --sidebar-item-hover: #e9ecef;
+    --sidebar-item-color: #6c757d;
     --sidebar-active: #e9ecef;
-    --sidebar-item-color: #000000;
+    --sidebar-active-color: #000
 }
 
 .dark-mode:root {
     --sidebar-item-hover: #000;
-    --sidebar-active: #000;
     --sidebar-item-color: #fff;
+    --sidebar-active: #000;
+    --sidebar-active-color: #fff
 }
 
 .sidebar {
@@ -39,6 +41,15 @@
 .sidebar li .active {
     background: var(--sidebar-item-hover);
     color: var(--sidebar-item-color) !important;
+}
+
+.sidebar li .active .sidebar-item-link{
+    color: var(--sidebar-active-color) !important;
+}
+
+.sidebar li .active .sidebar-item-icon::before
+{
+    color: var(--sidebar-active-color) !important;
 }
 
 #main {
