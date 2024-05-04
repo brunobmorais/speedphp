@@ -181,7 +181,7 @@ class PessoaDao extends Crud{
     public function updateSenha(PessoaModel $pessoaModel): bool{
 
 
-        $sql = "UPDATE USUARIO SET senha='" . $pessoaModel->getSENHA() . "' WHERE CODUSUARIO='" . $pessoaModel->getCODUSUARIO() . "'";;
+        $sql = "UPDATE SI_USUARIO SET senha='" . $pessoaModel->getSENHA() . "' WHERE CODUSUARIO='" . $pessoaModel->getCODUSUARIO() . "'";;
         if ($this->executeSQL($sql)){
             return true;
         } else {
