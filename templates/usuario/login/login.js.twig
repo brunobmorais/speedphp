@@ -22,7 +22,6 @@ async function loginusuario() {
             ).then((data) => {
                 //console.log(data);
                 if (!data.error) {
-                    setCookie('TOKEN_USER', data.token, 31);
                     window.location.href = data.redireciona;
                 } else {
                     document.getElementById("senha").value = "";

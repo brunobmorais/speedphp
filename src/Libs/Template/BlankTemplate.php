@@ -16,9 +16,7 @@ class BlankTemplate implements TemplateInterface
         try {
             $data["THEME"] = empty(CookieLib::getValue("theme")) ? '' : (CookieLib::getValue("theme") == "dark" ? 'data-bs-theme="dark" class="dark-mode"' : '');
             $this->setHead($head['TITLE'] ?? "");
-
-            $data['SESSAO'] = SessionLib::getDataSession();
-            $data['JWT'] = (new JwtLib())->encode();
+            SessionLib::setValue("TOKEN_JWT", (new JwtLib())->encode());
 
             $data['head'] = $this->head();
             $data['main'] = $this->render($view, $data, false);

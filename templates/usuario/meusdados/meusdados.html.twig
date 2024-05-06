@@ -12,7 +12,7 @@
                                     <label class="form-label">Nome</label>
                                     <input name="NOME" id="nome_rs" type="text" class="form-control" required
                                            placeholder="Seu nome completo" readonly
-                                           value="{{ SESSAO.NOME }}"/>
+                                           value="{{ SESSION.NOME }}"/>
                                     <div class="invalid-feedback">
                                         Preencha o campo corretamente
                                     </div>
@@ -23,7 +23,7 @@
                                            placeholder="000.000.000-00" readonly
                                            onkeyup="mascara(this,cpfCnpj)"
                                            maxlength="18"
-                                           value="{{ SESSAO.CPF }}"/>
+                                           value="{{ SESSION.CPF }}"/>
                                     <div class="invalid-feedback">
                                         Preencha o campo corretamente
                                     </div>
@@ -36,7 +36,7 @@
                                     <input name="EMAIL" id="email" type="email" class="form-control"
                                            placeholder="nome@exemplo.com" required
                                            autocomplete="nope"
-                                           value="{{ SESSAO.EMAIL }}"/>
+                                           value="{{ SESSION.EMAIL }}"/>
                                     <div class="invalid-feedback">
                                         Preencha o campo corretamente
                                     </div>

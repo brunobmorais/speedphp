@@ -1,0 +1,9 @@
+{# CADASTRAR TOKEN #}
+async function registerTokenPushService(codpessoa, token) {
+    let headers = {'Authorization': 'Bearer {{ SESSION.TOKEN_JWT }}'};
+    return await requisicaoHttp("/api/pushnotification/registertoken","POST",  JSON.stringify({"CODPESSOA": codpessoa, "TOKEN":token}), headers).then(async (retorno) => {
+        return retorno;
+    }).catch(() => {
+        return false;
+    });
+}

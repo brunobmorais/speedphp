@@ -3,6 +3,7 @@
 namespace App\Core\Controller;
 
 use App\Controllers\ErroController;
+use App\Daos\InstituicaoDao;
 use App\Daos\ModuloDao;
 use App\Daos\UsuarioDao;
 use App\Libs\AlertLib;
@@ -31,7 +32,7 @@ class ControllerCore
         if (!empty($message))
             (new AlertLib())->warning($message,$url);
         else
-            header("location:" . $url);
+            header("location: " . $url);
 
         exit;
 
@@ -130,6 +131,11 @@ class ControllerCore
         $sisModuloDao = new ModuloDao();
         $alertaDao = new AlertLib();
 
+        if (empty(SessionLib::getValue("CODINSTITUICAO"))) {
+            $this->redirect("/usuario/selecionainstituicao");
+            exit();
+        }
+
         $url = explode("/", $_SERVER["REQUEST_URI"]);
         $servicoParams = explode("-", $url[2]??"");
         $moduleUrl = $url[1]??"";
@@ -162,14 +168,14 @@ class ControllerCore
         return $data;
     }
 
-    public function isLogged(){
+    /*public function isLogged(){
         $funcoes = new FuncoesLib();
         $cookie = new CookieLib();
         $usuarioDao = new UsuarioDao();
         $jwtTokenClass = new JwtLib();
 
         $codusuarioSessao = SessionLib::getValue("CODUSUARIO");
-        $tokenuser = CookieLib::getValue("TOKEN_USER");
+        $tokenuser = CookieLib::getValue("TOKEN_JWT");
         if (empty($codusuarioSessao)) {
             if (empty($tokenuser)) {
                 SessionLib::setValue("REDIRECIONA", $funcoes->pegarUrlAtual());
@@ -179,7 +185,25 @@ class ControllerCore
                 $dataToken = $jwtTokenClass->decode($tokenuser);
                 if (!empty($dataToken)) {
                     $codusuarioCookie = $dataToken->data->id;
-                    SessionLib::setDataSession($usuarioDao->buscarCodusuario($codusuarioCookie));
+                    $usuarioResult = $usuarioDao->buscarCodusuario($codusuarioCookie);
+                    $objInstituicao = (new InstituicaoDao())->buscarInstituicoesUsuario($usuarioResult->getCODPESSOA());
+                    $token = $jwtTokenClass->encode(43200, ["id" => $usuarioResult->getCODUSUARIO()]);
+
+                    if (count($objInstituicao??[]) == 0){
+                        $this->redirect("/usuario/logoff");
+                        exit();
+                    }
+
+                    CookieLib::setValue("TOKEN_JWT",$token);
+                    SessionLib::setDataSession($usuarioResult);
+
+                    if (count($objInstituicao??[]) == 1){
+                        $usuarioResult->setCODINSTITUICAO($objInstituicao[0]->CODINSTITUICAO);
+                    } else {
+                        $this->redirect('/usuario/selecionainstituicao');
+                        exit();
+                    }
+
                     return true;
                 } else {
                     SessionLib::setValue("REDIRECIONA", $funcoes->pegarUrlAtual());
@@ -190,6 +214,19 @@ class ControllerCore
         } else {
             return true;
         }
+    }*/
+
+    public function isLogged(){
+        $funcoes = new FuncoesLib();
+
+        $codusuarioSessao = SessionLib::getValue("CODUSUARIO");
+        if (empty($codusuarioSessao)) {
+            SessionLib::setValue("REDIRECIONA", $funcoes->pegarUrlAtual());
+            $this->redirect("/usuario/logoff");
+            exit();
+        }
+
+        return true;
     }
 
     public function pageNotFound(){
@@ -246,8 +283,12 @@ class ControllerCore
     }
 
     public function debug($value){
-        if (CONFIG_DISPLAY_ERROR_DETAILS)
-            dump($value); exit;
+        if (CONFIG_DISPLAY_ERROR_DETAILS){
+            echo "<pre>";
+            print_r($value);
+            echo "</pre>";
+            exit();
+        }
     }
 
     public function noCache()

@@ -16,9 +16,7 @@ class NotLoggedTemplate implements TemplateInterface
         try {
             $data["THEME"] = empty(CookieLib::getValue("theme")) ? '' : (CookieLib::getValue("theme") == "dark" ? 'data-bs-theme="dark" class="dark-mode"' : '');
             $this->setHead($data['TITLE'] ?? "");
-
-            $data['JWT'] = (new JwtLib())->encode();
-            $data['SESSAO'] = SessionLib::getDataSession();
+            SessionLib::setValue("TOKEN_JWT", (new JwtLib())->encode());
 
             $data['head'] = $this->head();
             $data['navbar'] = $this->navbar($data);

@@ -5,6 +5,7 @@ namespace App\Libs\Template;
 use App\Core\Controller\ControllerCore;
 use App\Libs\AlertLib;
 use App\Libs\FuncoesLib;
+use App\Libs\SessionLib;
 use App\Libs\Twig\TwigLib;
 
 Trait TemplateTrait
@@ -47,7 +48,7 @@ Trait TemplateTrait
 
     protected function navigationBottom($menuAtivo = 1, $data = null)
     {
-        $dataSessao = $data['SESSAO'];
+        $dataSessao = SessionLib::getDataSession();
 
         $menuAtivo == 1 ? $menu[1] = "navigation-menu-item-active" : $menu[1] = "";
         $menuAtivo == 2 ? $menu[2] = "navigation-menu-item-active" : $menu[2] = "";
@@ -68,7 +69,7 @@ Trait TemplateTrait
 
     protected function navbar($data = null)
     {
-        $dataSessao = $data['SESSAO'];
+        $dataSessao = SessionLib::getDataSession();
 
         if (isset($dataSessao)) {
             $primeiroNome = $dataSessao['PRIMEIRONOME']??"";
@@ -185,7 +186,7 @@ Trait TemplateTrait
 
     protected function addJs(string $url)
     {
-        return "<script src='{$url}?v=" . CONFIG_VERSION_CODE . "'></script>";
+        return "<script src='{$url}?v=" . CONFIG_VERSION_CODE . "' ></script>";
     }
 
     protected function setView($url)
@@ -201,7 +202,7 @@ Trait TemplateTrait
     {
         $data = [];
         foreach ($cssjs as $item) {
-            if ($type === "css")
+            if ($type == "css")
                 $data[] = $this->addCss($item);
             else
                 $data[] = $this->addJs($item);

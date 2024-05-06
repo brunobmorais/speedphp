@@ -17,12 +17,10 @@ class ServicosTemplate implements TemplateInterface
             $this->controller->isLogged();
             $data = $this->controller->getServicosFromModulo();
             $view = 'components/page_servicos';
+
             $data["THEME"] = empty(CookieLib::getValue("theme")) ? '' : (CookieLib::getValue("theme") == "dark" ? 'data-bs-theme="dark" class="dark-mode"' : '');
-
             $this->setHead($data['TITLE'] ?? "");
-
-            $data['SESSAO'] = SessionLib::getDataSession();
-            $data['JWT'] = (new JwtLib())->encode();
+            SessionLib::setValue("TOKEN_JWT", (new JwtLib())->encode());
 
             $data['head'] = $this->head();
             $data['navbar'] = $this->navbar($data);

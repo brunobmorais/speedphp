@@ -1,6 +1,6 @@
 async function buscaPessoaFisicaService(cpf) {
 
-    let headers = {'Authorization': 'Bearer ' + getCookie("TOKEN_USER")};
+    let headers = {'Authorization': 'Bearer {{ SESSION.TOKEN_JWT }}'};
     return await requisicaoHttp("/api/pessoa/pessoafisica/"+cpf,"GET", null, headers).then(async (retorno) => {
         return retorno;
     }).catch(() => {

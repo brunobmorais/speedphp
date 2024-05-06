@@ -89,7 +89,6 @@ class UsuarioController extends ControllerCore implements ControllerInterface
         try {
             $redireciona = SessionLib::getValue("REDIRECIONA");
             SessionLib::apagaSessao();
-            CookieLib::deleteValue("TOKEN_USER");
             SessionLib::setValue("REDIRECIONA", $redireciona);
             $this->redirect("/usuario/login");
         } catch (\Error $e) {
