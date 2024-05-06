@@ -30,7 +30,7 @@ if (form) {
 
         let textButton = document.getElementById(button).innerHTML;
         clickBotaoProgressAtivo(button);
-        validaForm();
+        validaFormId(form);
         if (document.getElementById(form).checkValidity() && event.returnValue) {
             (function () {
                 window.onpageshow = function (event) {
