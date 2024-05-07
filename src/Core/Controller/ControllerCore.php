@@ -131,11 +131,6 @@ class ControllerCore
         $sisModuloDao = new ModuloDao();
         $alertaDao = new AlertLib();
 
-        if (empty(SessionLib::getValue("CODINSTITUICAO"))) {
-            $this->redirect("/usuario/selecionainstituicao");
-            exit();
-        }
-
         $url = explode("/", $_SERVER["REQUEST_URI"]);
         $servicoParams = explode("-", $url[2]??"");
         $moduleUrl = $url[1]??"";
