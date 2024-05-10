@@ -33,6 +33,7 @@ class ConfigController extends ControllerCore implements ControllerInterface
     --mycolor-navbar: ".CONFIG_COLOR['color-navbar'].";
     --mycolor-bg: ".CONFIG_COLOR['color-bg'].";
     --mycolor-card: #FFFFFF;
+    --mycolor-black-white: #000000;
 }    
 .dark-mode:root {
     --mycolor-primary: #BB86FC;
@@ -42,6 +43,8 @@ class ConfigController extends ControllerCore implements ControllerInterface
     --mycolor-navbar: #1F252F;
     --mycolor-bg: #0D111E;
     --mycolor-card: #1F252F;
+    --mycolor-black-white: #FFFFFF;
+
 }";
                 file_put_contents(dirname(__DIR__,2)."/public/assets/css/my-color-root.css", $cssString);
 

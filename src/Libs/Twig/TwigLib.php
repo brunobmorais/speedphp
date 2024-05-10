@@ -72,7 +72,7 @@ class TwigLib
                 $retorno .= $twig->render("{$this->viewModule}/{$this->viewService}/{$this->viewFile}.css.twig", $data);
                 $retorno .= "</style>";
             }
-            if (!empty($this->viewFolder) && file_exists($this->dirName . "/templates/{$this->viewModule}/{$this->viewService}/{$this->viewFolder}/{$this->viewFile}.css.twig")) {
+            if (!empty($this->viewFolder) && file_exists($this->dirName . "/templates/{$this->viewModule}/{$this->viewService}/{$this->viewFolder}/{$this->viewFile}.css.twig") && !empty($this->viewFolder)) {
                 $retorno .= "<!--STYLE FOLDER-->\n";
                 $retorno .= "<style>";
                 $retorno .= $twig->render("{$this->viewModule}/{$this->viewService}//{$this->viewFolder}/{$this->viewFile}.css.twig", $data);
@@ -108,7 +108,7 @@ class TwigLib
                 $retorno .= $twig->render("{$this->viewModule}/{$this->viewService}/{$this->viewFile}.js.twig", $data);
                 $retorno .= "</script>";
             }
-            if (file_exists($this->dirName . "/templates/{$this->viewModule}/{$this->viewService}/{$this->viewFolder}/{$this->viewFile}.js.twig")) {
+            if (file_exists($this->dirName . "/templates/{$this->viewModule}/{$this->viewService}/{$this->viewFolder}/{$this->viewFile}.js.twig") && !empty($this->viewFolder)) {
                 $retorno .= "<!--SCRIPT FOLDER -->\n";
                 $retorno .= "<script>";
                 $retorno .= $twig->render("{$this->viewModule}/{$this->viewService}/{$this->viewFolder}/{$this->viewFile}.js.twig", $data);

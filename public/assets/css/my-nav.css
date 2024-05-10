@@ -1,0 +1,14 @@
+.nav-item .nav-link.active {
+    font-weight: 600;
+}
+.nav-link {
+    color: var(--mycolor-secondary);
+}
+.nav-link:hover {
+    color: var(--mycolor-black-white);
+}
+
+.nav-item .nav-link:hover
+{
+    background: #ececec !important;
+}

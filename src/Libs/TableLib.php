@@ -131,8 +131,8 @@ class TableLib
     {
         $this->linhas = 0;
 
-        $this->dataTable .= "<hr/>";
         $this->dataTable .= "<div>\n";
+        $this->dataTable .= "<hr/>\n";
         $this->dataTable .= "<div class='table-responsive'>\n";
         $this->dataTable .= "<table class='table table-striped' id='table-1'>\n";
         $this->dataTable .= "<thead class='cf'>\n";
@@ -275,11 +275,11 @@ class TableLib
         // fim da linha do rodap?
 
         // fim da grid
-        $this->dataTable .= "</table></div></div>\n";
+        $this->dataTable .= "</table></div>\n";
         $this->dataTable .= "<hr/>";
 
 
-        $this->dataTable .= "<form id='formTable' action='' method='get' style='margin:0'><div>\n";
+        $this->dataTable .= "<form id='formTable' action='' method='get' style='margin:0'>\n";
         //$this->dataTable .= "<input type='hidden' name='busca' value=\"".$this->busca2."\" />\n";
         $this->dataTable .= "<input type='hidden' id='pg' name='pg' value='" . $this->pg . "' />";
         foreach ($this->busca as $key => $value) {
@@ -290,18 +290,17 @@ class TableLib
         $this->dataTable .= "<div class='text-center col-4'><p class=\"fw-medium\">Pg: ". $this->pg."/".$this->npages."</p></div>\n";
         $this->dataTable .= "<div class='col-4 p-0' style='text-align: right'>\n";
         $this->dataTable .= "<nav class=\"d-inline-block\">
-                      <ul class=\"pagination pagination-sm\">
-                        <li class='page-item ".($this->pg==1?'disabled':'')."'>
-                          <a class=\"page-link\" href=\"javascript:void(0)\" onclick=formTableAction('".($this->pg - 1)."') tabindex=\"-1\"><i class=\"mdi mdi-chevron-left\"></i></a>
-                        </li>
-                        <li class=\"page-item active\"><a class=\"page-link\" href=\"#\">".$this->pg."</a></li>
-                        <li class='page-item ".($this->pg==$this->npages?'disabled':'')."'>
-                          <a class=\"page-link\" href=\"javascript:void(0)\" onclick=formTableAction('".($this->pg + 1)."')><i class=\"mdi mdi-chevron-right\"></i></a>
-                        </li>
-                      </ul>
-              </nav>\n";
-        $this->dataTable .= "</div>
-              </div>\n";
+                                      <ul class=\"pagination pagination-sm\">
+                                        <li class='page-item ".($this->pg==1?'disabled':'')."'>
+                                          <a class=\"page-link\" href=\"javascript:void(0)\" onclick=formTableAction('".($this->pg - 1)."') tabindex=\"-1\"><i class=\"mdi mdi-chevron-left\"></i></a>
+                                        </li>
+                                        <li class=\"page-item active\"><a class=\"page-link\" href=\"#\">".$this->pg."</a></li>
+                                        <li class='page-item ".($this->pg==$this->npages?'disabled':'')."'>
+                                          <a class=\"page-link\" href=\"javascript:void(0)\" onclick=formTableAction('".($this->pg + 1)."')><i class=\"mdi mdi-chevron-right\"></i></a>
+                                        </li>
+                                      </ul>
+                              </nav>\n";
+        $this->dataTable .= "</div></div>\n";
         $this->dataTable .= "</form>\n";
 
 
@@ -311,5 +310,7 @@ class TableLib
                     document.getElementById('formTable').submit();
                 }
                 </script>";
+        $this->dataTable .= "</div>\n";
+
     }
 }
