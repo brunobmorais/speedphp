@@ -10,6 +10,7 @@
     border-radius: 15px;
     border: none;
     position: relative;
+    margin-bottom: 20px;
 }
 
 .card .card-header {

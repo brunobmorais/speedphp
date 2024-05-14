@@ -47,10 +47,13 @@
     color: #fff;
     background-color: #6c757d;
     border-color: #6c757d;
+}
+
+.btn-outline-secondary, .btn-outline-danger, .btn-outline-success, .btn-outline-warning, .btn-outline-info, .btn-outline-dark, .btn-outline-light    {
     border-radius: 15px;
 }
 
-.btn-outline-secondary {
+.btn-secondary, .btn-danger, .btn-success, .btn-warning, .btn-info, .btn-dark, .btn-light    {
     border-radius: 15px;
 }
 
