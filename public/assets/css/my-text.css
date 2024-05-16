@@ -1,0 +1,6 @@
+.text-bg-primary {
+    background-color: var(--mycolor-primary) !important;
+}
+.text-bg-light{
+    background-color: var(--mycolor-light) !important;
+}

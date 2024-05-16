@@ -47,6 +47,30 @@
     border-top: 2px solid var(--mycolor-primary) !important;
 }
 
+.card-secondary {
+    border-top: 2px solid var(--bs-secondary) !important;
+}
+
+.card-warning {
+    border-top: 2px solid var(--bs-warning) !important;
+}
+
+.card-danger {
+    border-top: 2px solid var(--bs-danger) !important;
+}
+
+.card-success {
+    border-top: 2px solid var(--bs-success) !important;
+}
+
+.card-info {
+    border-top: 2px solid var(--bs-info) !important;
+}
+
+.card-dark {
+    border-top: 2px solid var(--bs-dark) !important;
+}
+
 /*FIM CARD*/
 
 .card-border {
