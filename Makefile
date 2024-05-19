@@ -4,7 +4,7 @@
 # Executar comando: make build | login | tag | push
 
 TAG=$(shell git log -1 --format=%h)
-URL="http://localhost/config"
+URL="http://speedphp.localhost/config"
 
 # PEGAR ARGUMENTOS QUANDO PASSAR GIT
 ifeq (push,$(firstword $(MAKECMDGOALS)))
@@ -29,4 +29,8 @@ createmodel:
 createpage:
 	@read -p "Digite o nome do módulo e serviço (Ex: teste/beta): " servico; \
 	curl ${URL}/createpage/$$servico
+	echo "Executado"
+
+build:
+	curl ${URL}/build
 	echo "Executado"

@@ -34,6 +34,7 @@ class ConfigController extends ControllerCore implements ControllerInterface
     --mycolor-bg: ".CONFIG_COLOR['color-bg'].";
     --mycolor-card: #FFFFFF;
     --mycolor-black-white: #000000;
+    --mycolor-light: #ececec;
 }    
 .dark-mode:root {
     --mycolor-primary: #BB86FC;
