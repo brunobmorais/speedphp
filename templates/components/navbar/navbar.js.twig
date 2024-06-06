@@ -21,17 +21,7 @@ async function mensagemPermissao() {
     }
 }
 
-function verificaModeDark() {
-    let theme = getCookie("theme");
-
-    if (theme === "dark") {
-        document.getElementById("checkboxModeDark").checked = true;
-        return;
-    }
-
-    document.getElementById("checkboxModeDark").checked = false;
-    return;
-}
+verificaModeDark();
 
 function modeDark() {
     const current = document.documentElement.getAttribute('data-bs-theme');

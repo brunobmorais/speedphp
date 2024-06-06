@@ -1003,3 +1003,15 @@ function modalTemCerteza(formId){
     })
 }
 
+function verificaModeDark() {
+    let theme = getCookie("theme");
+
+    if (theme === "dark") {
+        document.getElementById("checkboxModeDark").checked = true;
+        return;
+    }
+
+    document.getElementById("checkboxModeDark").checked = false;
+    return;
+}
+
