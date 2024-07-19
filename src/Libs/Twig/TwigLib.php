@@ -60,10 +60,10 @@ class TwigLib
             $this->setView($view);
 
             // ARQUIVO CSS
-            if (file_exists($this->dirName . "/templates/{$this->viewModule}/{$this->viewFile}.css.twig")) {
+            if (file_exists($this->dirName . "/templates/{$this->viewModule}/{$this->viewModule}.css.twig")) {
                 $retorno .= "<!--STYLE MODULE-->\n";
                 $retorno .= "<style>";
-                $retorno .= $twig->render("{$this->viewModule}/{$this->viewFile}.css.twig", $data);
+                $retorno .= $twig->render("{$this->viewModule}/{$this->viewModule}.css.twig", $data);
                 $retorno .= "</style>";
             }
             if (file_exists($this->dirName . "/templates/{$this->viewModule}/{$this->viewService}/{$this->viewFile}.css.twig")) {
@@ -95,10 +95,10 @@ class TwigLib
             }
 
             // ARQUIVO JS
-            if (file_exists($this->dirName . "/templates/{$this->viewModule}/{$this->viewFile}.js.twig")) {
+            if (file_exists($this->dirName . "/templates/{$this->viewModule}/{$this->viewModule}.js.twig")) {
                 $retorno .= "<!--SCRIPT MODULE-->\n";
                 $retorno .= "<script>";
-                $retorno .= $twig->render("{$this->viewModule}/{$this->viewFile}.js.twig", $data);
+                $retorno .= $twig->render("{$this->viewModule}/{$this->viewModule}.js.twig", $data);
                 $retorno .= "</script>";
 
             }

@@ -403,6 +403,26 @@ input[type="color"]:focus,
     height: .55rem;
 }
 
+.label-link-outline {
+    border: 0.08rem solid;
+    border-color: var(--mycolor-primary);
+    border-radius: 25px;
+    padding: 2px 8px 2px 8px;
+    color: var(--mycolor-primary);
+    font-size: 12px;
+}
+
+.label-link {
+    padding: 2px 8px 2px 8px;
+    color: var(--mycolor-primary);
+    font-size: 12px;
+}
+
+.form-check-input:checked {
+    background-color: var(--mycolor-primary);
+    border-color: var(--mycolor-primary);
+}
+
 /* MOBILE */
 @media (max-width: 992px) {
 
