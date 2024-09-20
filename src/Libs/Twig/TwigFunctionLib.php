@@ -25,6 +25,15 @@ class TwigFunctionLib
         });
         $twig->addFunction($intranetDao);
 
+        $modelsDao = new TwigFunction('getModels', function ($class, $func, array $params = []) {
+            $class = "App\\Models\\{$class}";
+
+            $controller = new $class();
+            $return = call_user_func_array([$controller, $func], $params);
+            return $return;
+        });
+        $twig->addFunction($modelsDao);
+
         $prevenirDao = new TwigFunction('getDaos', function ($class, $func, array $params = []) {
             $class = "App\\Daos\\{$class}";
             $controller = new $class();

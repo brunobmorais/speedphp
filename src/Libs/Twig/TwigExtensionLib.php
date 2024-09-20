@@ -54,6 +54,7 @@ class TwigExtensionLib extends \Twig\Extension\AbstractExtension implements \Twi
             'POST'=>$_POST??[],
             'SERVER'=>$_SERVER??[],
             'CONFIG_COLOR'=>CONFIG_COLOR??[]
+
         ];
     }
 

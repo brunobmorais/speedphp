@@ -75,9 +75,15 @@ class TableLib
         $this->has_img = $value;
     }
 
-    public function setQtd(int $qtd)
+    public function setQtd(int $qtd )
     {
-        $this->qtd = $qtd;
+        if (!empty($qtd))
+            $this->qtd = $qtd;
+    }
+    public function getQtd( )
+    {
+      
+        return $this->qtd ;
     }
 
     public function render()

@@ -18,7 +18,7 @@
                     <ul class="nav flex-column mb-auto">
                         {% for servico in getDaos('ModuloDao', 'buscaServicosUsuario', [SESSION.CODUSUARIO,item.CONTROLLER]) %}
                             <li class="ps-2 sidebar-item {{ SERVICO.CONTROLLER == servico.CONTROLLER ?'active':'' }}">
-                                <a href="/{{ item.CONTROLLER~"/"~servico.CONTROLLER }}" class="nav-link link-dark py-1">
+                                <a href="/{{ item.CONTROLLER~"/"~servico.CONTROLLER }}/" class="nav-link link-dark py-1">
                                     <span class="mdi {{ servico.ICONE }} mdi-18px sidebar-item-icon"></span>
                                     <span class="sidebar-item-link d-none"> {{ servico.TITULO }}</span>
                                 </a>

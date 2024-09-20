@@ -36,17 +36,17 @@
     "phpmailer/phpmailer": "^6.8",
     "firebase/php-jwt": "^6.10.0",
     "google/recaptcha": "^1.3",
-    "twig/twig": "^3.8",
+    "twig/twig": "^3.14.0",
+    "twig/intl-extra": "^3.13.0",
+    "performing/twig-components": "dev-master",
     "bmorais/database": "^1.0",
     "tecnickcom/tcpdf": "^6.6",
     "tecnickcom/tc-lib-pdf": "^8.0",
     "setasign/fpdi": "^2.3",
-    "performing/twig-components": "^0.5.4",
     "ext-exif": "*",
     "ext-fileinfo": "*"
   },
   "require-dev": {
-    "roave/security-advisories": "dev-latest",
     "matthiasmullie/minify": "^1.3",
     "spatie/ignition": "^1.12",
     "symfony/var-dumper": "^7.0"
