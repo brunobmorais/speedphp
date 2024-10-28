@@ -51,7 +51,7 @@ class PessoaDao extends Crud{
                     WHERE PF.CPF=? AND U.EXCLUIDO=0 AND P.EXCLUIDO=0 AND PF.EXCLUIDO=0";
             $params = array($cpfcnpj);
             $result = $this->executeSQL($sql, $params);
-            if ($this->count($result) > 0) {
+            if ($this->rowCount($result) > 0) {
                 return $this->fetchOneClass($result, $this->getClassModel());
             } else {
                 return null;
@@ -72,7 +72,7 @@ class PessoaDao extends Crud{
                     WHERE U.CODUSUARIO=? AND U.EXCLUIDO='0' AND P.EXCLUIDO=0";
             $params = array($id);
             $result = $this->executeSQL($sql, $params);
-            if ($this->count($result) > 0) {
+            if ($this->rowCount($result) > 0) {
                 return $this->fetchArrayObj($result);
             } else {
                 return null;
@@ -90,7 +90,7 @@ class PessoaDao extends Crud{
                     WHERE U.CODUSUARIO=? AND P.EXCLUIDO!='1'";
             $params = array($codusuario);
             $result = $this->executeSQL($sql, $params);
-            if ($this->count($result) > 0) {
+            if ($this->rowCount($result) > 0) {
                 return $this->fetchOneClass($result, $this->getClassModel());
             } else {
                 return null;
@@ -195,7 +195,7 @@ class PessoaDao extends Crud{
         $sql = "SELECT * FROM pessoa AS U WHERE U.email=? AND U.sts!='X'";
         $params = array($email);
         $result = $this->executeSQL($sql,$params);
-        if ($this->count($result)>0){
+        if ($this->rowCount($result)>0){
             return $this->fetchOneClass($result,$this->getClassModel());
         } else {
             return null;
@@ -208,7 +208,7 @@ class PessoaDao extends Crud{
         $sql = "SELECT * FROM pessoa AS U WHERE U.cpf_cnpj LIKE ? AND U.sts!='X'";
         $params = array($cpfcnpj);
         $result = $this->executeSQL($sql,$params);
-        if ($this->count($result)>0){
+        if ($this->rowCount($result)>0){
             return $this->fetchOneClass($result,$this->getClassModel());
         } else {
             return null;
@@ -221,7 +221,7 @@ class PessoaDao extends Crud{
         $sql = "SELECT * FROM pessoa AS U WHERE U.id=? AND U.sts!='X'";
         $params = array($codusuario);
         $result = $this->executeSQL($sql,$params);
-        if ($this->count($result) > 0) {
+        if ($this->rowCount($result) > 0) {
             return $this->fetchOneClass($result,$this->classModel);
         } else {
             return null;
@@ -261,7 +261,7 @@ class PessoaDao extends Crud{
 
         $sql = "SELECT * FROM funcionario WHERE token = '" . $pessoaModel->getToken() . "' AND id ='" . $pessoaModel->getIdFuncionario() . "'";
         $result = $this->executeSQL($sql);
-        if ($this->count($result)>0){
+        if ($this->rowCount($result)>0){
             return $this->fetchArrayObj($result);
         } else {
             return false;

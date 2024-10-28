@@ -61,7 +61,7 @@ class PessoaFisicaDao extends CrudBuilder
                 INNER JOIN PESSOA AS P ON P.CODPESSOA=F.CODPESSOA
                 INNER JOIN PESSOA_FISICA PF ON PF.CODPESSOA=P.CODPESSOA
                 WHERE PF.CPF = ? AND F.EXCLUIDO = 0 AND P.EXCLUIDO=0 AND PF.EXCLUIDO=0', [$pessoaFisica->getCPF()]);
-            if ($this->count() > 0) {
+            if ($this->rowCount() > 0) {
                 return [
                     "error" => true,
                     "message" => "Já existe funcionário com esse CPF!",
@@ -76,7 +76,7 @@ class PessoaFisicaDao extends CrudBuilder
                 WHERE PF.CPF = ? AND PF.EXCLUIDO = 0 AND P.EXCLUIDO= 0', [$pessoaFisica->getCPF()]);
 
             // VERIFICA SE RETORNOU ALGUM RESULTADO
-            if ($this->count() < 1) {
+            if ($this->rowCount() < 1) {
                 // CADASTRAR ENDEREÇO
                 $this->executeSQL("INSERT INTO ENDERECO (CODCIDADE, CEP, LOGRADOURO, NUMERO, BAIRRO, COMPLEMENTO)
             VALUES (?, ?, ?, ?, ?, ?) ", [$endereco->getCODCIDADE(), $endereco->getCEP(), $endereco->getLOGRADOURO(), $endereco->getNUMERO(), $endereco->getBAIRRO(), $endereco->getCOMPLEMENTO()]);
@@ -223,7 +223,7 @@ class PessoaFisicaDao extends CrudBuilder
                 WHERE PF.CPF = ? AND PF.EXCLUIDO = 0 AND P.EXCLUIDO= 0', [$pessoaFisica->getCPF()]);
 
             // VERIFICA SE RETORNOU ALGUM RESULTADO
-            if ($this->count() < 1) {
+            if ($this->rowCount() < 1) {
                 // CADASTRAR ENDEREÇO
                 $this->executeSQL("INSERT INTO ENDERECO (CODCIDADE, CEP, LOGRADOURO, NUMERO, BAIRRO, COMPLEMENTO)
             VALUES (?, ?, ?, ?, ?, ?) ", [$endereco->getCODCIDADE(), $endereco->getCEP(), $endereco->getLOGRADOURO(), $endereco->getNUMERO(), $endereco->getBAIRRO(), $endereco->getCOMPLEMENTO()]);

@@ -22,7 +22,7 @@ class UsuarioDao extends Crud{
                     WHERE PF.CPF=? AND U.EXCLUIDO=0 AND P.EXCLUIDO=0 AND PF.EXCLUIDO=0";
             $params = array($cpfcnpj);
             $result = $this->executeSQL($sql, $params);
-            if ($this->count($result) > 0) {
+            if ($this->rowCount($result) > 0) {
                 return $this->fetchOneClass($result, $this->getClassModel());
             } else {
                 return null;
@@ -43,7 +43,7 @@ class UsuarioDao extends Crud{
                     WHERE U.CODUSUARIO=? AND U.EXCLUIDO=0 AND P.EXCLUIDO=0 AND PF.EXCLUIDO=0";
             $params = array($id);
             $result = $this->executeSQL($sql, $params);
-            if ($this->count($result) > 0) {
+            if ($this->rowCount($result) > 0) {
                 return $this->fetchOneClass($result, $this->getClassModel());
             } else {
                 return null;

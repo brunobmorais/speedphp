@@ -52,7 +52,7 @@ class PerfilDao extends Crud{
                     WHERE P.CODPERFIL=? AND P.EXCLUIDO='0'";
             $params = array($id);
             $result = $this->executeSQL($sql, $params);
-            if ($this->count($result) > 0) {
+            if ($this->rowCount($result) > 0) {
                 return $this->fetchArrayObj($result)[0];
             } else {
                 return null;
