@@ -67,7 +67,7 @@ class UsuarioApiController
                 $token = $jwtTokenClass->encode(43200, $data); // 30 dias de validade
 
                 $redireciona = !empty(SessionLib::getValue('REDIRECIONA')) ? SessionLib::getValue('REDIRECIONA') : '/';
-                SessionLib::setDataSession($usuarioResult);
+                SessionLib::setDataSession($usuarioResult->getDataSession());
 
                 (new LogDao())->salvaLog("LOGIN: ENTROU NO SISTEMA");
 

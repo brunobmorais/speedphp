@@ -13,7 +13,7 @@ use Application\models\DispositivosModel;
  * Time: 15:17
  */
 
-/*TODO*/
+
 // ESSA CLASSE SÓ DEVE SER CHAMADA APÓS TODAS HTML
 
 class LocalStorageClass

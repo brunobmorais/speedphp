@@ -255,5 +255,20 @@ class UsuarioModel extends ModelAbstract {
         return $this;
     }
 
+    public function getDataSession()
+    {
+        return [
+            "CODUSUARIO" => $this->getCODUSUARIO(),
+            "CODPESSOA" => $this->getCODPESSOA(),
+            "CPF" => $this->getCPF(),
+            "NOME" => $this->getNOME(),
+            "EMAIL" => $this->getEMAIL(),
+            "TELEFONE" => $this->getTELEFONE(),
+            "SEXO" => $this->getSEXO(),
+            "DATANASCIMENTO" => $this->getDATANASCIMENTO(),
+            "PRIMEIRONOME" => explode(" ", $this->getNOME())[0],
+        ];
+    }
+
 
 }

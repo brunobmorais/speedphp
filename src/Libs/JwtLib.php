@@ -148,7 +148,7 @@ class JwtLib
                 // TOKEN INVALIDO
                 return false;
             }
-        } catch (\Error $ex) {
+        } catch (\Exception $ex) {
             //echo "Erro: ".$ex;
             return false;
         }

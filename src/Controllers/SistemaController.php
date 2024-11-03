@@ -854,7 +854,7 @@ class SistemaController extends ControllerCore implements ControllerInterface
             $data['id'] = $codusuario;
             $token = $jwtTokenClass->encode(1440, $data);
             CookieLib::setValue("token", $token,1);
-            SessionLib::setDataSession($usuarioModel);
+            SessionLib::setDataSession($usuarioModel->getDataSession());
 
             (new LogDao())->salvaLog("USUARIO-LOGAR-COMO: LOGOU COMO CODUSUARIO: {$codusuario}", $data["SERVICO"]["CODSERVICO"], null);
             (new AlertLib())->success("Efetuado com sucesso!", "/");

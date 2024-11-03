@@ -34,3 +34,8 @@ createpage:
 build:
 	curl ${URL}/build
 	echo "Executado"
+
+backup:
+	@echo "Iniciando o processo de backup e importação..."
+	@bash docker/import-database.sh
+	echo "Executado"

@@ -1,4 +1,4 @@
-FROM php:8.2-apache
+FROM php:7.4-apache
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
   autoconf \
@@ -24,13 +24,9 @@ RUN docker-php-ext-configure soap --enable-soap
 
 RUN docker-php-ext-install calendar && docker-php-ext-configure calendar
 
-RUN docker-php-ext-install gd intl pdo_mysql pdo_pgsql mysqli zip pdo_dblib soap exif bcmath
+RUN docker-php-ext-install gd intl pdo_mysql pdo_pgsql mysqli
 
-RUN pecl install imagick && docker-php-ext-enable imagick
-
-RUN pecl install xdebug && docker-php-ext-enable xdebug
-
-RUN docker-php-ext-enable pdo_dblib
+RUN pecl install xdebug-3.1.6 && docker-php-ext-enable xdebug
 
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
@@ -57,8 +53,6 @@ RUN find /var/www/html -type f -exec chmod u+rw,g+rw,o+r {} +
 RUN chown -R www-data:www-data /var/www/html
 
 WORKDIR /var/www/html
-
-COPY --from=composer /usr/bin/composer /usr/bin/composer
 
 RUN a2enmod rewrite
 RUN a2enmod ssl

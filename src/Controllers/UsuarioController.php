@@ -76,7 +76,7 @@ class UsuarioController extends ControllerCore implements ControllerInterface
 
         if ($result) {
             $resultUsuarioModel = $pessoaDao->buscarUsuarioModelId($_POST['CODUSUARIO']);
-            $sessaoClass->setDataSession($resultUsuarioModel);
+            $sessaoClass->setDataSession($resultUsuarioModel->getDataSession());
 
             $alertaClass->success("Atualização realizada com sucesso!", "/usuario/meusdados");
         } else {

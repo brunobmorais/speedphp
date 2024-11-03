@@ -240,6 +240,8 @@ class FuncoesLib
     {
         $cpf = str_replace(".", "", $cpf);
         $cpf = str_replace("-", "", $cpf);
+        $cpf = str_replace("/", "", $cpf);
+
         return $cpf;
     }
 
@@ -280,20 +282,12 @@ class FuncoesLib
 
     /**
      * @param $texto
-     * @return mixed
+     *
+     * @return string|array
      */
-    public function removeCaracteres($texto)
+    public function removeCaracteres($texto): string|array
     {
-        $texto = str_replace(".", "", $texto);
-        $texto = str_replace("-", "", $texto);
-        $texto = str_replace("/", "", $texto);
-        $texto = str_replace(" ", "", $texto);
-        $texto = str_replace("(", "", $texto);
-        $texto = str_replace(")", "", $texto);
-        $texto = str_replace("_", "", $texto);
-
-
-        return $texto;
+        return str_replace(array(".", "-", "/", " ", "(", ")", "_"), "", $texto);
     }
 
     /**
@@ -850,6 +844,18 @@ class FuncoesLib
         }
         return $obj;
     }
+
+
+    /**
+     * limpa caracteres especiais para inserir no banco
+     * @param mixed $string
+     * @return array|string|null
+     */
+    public static function clean($string) {
+        $string = str_replace(' ', ' ', $string); //
+     
+        return preg_replace('/[^A-Za-z0-9\-\s]/', '', $string); // 
+     }
 
     function tempoCorrido($time) {
 

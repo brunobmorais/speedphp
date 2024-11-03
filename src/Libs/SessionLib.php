@@ -12,24 +12,28 @@ use App\Models\UsuarioModel;
  */
 class SessionLib
 {
-    protected static $nomeSessao = "SESSION-APP";
+    protected const NOME_SESSAO = "SESSION-APP";
 
     public function __construct()
     {
     }
 
-    public static function start(){
-        @ob_start();
-        session_name(self::$nomeSessao);
-        session_start();
+    public static function start(): void{
+        if (session_status() === PHP_SESSION_NONE) {
+            session_name(self::NOME_SESSAO);
+            session_start();
+            ob_start();
+        }
     }
 
-    private static function end(){
-        session_write_close();
-        ob_end_flush();
+    private static function end(): void{
+        if (session_status() === PHP_SESSION_ACTIVE) {
+            session_write_close();
+            ob_end_flush();
+        }
     }
 
-    public static function apagaSessao()
+    public static function apagaSessao(): void
     {
         self::start();
 
@@ -48,13 +52,10 @@ class SessionLib
 
     public static function getValue($name)
     {
-        $valorRetorno = null;
         self::start();
-        if (isset($_SESSION[$name]))
-            $valorRetorno = $_SESSION[$name];
+        $value = $_SESSION[$name] ?? null;
         self::end();
-
-        return $valorRetorno;
+        return $value;
     }
 
     public static function apagaCampo($nomeCampo)
@@ -76,33 +77,24 @@ class SessionLib
         }
     }*/
 
-    public static function setDataSession(UsuarioModel $dados){
+    public static function setDataSession(array $dados){
 
         self::apagaSessao();
 
-        self::setValue("CODUSUARIO", $dados->getCODUSUARIO());
-        self::setValue("CODPESSOA", $dados->getCODPESSOA());
-        self::setValue("CPF", $dados->getCPF());
-        self::setValue("NOME", $dados->getNOME());
-        self::setValue("EMAIL", $dados->getEMAIL());
-        self::setValue("TELEFONE", $dados->getEMAIL());
-        self::setValue("SEXO", $dados->getSEXO());
-        self::setValue("DATANASCIMENTO", $dados->getDATANASCIMENTO());
-        self::setValue("PRIMEIRONOME", explode(" ", $dados->getNOME())[0]);
-
+        foreach ($dados as $key => $value) {
+            self::setValue($key, $value);
+        }
     }
 
-    public static function getDataSession(){
+    public static function getDataSession(array $keys = []){
 
-        $dados['CODPESSOA'] = self::getValue("CODPESSOA");
-        $dados['CODUSUARIO'] = self::getValue("CODUSUARIO");
-        $dados['CPF'] = self::getValue("CPF");
-        $dados['NOME'] = self::getValue("NOME");
-        $dados['EMAIL'] = self::getValue("EMAIL");
-        $dados['TELEFONE'] = self::getValue("TELEFONE");
-        $dados['DATANASCIMENTO'] = self::getValue("DATANASCIMENTO");
-        $dados['PRIMEIRONOME'] = self::getValue("PRIMEIRONOME");
-        $dados['REDIRECIONA'] = self::getValue("REDIRECIONA");
+        // Se $keys for vazio, busca todos os dados de sessão
+        $keys = empty($keys) ? array_keys($_SESSION) : $keys;
+
+        $dados = [];
+        foreach ($keys as $key) {
+            $dados[$key] = self::getValue($key);
+        }
 
         return $dados;
     }

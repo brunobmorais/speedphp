@@ -8,7 +8,7 @@ class DownloadLib
 
         $jwt = new JwtLib();
         $token = $jwt->encode(10);
-        return "/download/?file=$file&folder={$folder}&token={$token}";
+        return "/documento/download/?file=$file&folder={$folder}&token={$token}";
 
     }
 }

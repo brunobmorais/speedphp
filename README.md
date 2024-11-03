@@ -16,6 +16,9 @@ https://seudominio.com/api/nome_da_rota
 
 Todo tráfego passo pelo index principal, a aplicação faz um autoloader dentro da pasta Application e chama o controler específico com o método index, a qual é o método padrão, caso a pessoa não especifique.
 
+## FRAMEWORK FRONT-END
+    https://getbootstrap.com/ -> versão 5.3
+
 ## ESTRUTURA
 
     FRAMEWORK
@@ -89,23 +92,23 @@ Todo tráfego passo pelo index principal, a aplicação faz um autoloader dentro
     Neste arquivo, apenas negaremos a navegação no diretório com a opção Options -Indexes.
 
 ## GERAR FAVICON
-https://www.favicon-generator.org/
+    https://www.favicon-generator.org/
 
 ## TESTAR
     Configure php como variavel de ambiente e execute o comando abaixo
         php -S localhost:8080 -t ./public
 
 ## GERAR ARQUIVOS MINIFICADOS CSS, JS
-    Acesse seu site http://seusite.com/config/build
+    Navegador: http://seusite.com/config/build
+    Terminal: make build
 
 ## CRIAR CONTROLLER E TEMPLATE
-    Acesse seu site http://localhost/config/createpage/NOME_CONTROLLER/NOME_SERVICO
+    Nagavegador: http://localhost/config/createpage/NOME_CONTROLLER/NOME_SERVICO
+    Terminal: make create build
 
 ## CRIAR MODEL E DAO
-    Acesse seu site http://localhost/config/createmodel/NOME_TABELA_BANCO
-
-## FRAMEWORK FRONT-END
-    https://getbootstrap.com/ -> versão 5.3
+    Navegador http://localhost/config/createmodel/NOME_TABELA_BANCO
+    Terminal: make createmodel
 
 ## COMANDOS
     Otimizar autoloader para produção
@@ -117,15 +120,32 @@ https://www.favicon-generator.org/
         composer update
     3 - Inicie o docker
         docker-compose up
-    4 - Acesse localhost ou framework.localhost no seu navegador
+    4 - Acesse localhost ou fpto.localhost no seu navegador
+    5 - Criação das pastas de upload
+        - /public/files/funcinario
+
+## ATIVAR XDEBUG
+    1 - PHPSTORM: Adicione o absolute path /var/www/html no Settings -> PHP -> Servers, marque Use path mappings e adicione o Absolute path on the server
 
 ## CREDENCIAIS DE ACESSO
     login: 000.000.000-00
     senha: 123456
 
-## ACESSAR BANCO DE DADOS
+## ACESSAR BANCO DE DADOS PHPMYADMIN
     Url: http://phpmyadmin.localhost:8080/
     Usuario: user
     Senha: user
 
     usuario e senha root: root
+
+## TRABALHAR EM AMBIENTE LOCALHOST
+    Renomear o arquivo /config/developerConfig.example.php para /config/developerConfig.php
+    Editar as infomrações dentro do arquivo com as informações do servidor localhost
+
+### PACOTES EXTERNOS
+- robmorgan/phinx
+    - name: Migration e Seeds
+    - link: https://phinx.org/
+- bmorais/database
+    - PDO Connection Database
+    - link: https://github.com/brunobmorais/php-database

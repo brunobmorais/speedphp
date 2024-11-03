@@ -1,4 +1,4 @@
-FROM php:8.2-apache
+FROM php:8.3-apache
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
   autoconf \
@@ -26,7 +26,16 @@ RUN docker-php-ext-install calendar && docker-php-ext-configure calendar
 
 RUN docker-php-ext-install gd intl pdo_mysql pdo_pgsql mysqli zip pdo_dblib soap exif bcmath
 
-RUN pecl install imagick && docker-php-ext-enable imagick
+RUN apt-get update && apt-get install -y \
+    libmagickwand-dev \
+    libmagickcore-dev \
+    imagemagick \
+    imagemagick-6-common \
+    pkg-config \
+    gcc \
+    make \
+    autoconf \
+    --no-install-recommends
 
 RUN pecl install xdebug && docker-php-ext-enable xdebug
 
@@ -62,6 +71,9 @@ COPY --from=composer /usr/bin/composer /usr/bin/composer
 
 RUN a2enmod rewrite
 RUN a2enmod ssl
+
+# Limpe os caches do apt para reduzir o tamanho da imagem
+RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 
 EXPOSE 80
 EXPOSE 443
