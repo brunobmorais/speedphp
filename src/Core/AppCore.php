@@ -23,36 +23,46 @@ class AppCore
     {
         $URL_ARRAY = $this->parseUrl();
 
-        if (!empty($URL_ARRAY[0]) && isset($URL_ARRAY[0])) {
-            if ($URL_ARRAY[0] === "api") {
-                Api::run();
-            } else {
-                $this->getControllerFromUrl($URL_ARRAY);
-                $this->getMethodFromUrl($URL_ARRAY);
-                $this->getParamsFromUrl($URL_ARRAY);
-                // chama um método de uma classe passando os parâmetros
-                $response = call_user_func_array([$this->controller, $this->method], $this->params);
-            }
-        } else {
+        // Verifica se a URL não está vazia ou se não está apontando para a API
+        if (!empty($URL_ARRAY[0]) && $URL_ARRAY[0] === "api") {
+            Api::run();
+            return; // Interrompe o fluxo se for uma requisição API
+        }
+
+        // Se a URL não está vazia, tenta obter o controller, método e parâmetros
+        if (!empty($URL_ARRAY)) {
             $this->getControllerFromUrl($URL_ARRAY);
             $this->getMethodFromUrl($URL_ARRAY);
             $this->getParamsFromUrl($URL_ARRAY);
-            // chama um método de uma classe passando os parâmetros
-            $response = call_user_func_array([$this->controller, $this->method], $this->params);
+        } else {
+            // Caso não tenha controlador na URL, inicializa o controlador padrão 'Home'
+            $this->controller = 'App\\Controllers\\HomeController';
+            $this->controller = new $this->controller();
+            $this->method = 'index';
+            $this->params = [];
         }
 
+        // Chama o método do controlador passando os parâmetros
+        $response = call_user_func_array([$this->controller, $this->method], $this->params);
+
+        // Verifica se houve algum erro na execução
         if (!empty($response)) {
-            $e = $response;
-            if (CONFIG_DISPLAY_ERROR_DETAILS) {
-                if (is_array($e))
-                    throw new \ErrorException($e->getMessage(), $e->getCode(), 1, $e->getFile(), $e->getLine());
-                else
-                    throw new \ErrorException($e);
-            } else {
-                (new ErroController())->database();
-            }
+            $this->handleError($response);
         }
 
+    }
+
+    private function handleError(mixed $error): void
+    {
+        if (CONFIG_DISPLAY_ERROR_DETAILS) {
+            if ($error instanceof \ErrorException) {
+                throw new \ErrorException($error->getMessage(), $error->getCode(), 1, $error->getFile(), $error->getLine());
+            } else {
+                throw new \ErrorException($error);
+            }
+        } else {
+            (new ErroController())->database();  // Caso não mostre os detalhes, apenas redireciona para página de erro
+        }
     }
 
     /**
