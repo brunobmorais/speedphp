@@ -1,0 +1,24 @@
+{% set id = id|default(random()) %}
+
+<div class="form-group col-12 col-md-6">
+    <x-input.selecttwo label="Tipo de arquivo"
+                       name="TIPO_ARQUIVO[]"
+                       id="{{ id }}"
+                       optionValue="CODTIPOARQUIVO"
+                       optionLabel="NOME"
+                       class="input-tipo-arquivo"
+                       :object="getDaos('PrTipoArquivoDao', 'buscarTipoArquivo')">
+    </x-input.selecttwo>
+</div>
+<div class="form-group col-12 col-md-6">
+    <x-input.file label="Arquivo (imagem/pdf)" name="ARQUIVO[]" accept="image/*,application/pdf"></x-input.file>
+</div>
+{% if assinatura == "true" %}
+    <div class="form-group form-check ms-3">
+        <input class="form-check-input" type="checkbox" value="1" name="ASSINAR">
+        <label class="form-check-label" for="flexCheckDefault">
+            Assinar documento
+        </label>
+    </div>
+{% endif %}
+<hr/>

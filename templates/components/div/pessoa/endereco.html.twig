@@ -1,0 +1,177 @@
+{% if PESSOA.CODENDERECO %}
+    {% set enderecoObj = getDaos('EnderecoDao', "buscar", [{'CODENDERECO' : PESSOA.CODENDERECO  }  ,{ 'EXCLUIDO' : '0'}])|first %}
+{% endif %}
+{% block top %}{% endblock %}
+
+{% block middle %}
+    <div>
+        <input type="hidden" name="CODENDERECO" value='{{ enderecoObj.CODENDERECO }}'>
+        <div class="row">
+            <div class="section-title col-12">ENDEREÇO</div>
+            <div class="form-group col-12 col-md-4 float-left">
+                <label>CEP</label>
+                <div class="form-group">
+                    <input type="text" class="form-control" id="cep{{ id }}" name="CEP"
+                           placeholder="77555-000"
+                           value="{{ enderecoObj.CEP }}"
+                           onkeyup="mascara(this,mcep); buscarCep();"
+                           autocomplete="nope"
+                           maxlength="9" minlength="9" required>
+                    <div class="invalid-feedback">
+                        Preencha o campo corretamente
+                    </div>
+                </div>
+            </div>
+            <div class="form-group col-12 col-md-8 float-left">
+                <label>Logradouro</label>
+                <div class="form-group">
+                    <input type="text" class="form-control" id="logradouro{{ id }}" name="LOGRADOURO"
+                           placeholder="Rua, Quadra, Alameda etc."
+                           value="{{ enderecoObj.LOGRADOURO }}"
+                           autocomplete="nope"
+                           required>
+                    <div class="invalid-feedback">
+                        Preencha o campo corretamente
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="row">
+            <div class="form-group col-12 col-md-2 float-left">
+                <label class="form-label">Número</label>
+                <input name="NUMERO" id="numero{{ id }}" type="text" class="form-control" placeholder="Número" required
+                       autocomplete="nope" value="{{ enderecoObj.NUMERO }}"/>
+                <div class="invalid-feedback">
+                    Preencha o campo corretamente
+                </div>
+            </div>
+
+
+            <div class="form-group col-12 col-md-6 float-left">
+                <label class="form-label">Complemento</label>
+                <input name="COMPLEMENTO" id="complemento{{ id }}" type="text" class="form-control" placeholder="Residencial, Apartamento...."
+                       autocomplete="nope" value="{{ enderecoObj.COMPLEMENTO }}"/>
+                <div class="invalid-feedback">
+                    Preencha o campo corretamente
+                </div>
+            </div>
+            <div class="form-group col-12 col-md-4 float-left">
+                <label class="form-label">Bairro</label>
+                <input name="BAIRRO" id="bairro{{ id }}" type="text" class="form-control" placeholder="Nome do bairro" required
+                       autocomplete="nope" value="{{ enderecoObj.BAIRRO }}"/>
+                <div class="invalid-feedback">
+                    Preencha o campo corretamente
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="form-group col-12 col-md-6 float-left">
+                <label class="form-label">Estado</label>
+                <select name="ESTADO" id="estado{{ id }}" onchange='buscarMunicipio()' class="form-control form-select" placeholder=""
+                        required>
+                    <option value="" disabled selected>Selecione um Estado</option>
+
+
+                    {% set buscaEstadoQuery = [{'CODCIDADE' : enderecoObj.CODCIDADE}] %}
+                    {% set estadoUFPessoa = getDaos('CidadeDao', "buscar", buscaEstadoQuery )|first %}
+                    {% for estado in getDaos('CidadeDao', 'getEstados') %}
+                        <option value="{{ estado.UF }}" {{ estadoUFPessoa.UF == estado.UF ? 'selected ' : '' }}>{{ estado.UF }}</option>
+
+                    {% endfor %}
+
+                </select>
+                <div class="invalid-feedback">
+                    Preencha o campo corretamente
+                </div>
+            </div>
+
+
+            <div class="form-group col-12 col-md-6 float-left">
+                <label class="form-label">Cidade</label>
+                <select name="CODCIDADE" id="cidade{{ id }}" class="form-control select2" placeholder="" required>
+                    {% set buscaCidadesEstadoQuery = [{'UF' : estadoUFPessoa.UF}] %}
+                    {% set buscaCidadesEstadoQuery = buscaCidadesEstadoQuery|merge(['NOME ASC']) %}
+                    {% for cidades in getDaos('CidadeDao', "buscar", buscaCidadesEstadoQuery ) %}
+                        <option value="{{ cidades.CODCIDADE }}" {{ enderecoObj.CODCIDADE == cidades.CODCIDADE ? 'selected ' : '' }}>{{ cidades.NOME }}</option>
+
+                    {% endfor %}
+
+                </select>
+                <div class="invalid-feedback">
+                    Preencha o campo corretamente
+                </div>
+            </div>
+
+        </div>
+    </div>
+{% endblock %}{% block bottom %}{% endblock %}
+
+<script>
+
+    async function buscarCep() {
+
+        var cep = $('#cep{{ id }}').val();
+
+        if (cep.length > 8) {
+            cep = removeCaracteres(cep);
+
+            var valor = await requisicaoHttp("https://viacep.com.br/ws/" + cep + "/json/", "GET").then(async (data) => {
+                console.log(data);
+                if (data.erro !== true && data !== false) {
+                    $('#logradouro{{ id }}').val(data.logradouro);
+                    $('#bairro{{ id }}').val(data.bairro);
+                    $('#complemento{{ id }}').val(data.complemento);
+                    $('#estado{{ id }}').val(data.uf).prop('selected', true);
+
+                    await buscarMunicipio(data.localidade);
+
+                    $('#numero').focus();
+                } else {
+                }
+
+            }).catch(() => {
+
+            });
+
+            console.log(valor);
+        }
+    }
+
+    async function buscarMunicipio(nomecidade = null) {
+
+        var selectEstado = document.getElementById("estado{{ id }}");
+        var uf = selectEstado.options[selectEstado.selectedIndex].value;
+        var selectMunicipio = document.getElementById("cidade{{ id }}");
+        selectMunicipio.innerHTML = "";
+
+        if (nomecidade != null) {
+            nomecidade = removerAcentos(maiuscula(nomecidade));
+        }
+
+
+        await requisicaoHttp("/api/buscarmunicipio", "POST", JSON.stringify({"uf": uf})).then((data) => {
+
+            //console.log(data);
+            if (!data.error) {
+                for (var i = 0; i < data.data.length; i++) {
+                    option = document.createElement("option");
+                    texto = document.createTextNode(data.data[i].NOME);
+                    if (removerAcentos(maiuscula(data.data[i].NOME)) === nomecidade) {
+                        option.setAttribute("selected", "selected");
+                        $('#municipio{{ id }}').trigger('change');
+                    }
+                    option.setAttribute("value", data.data[i].CODCIDADE);
+                    option.appendChild(texto);
+                    selectMunicipio.appendChild(option);
+                }
+            }
+
+        }).catch(() => {
+
+        });
+    }
+
+</script>

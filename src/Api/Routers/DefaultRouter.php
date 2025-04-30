@@ -1,9 +1,8 @@
 <?php
+
 namespace App\Api\Routers;
 
 
-use App\Api\Controllers\PessoaApiController;
-use App\Api\Controllers\PrevisaoDoTempoApiController;
 use App\Api\Controllers\UsuarioApiController;
 use App\Api\Lib\ResponseClass;
 use App\Api\Lib\RouterClass;
@@ -11,17 +10,25 @@ use App\Api\Lib\RouterClass;
 class DefaultRouter
 {
 
-    public static function start(RouterClass $router): RouterClass{
+    public static function start(RouterClass $router): RouterClass
+    {
 
         // FAZER LOGIN
-        $router->post('/login', [
+        $router->post('/usuario/login', [
             function ($request) {
                 return new ResponseClass(200, (new UsuarioApiController())->login($request));
             }
         ]);
 
+        // FAZER LOGIN
+        $router->post('/usuario/cadastrar', [
+            function ($request) {
+                return new ResponseClass(200, (new UsuarioApiController())->cadastrar($request));
+            }
+        ]);
+
         // RECUPERAR SENHA
-        $router->post('/recuperasenha', [
+        $router->post('/usuario/recuperasenha', [
             function ($request) {
                 return new ResponseClass(200, (new UsuarioApiController())->recuperasenha($request));
             }
@@ -34,16 +41,7 @@ class DefaultRouter
             }
         ]);
 
-        $router->get('/pessoa/pessoafisica/{cpf}', [
-            "middlewares" => [
-                "origin",
-                "bearer-auth"
-            ],
-            function ($request, $cpf) {
-                $args['cpf'] = $cpf;
-                return new ResponseClass(200, (new PessoaApiController())->pessoafisica($request,$args));
-            }
-        ]);
+
 
         return $router;
     }

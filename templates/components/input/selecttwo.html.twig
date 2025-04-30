@@ -1,5 +1,5 @@
 <label for="{{name|upper}}">{{label}}</label>
-<select name="{{name}}" id="{{name|lower}}" class="select2 form-control">
+<select name="{{name}}" id="{{id|default(name|lower)}}" class="select2 form-control {{ class|default("") }}" {{ required|default("") }} onchange="{{ onchange|default("") }}">
 	<option value="" disabled selected>Selecione um
 		{{label}}</option>
 	{% if object %}

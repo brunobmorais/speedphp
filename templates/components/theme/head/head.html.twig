@@ -1,0 +1,107 @@
+
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="content-language" content="pt-BR"/>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
+    <meta name="robots" content="index, follow">
+    <meta name='googlebot' content='index,follow'>
+    <meta http-equiv='Cache-control' content='max-age=1800, public'>
+    <meta name="author" content="{{HEAD.author|length>0 ? HEAD.author : CONFIG_HEADER.author}}"/>
+    <meta name="keywords" content="{{HEAD.keywords|length>0 ? HEAD.keywords : CONFIG_HEADER.keywords}}">
+    <meta name="description" content="{{HEAD.description|length>0 ? HEAD.description : CONFIG_HEADER.description}}">
+    <link rel='canonical' href='{{HEAD.url|length>0 ? HEAD.url : CONFIG_HEADER.url}}'/>
+    <meta name="docsearch:language" content="pt-BR">
+    <meta name="docsearch:version" content="1.0">
+
+    <title>{{HEAD.title}}</title>
+
+    {% if (HEAD.tag|length>0) %}
+        <!-- Google Tag Manager -->
+        <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+                    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+                j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+                'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+            })(window,document,'script','dataLayer','{{ HEAD.tag }}');</script>
+        <!-- End Google Tag Manager -->
+    {% endif %}
+
+    <meta property="og:title" content="{{HEAD.title}}">
+    <meta property="og:url" content="{{HEAD.url|length>0 ? HEAD.url : CONFIG_HEADER.url}}">
+    <meta property="og:image" content="{{HEAD.image|length>0 ? HEAD.image : CONFIG_HEADER.image}}">
+    <meta property="og:image:type" content="image/png">
+    <meta property="og:description" content="{{HEAD.description|length>0 ? HEAD.description : CONFIG_HEADER.description}}">
+    <meta property="og:site_name" content="{{HEAD.title}}">
+    <meta property='og:type' content='website'/>
+    <meta property='og:locale' content='pt_BR'>
+
+    <meta name="twitter:title" content="{{HEAD.title}}">
+    <meta name="twitter:description" content="{{HEAD.description|length>0 ? HEAD.description : CONFIG_HEADER.description}}">
+    <meta name="twitter:image" content="{{HEAD.image|length>0 ? HEAD.image : CONFIG_HEADER.image}}">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image:alt" content="{{HEAD.title}}">
+    <meta name="twitter:site" content="{{HEAD.author|length>0 ? HEAD.author : CONFIG_HEADER.author}}">
+    <meta name="twitter:creator" content="{{HEAD.author|length>0 ? HEAD.author : CONFIG_HEADER.author}}">
+
+    <meta itemprop='url' content='{{HEAD.url}}'/>
+    <meta itemprop='name' content="{{HEAD.title}}"/>
+    <meta itemprop='image' content='{{HEAD.image}}'/>
+    <meta itemprop='description' content='{{HEAD.description}}'/>
+
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="application-name" content="{{HEAD.title}}">
+    <meta name="apple-mobile-web-app-title" content="{{HEAD.title}}">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel='apple-touch-startup-image' href='/assets/img/icon/apple-icon-180x180.png?v={{CONFIG_VERSION_CODE}}'>
+
+    {# ICON #}
+    <link rel="apple-touch-icon" sizes="57x57" href="/assets/img/icon/apple-icon-57x57.png?v={{CONFIG_VERSION_CODE}}">
+    <link rel="apple-touch-icon" sizes="60x60" href="/assets/img/icon/apple-icon-60x60.png?v={{CONFIG_VERSION_CODE}}">
+    <link rel="apple-touch-icon" sizes="72x72" href="/assets/img/icon/apple-icon-72x72.png?v={{CONFIG_VERSION_CODE}}">
+    <link rel="apple-touch-icon" sizes="76x76" href="/assets/img/icon/apple-icon-76x76.png?v={{CONFIG_VERSION_CODE}}">
+    <link rel="apple-touch-icon" sizes="114x114" href="/assets/img/icon/apple-icon-114x114.png?v={{CONFIG_VERSION_CODE}}">
+    <link rel="apple-touch-icon" sizes="120x120" href="/assets/img/icon/apple-icon-120x120.png?v={{CONFIG_VERSION_CODE}}">
+    <link rel="apple-touch-icon" sizes="144x144" href="/assets/img/icon/apple-icon-144x144.png?v={{CONFIG_VERSION_CODE}}">
+    <link rel="apple-touch-icon" sizes="152x152" href="/assets/img/icon/apple-icon-152x152.png?v={{CONFIG_VERSION_CODE}}">
+    <link rel="apple-touch-icon" sizes="180x180" href="/assets/img/icon/apple-icon-180x180.png?v={{CONFIG_VERSION_CODE}}">
+    <link rel="icon" type="image/png" sizes="192x192"  href="/assets/img/icon/android-icon-192x192.png?v={{CONFIG_VERSION_CODE}}">
+    <link rel="icon" type="image/png" sizes="32x32" href="/assets/img/icon/favicon-32x32.png?v={{CONFIG_VERSION_CODE}}">
+    <link rel="icon" type="image/png" sizes="96x96" href="/assets/img/icon/favicon-96x96.png?v={{CONFIG_VERSION_CODE}}">
+    <link rel="icon" type="image/png" sizes="16x16" href="/assets/img/icon/favicon-16x16.png?v={{CONFIG_VERSION_CODE}}">
+
+    <meta name='msapplication-TileColor' content='{{color}}'>
+    <meta name="msapplication-TileImage" content="/assets/img/icon/ms-icon-144x144.png?v={{CONFIG_VERSION_CODE}}">
+    <meta name='msapplication-starturl' content='/'>
+
+    <script data-pace-options='{ "ajax": false }'
+            src='/assets/plugin/pace/pace.min.js?v={{CONFIG_VERSION_CODE}}'></script>
+    <link href='/assets/plugin/pace/pace-theme-default.min.css?v={{CONFIG_VERSION_CODE}}' rel='stylesheet'/>
+
+    <link rel="mask-icon" href="/assets/img/icon/apple-icon-180x180.png?v={{CONFIG_VERSION_CODE}}" color="{{color}}">
+    <meta name='theme-color' content='{{color}}'>
+    <link rel="manifest" href="/manifest.webmanifest?v={{CONFIG_VERSION_CODE}}"/>
+
+    {# BOOTSTRAP #}
+    <link rel='stylesheet' href="/assets/plugin/bootstrap/dist/css/bootstrap.min.css?v={{CONFIG_VERSION_CODE}}"/>
+
+    {# ICONES #}
+    <link rel='stylesheet' href="/assets/plugin/@mdi/font/css/materialdesignicons.min.css?v={{CONFIG_VERSION_CODE}}"/>
+
+    {# PLUGINS #}
+    <link rel="stylesheet" href="/assets/plugin/izitoast/dist/css/iziToast.min.css?v={{CONFIG_VERSION_CODE}}">
+    <link rel="stylesheet" href="/assets/plugin/select2/css/select2.min.css?v={{CONFIG_VERSION_CODE}}">
+    <link rel="stylesheet" href="/assets/plugin/select2/css/select2-bootstrap5.css?v={{CONFIG_VERSION_CODE}}">
+    <link rel="stylesheet" href="/assets/plugin/sweetalert2/sweetalert2.min.css?v={{CONFIG_VERSION_CODE}}"/>
+
+    {# PESSOAL #}
+    <link href='/assets/css/style.min.css?v={{CONFIG_VERSION_CODE}}' rel='stylesheet'>
+
+    {# JS-->#}
+    <script src="/assets/plugin/jquery/jquery.min.js?v={{CONFIG_VERSION_CODE}}"></script>
+    <script defer src="/assets/plugin/alpinejs/alpinejs.min.js?v={{CONFIG_VERSION_CODE}}"></script>
+    <script defer src="/assets/plugin/htmx/htmx.min.js?v={{CONFIG_VERSION_CODE}}"></script>
+
+
+
+

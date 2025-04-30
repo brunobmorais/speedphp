@@ -3,6 +3,7 @@
 namespace App\Libs\Template;
 
 use App\Libs\CookieLib;
+use App\Libs\FuncoesLib;
 use App\Libs\JwtLib;
 use App\Libs\SessionLib;
 
@@ -14,11 +15,14 @@ class BlankTemplate implements TemplateInterface
     public function build(string $view = "", array $data = [], array $css = [], array $js = [])
     {
         try {
+            $this->controller->getSession();
+
             $data["THEME"] = empty(CookieLib::getValue("theme")) ? '' : (CookieLib::getValue("theme") == "dark" ? 'data-bs-theme="dark" class="dark-mode"' : '');
-            $this->setHead($head['TITLE'] ?? "");
             SessionLib::setValue("TOKEN_JWT", (new JwtLib())->encode());
 
-            $data['head'] = $this->head();
+            $data["HEAD"]["title"] = !empty($data["HEAD"]['title']) ? CONFIG_HEADER['title']." › ".$data["HEAD"]['title']:CONFIG_HEADER['title'];
+            $data["HEAD"]["url"] = (new FuncoesLib())->getCurrentUrlWithoutParameters();
+            $data['head'] = $this->head($data);
             $data['main'] = $this->render($view, $data, false);
             $data['main'] .= $this->servicesJS($data, false);
             $data['footer'] = $this->footer();

@@ -1,0 +1,5 @@
+<label for="{{name|lower}}">{{label}}</label>
+<input name="{{ name|upper }}" id="{{id|lower ?: name|lower }}" type="file" class="form-control input-arquivo" accept="{{ accept|default('application/pdf') }}" {{ required|default("") }} {{ multiple|default("") }}/>
+<div class="invalid-feedback">
+	Preencha o campo corretamente
+</div>

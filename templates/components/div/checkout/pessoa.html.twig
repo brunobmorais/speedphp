@@ -1,0 +1,29 @@
+{% set id = id|default(random()) %}
+
+<div class="row">
+    <div class="form-group">
+        <label>CPF</label>
+        <div class="input-group mb-1">
+            <input type="text" class="form-control" placeholder="CPF"
+                   aria-label="Recipient's username" aria-describedby="button-addon2"
+                   id="cpf{{ id }}" name="CPF[]" onkeydown="mascara(this,mcpf)"
+                   maxlength="14" onkeyup="buscarPessoaChange({{ id }})" value="{{ cpf }}" {{ cpf|length>0?'disabled':'' }}>
+            <button class="btn btn-outline-secondary {{ cpf|length>0?'d-none':'' }}" type="button" id="button-addon2"
+                    onclick="buscarPessoa({{ id }})">Buscar
+            </button>
+        </div>
+    </div>
+</div>
+<div class="row d-none" id="divPessoaInscricao{{ id }}">
+    <div class="form-group col-12 col-md-6">
+        <label class="mb-0">Nome</label>
+        <p class="mb-0" id="nomeAtleta{{ id }}">---</p>
+    </div>
+    <div class="form-group col-12 col-md-6">
+        <label class="mb-0">Email</label>
+        <p class="mb-0" id="emailAtleta{{ id }}">---</p>
+    </div>
+    <input type="hidden" name="CODPESSOA_INSCRICAO[]" id="codpessoaInscricao{{ id }}" value=""/>
+    <input type="hidden" name="NOME_INSCRICAO[]" id="nomeInscricao{{ id }}" value=""/>
+</div>
+<hr>

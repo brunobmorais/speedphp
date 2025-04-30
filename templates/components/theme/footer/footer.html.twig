@@ -1,0 +1,29 @@
+<footer class='d-none d-lg-block'>
+    <div class='col-12 text-center'>
+    Desenvolvido por {{ nameFull }}<br>
+    <a href='/institucional/privacidade' class='btn btn-sm btn-link'>Termo de Uso e Privacidade</a>
+    </div>
+</footer>
+
+<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/cookieconsent@3/build/cookieconsent.min.css" />
+<script src="https://cdn.jsdelivr.net/npm/cookieconsent@3/build/cookieconsent.min.js" data-cfasync="false"></script>
+<script>
+    window.cookieconsent.initialise({
+        "palette": {
+            "popup": {
+                "background": "#edeff5",
+                "text": "#838391"
+            },
+            "button": {
+                "background": "#1fa600"
+            }
+        },
+        /*"position": "bottom-right",*/
+        "content": {
+            "message": "Usamos cookies para garantir que você obtenha a melhor experiência no nosso site.",
+            "dismiss": "Entendi!",
+            "link": "Termos de uso e privacidade",
+            "href": "/institucional/privacidade"
+        }
+    });
+</script>

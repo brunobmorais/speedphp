@@ -80,4 +80,12 @@ const CONFIG_FRAMEWORK = [
     "controller_default" => "Home",
 ];
 
+// MERCADOPAGO BRICK
+const CONFIG_PAYMENT = [
+    "public_key" => "",
+    "access_token" => "",
+    "secret_key" => "",
+    "client_id" => ""
+];
+
 const CONFIG_KEY_API_GOOGLE = "ChaveKeyGoolge";

@@ -1,0 +1,12 @@
+<x-theme.main.container>
+    <div class="row">
+        {% for item in SERVICOS %}
+            <x-div.list_item_card
+                    title="{{ item.TITULO}}"
+                    icon="{{ item.ICONE}}"
+                    description="{{ item.DESCRICAO}}"
+                    onclick="{{ (SERVICO.URL|length>0?SERVICO.URL~'-':'./')~item.CONTROLLER}}">
+            </x-div.list_item_card>
+        {% endfor %}
+    </div>
+</x-theme.main.container>

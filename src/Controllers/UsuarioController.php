@@ -18,6 +18,7 @@ use App\Libs\SessionLib;
 use App\Libs\Template\TemplateAbstract;
 use App\Models\PessoaModel;
 use App\Models\UsuarioModel;
+use Ramsey\Uuid\Uuid;
 
 class UsuarioController extends ControllerCore implements ControllerInterface
 {
@@ -99,9 +100,9 @@ class UsuarioController extends ControllerCore implements ControllerInterface
     public function login($args = null)
     {
         try {
-            $data['TITLE'] = "Login";
-            SessionLib::apagaSessao();
-            SessionLib::setValue("CSRF", bin2hex(random_bytes(32)));
+            $data['HEAD']['title'] = "Login";
+            //SessionLib::apagaSessao();
+            SessionLib::setValue("CSRF", Uuid::uuid4()->toString());
             return $this->render(
                 TemplateAbstract::BLANK,
                 'usuario/login', $data);

@@ -1,0 +1,41 @@
+{% set id = id|default(random()) %}
+<div id="divItem{{ id }}">
+
+    <div class="row">
+
+        <div class="form-group col-12 col-md-4">
+            <label>Nome</label>
+            <input type="text" class="form-control" name="NOME_MODELO[]" value="{{ ITEM.NOME }}" placeholder="P/M/G"
+                   required>
+            <div class="invalid-feedback">
+                Preencha o campo corretamente
+            </div>
+        </div>
+        <div class="form-group col-12 col-md-4">
+            <label>Quantidade</label>
+            <input type="number" class="form-control" name="QTD_MODELO[]" value="{{ ITEM.QTD|default("1") }}" placeholder="1"
+                   required>
+            <div class="invalid-feedback">
+                Preencha o campo corretamente
+            </div>
+        </div>
+        <div class="form-group col-12 col-md-4">
+            <label class="col-12">Situação</label>
+            <select class="form-control form-select" name="SITUACAO_MODELO[]" required>
+                <option value="1" {{ ITEM.SITUACAO|length>0?(ITEM.SITUACAO == 1 ? "selected" : ""):"selected" }}>Disponível</option>
+                <option value="0" {{ ITEM.SITUACAO|length>0?(ITEM.SITUACAO == 0 ? "selected" : ""):"" }}>Indisponível</option>
+            </select>
+            <div class="invalid-feedback">
+                Preencha o campo corretamente
+            </div>
+        </div>
+        <input type="hidden" name="CODKIT_ITEM_MODELO[]" value="{{ ITEM.CODKIT_ITEM_MODELO }}"/>
+
+    </div>
+    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+        <button type="button" onclick="document.getElementById('divItem{{ id }}').remove();" href="#"
+                class="btn btn-link text-danger p-0 m-0"><span class="mdi mdi-trash-can-outline"></span> Remover
+        </button>
+    </div>
+    <hr>
+</div>

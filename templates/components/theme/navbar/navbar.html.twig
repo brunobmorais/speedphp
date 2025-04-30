@@ -1,0 +1,108 @@
+<nav class="navbar navbar-expand-lg navbar-bg nav-down fixed-top navbar-dark d-flex flex-wrap align-content-center"
+     style="background: {{ URL == 'http://viaesporte.localhost'?'#242424':'' }}"
+    id="navbar">
+    <li class="container">
+        <div class="col">
+            <a href="/" class="navbar-brand d-none d-md-inline-block"><img alt="logo" src="/assets/img/logo_white.png"
+                    height="30px" /> {{ URL == 'http://viaesporte.localhost'?'Dev':'' }}</a>
+            <a href="/" class="navbar-brand d-inline-block d-md-none"><img alt="logo"
+                    src="/assets/img/logo_quadrada_branca.png" height="42px" /> {{ URL == 'http://viaesporte.localhost'?'Dev':'' }}</a>
+        </div>
+        <ul class="navbar-nav flex-row flex-wrap ms-md-auto">
+            <li class="nav-item d-inline-block d-none">
+                <a href="#" class="nav-link nav-link-navbar">
+                    <div class="nlCadaLink d-flex flex-column align-items-center">
+                        <span class="nlIcone mdi mdi-calendar-multiselect-outline"></span>
+                        <div class="nlLink font-weight-light text-uppercase">CALENDÁRIO</div>
+                    </div>
+                </a>
+            </li>
+            <li class="nav-item d-inline-block">
+                <a href="{{ PERFILUSUARIO.POSSUIEVENTO?"/organizador/":"/promo/" }}" class="nav-link nav-link-navbar">
+                    <div class="nlCadaLink d-flex flex-column align-items-center">
+                        <span class="nlIcone mdi mdi-laptop-account"></span>
+                        <div class="nlLink font-weight-light text-uppercase">{{ PERFILUSUARIO.POSSUIEVENTO?"Painel do":"" }} Organizador </div>
+                    </div>
+                </a>
+            </li>
+
+            <li class="nav-item dropdown">
+                {% if PRIMEIRONOME %}
+                <a href="#" data-toggle="dropdown" class="nav-link nav-link-navbar dropdown-toggle"
+                    data-bs-toggle="dropdown" aria-expanded="false">
+                    <div class="nlCadaLink d-flex flex-column align-items-center">
+                        <span class="nlIcone mdi mdi-run"></span>
+                        <div class="nlLink font-weight-light text-uppercase">{{ PRIMEIRONOME ?: 'ATLETA' }}</div>
+                    </div>
+                </a>
+                <ul class="dropdown-menu dropdown-menu-navbar dropdown-menu-end">
+                    <li>
+                        <p class="dropdown-header">Olá, {{ PRIMEIRONOME ?: 'Atleta' }}</p>
+                    </li>
+                    <li>
+                        <a href="/atleta/" class="dropdown-item font-weight-light">
+                            <i class="mdi mdi-18px mdi-account-outline"></i> Perfil
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/atleta/" class="dropdown-item font-weight-light">
+                            <i class="mdi mdi-18px mdi-ticket-confirmation-outline"></i> Minhas Inscrições
+                        </a>
+                    </li>
+                    <li>
+                        {% if PERFILUSUARIO.POSSUIEVENTO %}
+                        <a href="/organizador/" class="dropdown-item font-weight-light">
+                            <i class="mdi mdi-18px mdi-calendar-check-outline"></i> Área do organizador
+                        </a>
+                        {% else %}
+                        <a href="/organizador/evento" class="dropdown-item font-weight-light">
+                            <i class="mdi mdi-18px mdi-calendar-check-outline"></i> Cadastrar um evento
+                        </a>
+                        {% endif %}
+                    </li>
+                    {% if PERFILUSUARIO.ADMINISTRADOR %}
+                        <li>
+                            <a href="/sistema/" class="dropdown-item font-weight-light">
+                                <i class="mdi mdi-18px mdi-cog-outline"></i> Administração
+                            </a>
+                        </li>
+                    {% endif %}
+                    <li>
+                        <a href="/atleta/suporte/" class="dropdown-item font-weight-light"><span class="mdi mdi-18px mdi-chat-outline"></span> Suporte</a>
+                    </li>
+                    <li>
+                        <a href="/institucional/sobre/" target="_blank" class="dropdown-item font-weight-light"><span class="mdi mdi-18px mdi-information-slab-box-outline"></span> Sobre a Via Esporte</a>
+                    </li>
+                    <li class="d-none">
+                        <div class="dropdown-item font-weight-light">
+                            <i class="mdi mdi-18px mdi-brightness-5"></i> Modo escuro
+                            <label class="custom-switch mt-2 float-end">
+                                <input type="checkbox" class="custom-switch-input" onchange="modeDark()"
+                                    id="checkboxModeDark" value="1">
+                                <span class="custom-switch-indicator"></span>
+                            </label>
+                        </div>
+                    </li>
+                    <div class="dropdown-divider"></div>
+                    <li><a href="/usuario/logoff" class="dropdown-item font-weight-light">
+                            <span class="mdi mdi-18px mdi-logout"></span> Sair da conta</a>
+                    </li>
+                </ul>
+                {% else %}
+                <a href="/atleta/" class="nav-link nav-link-navbar" aria-expanded="false">
+                    <div class="nlCadaLink d-flex flex-column align-items-center">
+                        <span class="nlIcone mdi mdi-run"></span>
+                        <div class="nlLink font-weight-light text-uppercase">Entrar</div>
+                    </div>
+                </a>
+                {% endif %}
+            </li>
+        </ul>
+    </div>
+</nav>
+
+<script defer>
+    window.addEventListener('load', function () {
+        verificaModeDark();
+    })
+</script>

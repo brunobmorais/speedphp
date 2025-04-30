@@ -71,7 +71,7 @@
     <div class="form-group col-12 col-md-6 float-left">
         <label>Estado</label>
         <div class="form-group">
-            <select class="form-control" id="estado" name="estado" required onchange="buscarMunicipio()">
+            <select class="form-control form-select" id="estado" name="estado" required onchange="buscarMunicipio()">
                 <option value="">Selecione</option>
                 {% for item in ESTADO %}
                     <option value="{{ item.uf }}" {{ ENDERECO.uf == item.uf?"selected":"" }}>{{ item.nome_estado }}</option>
@@ -85,7 +85,7 @@
     <div class="form-group col-12 col-md-6 float-left">
         <label>Cidade</label>
         <div class="form-group">
-            <select class="form-control" id="id_municipio" name="id_municipio" required>
+            <select class="form-control form-select" id="id_municipio" name="id_municipio" required>
                 <option value="">Selecione</option>
                 {% for item in MUNICIPIO %}
                     <option value="{{ item.id_municipio }}" {{ ENDERECO.id_municipio == item.id_municipio?"selected":"" }}>{{ item.nome_municipio }}</option>

@@ -1,0 +1,94 @@
+<!-- Menu Footer Mobile-->
+<nav class="navigation-menu-bottom d-md-none d-inline-flex" id="navbar-bottom">
+    <a href="#" onclick="clickProgress('menuHome','/atleta/')" id="menuHome" class="navigation-menu-item {{menu1}}">
+        <i class="mdi mdi-view-grid{{menu1?'':'-outline'}} navigation-menu-item-icon"></i>
+        <span class="navigation-menu-text">Inicio</span>
+    </a>
+    <a href="#" onclick="clickProgress('menuTempo','/atleta/inscricoes/')" id="menuTempo"
+        class="navigation-menu-item {{menu2}}">
+        <i class="mdi mdi-ticket-confirmation{{menu2?'':'-outline'}} navigation-menu-item-icon"></i>
+        <span class="navigation-menu-text">Minhas Inscrições</span>
+    </a>
+    <a href="#" onclick="clickProgress('menuCotacao','/areaAtleta/calculadoraPace/')" id="menuCotacao"
+        class="navigation-menu-item {{menu3}}">
+        <i class="mdi mdi-run{{menu3?'':'-fast'}} navigation-menu-item-icon"></i>
+        <span class="navigation-menu-text">Área do Atleta</span>
+    </a>
+    <a href="#" data-toggle="modal" class="navigation-menu-item {{menu4}}" data-bs-toggle="modal"
+        data-bs-target="#modalPerfil">
+        <i class="mdi mdi-account{{menu4?'':'-outline'}} navigation-menu-item-icon"></i>
+        <span class="navigation-menu-text">Perfil</span>
+    </a>
+</nav>
+
+<!-- Modal Perfil-->
+<div class="modal fade" id="modalPerfil" data-hash="#perfil" tabindex="-1" aria-labelledby="exampleModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog odal-fullscreen modal-fullscreen-md-down">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title" id="exampleModalLabel">Perfil</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="text-center">
+                        <img class="rounded-circle" alt="Usuario"
+                            src="/assets/upload/pessoa/{{ PESSOA.IMAGEM|length>0?PESSOA.IMAGEM:'default.png' }}"
+                            height="60px">
+                    </div>
+                    <div class="ps-2 text-center">
+                        <h5 class="mb-0">{{ SESSION.PRIMEIRONOME }}</h5>
+                        <h6 class="text-muted font-weight-lighter">{{ SESSION.EMAIL }}</h6>
+                    </div>
+                </div>
+                <hr />
+                <div class="mt-4">
+                    <div class="dropdown-divider"></div>
+                    <div class="col-12 py-1">
+                        <a href="/usuario/meusdados/" class="dropdown-item ps-0 fw-light"><span
+                                class="mdi mdi-24px mdi-account-outline"></span><span style="font-size: 1rem"> Editar
+                                Perfil</span></a>
+                    </div>
+                    <div class="col-12 py-1">
+                        <a href="/atleta/" class="dropdown-item ps-0 fw-light"><span
+                                class="mdi mdi-24px mdi-ticket-confirmation-outline"></span><span
+                                style="font-size: 1rem"> Minhas Inscrições</span></a>
+                    </div>
+                    {% if PERFILUSUARIO.POSSUIEVENTO %}
+                    <div class="col-12 py-1">
+                        <a href="/organizador/" class="dropdown-item ps-0 fw-light"><span
+                                class="mdi mdi-24px mdi-calendar-check-outline"></span><span style="font-size: 1rem">
+                                Área do Organizador</span></a>
+                    </div>
+                    {% else %}
+                    <div class="col-12 py-1">
+                        <a href="/organizador/evento/" class="dropdown-item ps-0 fw-light"><span
+                                class="mdi mdi-24px mdi-calendar-check-outline"></span><span style="font-size: 1rem">
+                                Cadastrar um evento</span></a>
+                    </div>
+                    {% endif %}
+                    {% if PERFILUSUARIO.ADMINISTRADOR %}
+                    <div class="col-12 py-1">
+                        <a href="/sistema/" class="dropdown-item ps-0 fw-light"><span
+                                class="mdi mdi-24px mdi-cog-outline"></span><span style="font-size: 1rem">
+                                Administrador</span></a>
+                    </div>
+                    {% endif %}
+                    <div class="col-12 py-1">
+                        <a href="/atleta/suporte/" class="dropdown-item ps-0 fw-light"><span
+                                class="mdi mdi-24px mdi-chat-outline"></span><span style="font-size: 1rem">
+                                Suporte</span></a>
+                    </div>
+                </div>
+
+                <div class="d-grid gap-2">
+                    <a href="/usuario/logoff" class="btn btn-outline-primary btn-lg mt-5 ">Sair</a>
+                </div>
+            </div>
+            <!--<div class="modal-footer">
+                <button type="button" class="btn btn-link" data-dismiss="modal">Voltar</button>
+            </div>-->
+        </div>
+    </div>
+</div>

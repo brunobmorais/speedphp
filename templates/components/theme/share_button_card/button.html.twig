@@ -1,0 +1,156 @@
+<!-- Botão de Compartilhar -->
+<button id="shareButton" class="btn btn-link" data-bs-toggle="popover" data-bs-placement="bottom"
+    data-bs-trigger="click" data-bs-html="true" data-bs-content='
+        <div class="d-flex justify-content-center flex-wrap align-items-center gap-3">
+            <a href="#" id="shareFacebook" target="_blank" class="text-primary"><i class="mdi mdi-facebook mdi-24px"></i></a>
+            <a href="#" id="shareTwitter" target="_blank" class="text-info"><i class="mdi mdi-twitter mdi-24px"></i></a>
+            <a href="#" id="shareWhatsApp" target="_blank" class="text-success"><i class="mdi mdi-whatsapp mdi-24px"></i></a>
+            <a href="#" id="copyLink" class="d-flex align-items-center cursor-pointer">
+                <span class="mdi mdi-content-copy mdi-24px"></span> Copiar Link
+            </a>
+        </div>
+    '>
+    <span class="mdi mdi-share-variant shareButtonIcone"></span>
+</button>
+
+<!-- Contêiner para Alertas -->
+<div id="alertContainer" class="position-fixed bottom-0 end-0 p-3" style="z-index: 1055;"></div>
+
+<!-- Estilo -->
+<style>
+    .popover {
+        max-width: 300px;
+    }
+
+    .popover .btn {
+        font-size: 12px;
+    }
+
+    .cursor-pointer {
+        cursor: pointer;
+    }
+
+    .alert {
+        text-transform: none;
+        font-size: 14px;
+    }
+
+    #shareButton {
+        z-index: 9999;
+        background: #7811a5;
+        color: white;
+        border-radius: 20px;
+        height: 32px;
+        width: 32px;
+        padding: 0;
+        font-size: 20px;
+        box-shadow: 0 2px 2px 0 rgb(0 0 0 / .14),0 3px 1px -2px rgb(0 0 0 / .12),0 1px 5px 0 rgb(0 0 0 / .2)!important;
+    }
+
+    @media (max-width: 576px) {
+        #shareButton {
+            height: 26px;
+            width: 26px;
+            font-size: 12px;
+        }
+    }
+</style>
+
+<!-- Script -->
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        // Inicializar o popover (requer Bootstrap 5)
+        const popoverTrigger = document.getElementById("shareButton");
+        const popover = new bootstrap.Popover(popoverTrigger);
+
+        // URL da página atual e título
+        const currentURL = encodeURIComponent(window.location.href);
+        const pageTitle = encodeURIComponent(document.title);
+
+        // Função fallback para copiar texto (compatível com Safari antigo)
+        function copyTextToClipboard(text) {
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                return navigator.clipboard.writeText(text);
+            } else {
+                return new Promise((resolve, reject) => {
+                    const textArea = document.createElement("textarea");
+                    textArea.value = text;
+                    textArea.style.position = "fixed";  // Evita scroll
+                    textArea.style.top = "-9999px";
+                    document.body.appendChild(textArea);
+                    textArea.focus();
+                    textArea.select();
+
+                    try {
+                        const successful = document.execCommand('copy');
+                        document.body.removeChild(textArea);
+                        if (successful) {
+                            resolve();
+                        } else {
+                            reject(new Error('Fallback: Copy command was unsuccessful'));
+                        }
+                    } catch (err) {
+                        document.body.removeChild(textArea);
+                        reject(err);
+                    }
+                });
+            }
+        }
+
+        // Função para exibir um alerta temporário
+        function showAlert(message, type) {
+            const alertContainer = document.getElementById("alertContainer");
+
+            const alert = document.createElement("div");
+            alert.className = `alert alert-${type} alert-dismissible fade show`;
+            alert.role = "alert";
+            alert.innerHTML = `
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            `;
+
+            alertContainer.appendChild(alert);
+
+            setTimeout(() => {
+                alert.classList.remove("show");
+                alert.classList.add("fade");
+                setTimeout(() => alert.remove(), 150);
+            }, 3000);
+        }
+
+        // Configurar os links e eventos após o popover ser mostrado
+        popoverTrigger.addEventListener("shown.bs.popover", function () {
+            const shareFacebook = document.getElementById("shareFacebook");
+            const shareTwitter = document.getElementById("shareTwitter");
+            const shareWhatsApp = document.getElementById("shareWhatsApp");
+            const copyLinkButton = document.getElementById("copyLink");
+
+            if (shareFacebook) {
+                shareFacebook.href = `https://www.facebook.com/sharer/sharer.php?u=${currentURL}`;
+            }
+            if (shareTwitter) {
+                shareTwitter.href = `https://twitter.com/intent/tweet?url=${currentURL}&text=${pageTitle}`;
+            }
+            if (shareWhatsApp) {
+                shareWhatsApp.href = `https://api.whatsapp.com/send?text=${pageTitle} ${currentURL}`;
+            }
+
+            if (copyLinkButton) {
+                // Remove listeners antigos clonando o nó
+                copyLinkButton.replaceWith(copyLinkButton.cloneNode(true));
+                const newCopyLinkButton = document.getElementById("copyLink");
+
+                newCopyLinkButton.addEventListener("click", function (event) {
+                    event.preventDefault(); // Evita comportamento padrão do link
+
+                    copyTextToClipboard(window.location.href).then(() => {
+                        showAlert("Link copiado para a área de transferência!", "success");
+                    }).catch(err => {
+                        console.error("Erro ao copiar o link: ", err);
+                        showAlert("Erro ao copiar o link!", "danger");
+                    });
+                });
+            }
+        });
+    });
+</script>

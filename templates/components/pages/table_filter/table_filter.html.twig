@@ -1,0 +1,17 @@
+<main>
+    <div class="container my-container">
+        <div class="card shadow-1 h-100">
+            <div class="card-header">
+                <h4>{{ CARD_TITLE }}</h4>
+            </div>
+            <div class="card-body">
+                <div class="col p-2">
+                    {% include BUTTON_TABLE|default("components/button/table/filter.html.twig") %}
+                    {{ TABLE_COMPONENT | raw }}
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+{% include MODAL_FILTER ?? 'protocolo/components/filtros.html.twig' %}

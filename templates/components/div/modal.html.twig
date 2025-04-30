@@ -2,6 +2,12 @@
     modal-sm
     modal-lg
     modal-xl
+    modal-fullscreen	        Always
+    modal-fullscreen-sm-down	576px
+    modal-fullscreen-md-down	768px
+    modal-fullscreen-lg-down	992px
+    modal-fullscreen-xl-down	1200px
+    modal-fullscreen-xxl-down
 #}
 {# class
     modal-dialog-scrollable
@@ -11,7 +17,7 @@
     data-bs-keyboard="false"
 #}
 
-<div class="modal fade" id="{{ id }}" data-hash="#{{ id }}" aria-labelledby="{{ id }}" aria-hidden="true" tabindex="-1" {{ databs|default("") }}>
+<div class="modal fade" id="{{ id }}" data-hash="#{{ id }}" aria-labelledby="{{ id }}" aria-hidden="true"  data-bs-focus="false"  tabindex="-1" {{ databs|default("") }}>
     <div class="modal-dialog modal-fullscreen-md-down {{ size|default("modal-lg") }} {{ class|default("") }}" role="document">
         <div class="modal-content">
             <div class="modal-header">

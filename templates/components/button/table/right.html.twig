@@ -1,0 +1,16 @@
+  {% block buttonTableRight %}
+      <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+        <div class="col-md-6 col-12 p-0">
+            <form action="{{ SERVER['REQUEST_URI'] }}" class="mb-0">
+                <div class="input-group">
+                    <input class="form-control" name="b" placeholder="{{ TABLE_INPUT_PLACEHOLDER|default("Buscar...") }}"
+                           value="{{ GET.b }}">
+                    <button class="btn btn-outline-secondary" type="submit" id="button-addon2">
+                        <span class="mdi mdi-magnify"></span> Buscar
+                    </button>
+                    <button type="button" class="btn btn-outline-secondary" onclick="window.location.href = './'"><span class="mdi mdi-format-list-bulleted"></span> Todos</button>
+                </div>
+            </form>
+        </div>
+      </div>
+   {% endblock %}

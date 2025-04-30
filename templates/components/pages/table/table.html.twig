@@ -1,0 +1,7 @@
+<x-theme.main.container>
+    {{ FORM | raw }}
+    <x-div.card title="{{ CARD_TITLE }}">
+            {% include BUTTON_TABLE|default("components/pages/blank/blank.html.twig") %}
+            {{ TABLE_COMPONENT | raw }}
+    </x-div.card>
+</x-theme.main.container>
