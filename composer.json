@@ -47,7 +47,8 @@
     "setasign/fpdi": "^2.3",
     "ramsey/uuid": "^4.7",
     "mpdf/qrcode": "^1.2",
-    "phpoffice/phpspreadsheet": "^4.2"
+    "phpoffice/phpspreadsheet": "^4.2",
+    "ext-intl": "*"
   },
   "require-dev": {
     "matthiasmullie/minify": "^1.3",

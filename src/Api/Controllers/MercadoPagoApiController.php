@@ -450,7 +450,7 @@ class MercadoPagoApiController
         }
 
         // Obtain the secret key for the user/application from Mercadopago developers site
-        $secret = "74dc123aacbd6fadd31e8cf8b7818b310c9dc186002cf1cd42227b61bf7c3a36";
+        $secret = "your_secret_key"; // Replace with your actual secret key
 
         // Generate the manifest string
         $manifest = "id:$dataID;request-id:$xRequestId;ts:$ts;";

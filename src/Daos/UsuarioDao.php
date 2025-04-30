@@ -18,7 +18,7 @@ class UsuarioDao extends Crud{
             $sql = "SELECT P.CODPESSOA, U.CODUSUARIO, P.NOME, P.EMAIL, U.SITUACAO, U.SENHA, P.TELEFONE, PF.DATANASCIMENTO, PF.SEXO, PF.CPF 
                     FROM PESSOA AS P
                     INNER JOIN PESSOA_FISICA PF ON PF.CODPESSOA=P.CODPESSOA
-                    INNER JOIN SI_USUARIO AS U on U.CODPESSOA=P.CODPESSOA
+                    INNER JOIN USUARIO AS U on U.CODPESSOA=P.CODPESSOA
                     WHERE PF.CPF=? AND U.EXCLUIDO=0 AND P.EXCLUIDO=0 AND PF.EXCLUIDO=0";
             $params = array($cpfcnpj);
             $result = $this->executeSQL($sql, $params);

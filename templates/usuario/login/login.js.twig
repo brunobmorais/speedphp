@@ -34,13 +34,7 @@ async function loginusuario() {
 
         // Verifica se veio erro ou se faltam campos importantes
         if (!data.error && data.token && data.codusuario) {
-            const tipoSelecionado = document.querySelector('input[name="tipo"]:checked').value;
-
-            if (tipoSelecionado === "organizador") {
-                window.location.href = "/organizador/";
-            } else {
-                window.location.href = data.redireciona || "/";
-            }
+            window.location.href = data.redireciona || "/";
         } else {
             // Reseta o campo de senha
             document.getElementById("senha").value = "";

@@ -103,6 +103,7 @@ class UsuarioController extends ControllerCore implements ControllerInterface
             $data['HEAD']['title'] = "Login";
             //SessionLib::apagaSessao();
             SessionLib::setValue("CSRF", Uuid::uuid4()->toString());
+
             return $this->render(
                 TemplateAbstract::BLANK,
                 'usuario/login', $data);

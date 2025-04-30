@@ -22,8 +22,8 @@ class TelegramApiController
     {
         $tituloJson = $request->getJsonParams()['title'] ?? "";
         $messageJson = "\n\n".$request->getJsonParams()['message'] ?? "";
-        $token = '7675098419:AAED8Vd4-6Z5K87nQtkvP6MeDhu_Bhn746Y';
-        $chat_id = '-4737388523'; // ID do chat ou do grupo
+        $token = '';
+        $chat_id = ''; // ID do chat ou do grupo
         //$chat_id = '130511391'; // ID do chat ou do grupo
         $message_thread_id = $request->getJsonParams()['title'] ?? "1";
         // 1 = GERAL
