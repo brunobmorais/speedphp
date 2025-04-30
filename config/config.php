@@ -52,7 +52,7 @@ const CONFIG_HEADER = [
     "image" => 'https://speedphp.bmorais.com/assets/img/ic_logosocial.png',
     "keywords" => "palavras, chaves, site",
     "color" => CONFIG_COLOR['color-primary'],
-    "fbAppId" => "0"
+    "tag" => "0"
 ];
 
 // CONFIGURAÇÃO EMAIL
@@ -73,6 +73,11 @@ const CONFIG_EMAIL = [
 const CONFIG_RECAPTCHA = [
     "chaveSite" => 'chavesite',
     "chaveSecreta" => 'chavesecreta',
+];
+
+const CONFIG_FRAMEWORK = [
+    "controller_without_method" => ["Home"],
+    "controller_default" => "Home",
 ];
 
 const CONFIG_KEY_API_GOOGLE = "ChaveKeyGoolge";

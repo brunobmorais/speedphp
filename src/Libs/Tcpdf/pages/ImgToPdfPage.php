@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Libs\tcpdf\pages;
+namespace App\Libs\Tcpdf\pages;
 
 use setasign\Fpdi\Tcpdf\Fpdi;
 

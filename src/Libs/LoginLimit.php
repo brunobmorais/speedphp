@@ -43,7 +43,7 @@ class LoginLimit
     }
 
     public function check(
-        int $maxAttempts = 4,
+        int $maxAttempts = 5,
         int $secondsToExpire = 20
     ) {
         //echo SessionLib::getValue($this->name . '_limit'[$this->ip]);

@@ -144,6 +144,16 @@ function mvalor(v){
     return v;
 }
 
+function mvalor2(i) {
+    var v = i.toString().replace(/\D/g,'');
+    v = (v/100).toFixed(2) + '';
+    v = v.replace(".", ",");
+    v = v.replace(/(\d)(\d{3})(\d{3}),/g, "$1.$2.$3,");
+    v = v.replace(/(\d)(\d{3}),/g, "$1.$2,");
+    i = v;
+    return i;
+}
+
 function ncartao(v){
     v = v.replace(/\D/g,""); // Permite apenas dígitos
     v = v.replace(/(\d{4})/g, "$1."); // Coloca um ponto a cada 4 caracteres
@@ -205,15 +215,7 @@ function soLetrasMI(v){
     return v.replace(/\d/g,"") //Remove tudo o que não é Letra ->minusculas
 }
 
-function mascaraMoedaValor(i) {
-    var v = i.toString().replace(/\D/g,'');
-    v = (v/100).toFixed(2) + '';
-    v = v.replace(".", ",");
-    v = v.replace(/(\d)(\d{3})(\d{3}),/g, "$1.$2.$3,");
-    v = v.replace(/(\d)(\d{3}),/g, "$1.$2,");
-    i = v;
-    return i;
-}
+
 //FIM DE MASCARAS
 
 function validaData(data) {
@@ -372,16 +374,16 @@ function removerAcentos(s){
 function excluirItemTabela(id) {
     Swal.fire({
         title: 'Deseja excluir esse item?',
-        text: 'Uma vez deletado, você não poderá recuperar este arquivo!',
+        text: 'Uma vez deletado, você não poderá recuperar este item!',
         type: 'question',
         showCancelButton: true,
-        confirmButtonColor: '#2AB164',
+        confirmButtonColor: '#880000',
         confirmButtonText: 'Sim',
         cancelButtonText: 'Não',
     })
         .then((result) => {
             if (result.value) {
-                document.getElementById('idExcluir').value = id;
+                document.getElementById('ID_DELETE').value = id;
                 document.getElementById('formExcluir').submit();
             }
         });
@@ -771,15 +773,31 @@ async function alertInfo(mensagem){
     iziToast.info({title: 'Informaçao!', message: mensagem, position: 'bottomRight'});
 }
 
+function alertModal(mensagem, tipo = 'warning', titulo = 'Atenção!', btnText = 'Ok', btnColor = '#9400d3') {
+    Swal.fire({
+        title: titulo,
+        icon: tipo, // Pode ser: 'warning', 'error', 'success', 'info', 'question'
+        html: mensagem,
+        showCloseButton: true,
+        showCancelButton: false,
+        focusConfirm: true,
+        confirmButtonText: btnText,
+        confirmButtonAriaLabel: 'sim',
+        confirmButtonColor: btnColor,
+        customClass: {
+            htmlContainer: 'text-start'
+        }
+    }).then((result) => {})
+}
+
 /**
  * Função para ocutar a modal
  * @param nome da modal
  * @returns {Promise<void>}
  */
-async function hideModal(nome) {
-    (new bootstrap.Modal(document.getElementById(nome), {
-        // keyboard: false
-    })).hide();
+async function hideModal(id) {
+    var modalInstance = bootstrap.Modal.getInstance(document.getElementById(id));
+    modalInstance.hide();
 }
 
 /**
@@ -990,7 +1008,7 @@ function modalTemCerteza(formId){
         cancelButtonAriaLabel: 'nao',
         confirmButtonText: 'Sim',
         confirmButtonAriaLabel: 'sim',
-        confirmButtonColor: '#1B6BDD',
+        confirmButtonColor: '#9400d3',
     }).then((result) => {
         if (result.isConfirmed) {
             validaForm()
@@ -1005,13 +1023,40 @@ function modalTemCerteza(formId){
 
 function verificaModeDark() {
     let theme = getCookie("theme");
+    let checkbox = document.getElementById("checkboxModeDark");
 
-    if (theme === "dark") {
-        document.getElementById("checkboxModeDark").checked = true;
-        return;
+    if (!checkbox) return; // Evita erro se o checkbox não existir
+
+    checkbox.checked = theme === "dark";
+}
+
+function convertDateToISO(dateStr) {
+    // Expects dateStr in format d/m/Y
+    const [day, month, year] = dateStr.split('/');
+    return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+}
+
+function convertIsoToDate(isoStr) {
+    // Espera o formato YYYY-MM-DD
+    const [year, month, day] = isoStr.split('-');
+    return `${day.padStart(2, '0')}/${month.padStart(2, '0')}/${year}`;
+}
+
+function validaDataNascimento(bDayIso, ageMin = 18, ageMax = 130) {
+    // comparo as datas e calculo a idade
+    var hoje = new Date();
+    var nasc = new Date(bDayIso);
+    var idade = hoje.getFullYear() - nasc.getFullYear();
+    var m = hoje.getMonth() - nasc.getMonth();
+    if (m < 0 || (m === 0 && hoje.getDate() < nasc.getDate())) idade--;
+
+    if (idade < ageMin) {
+        return false;
     }
 
-    document.getElementById("checkboxModeDark").checked = false;
-    return;
+    if (idade >= ageMin && idade <= ageMax) {
+        return true;
+    }
+    return false;
 }
 

@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Libs\tcpdf\pages;
+namespace App\Libs\Tcpdf\pages;
 
+use App\Libs\Tcpdf\model\AssinaturaModel;
 use setasign\Fpdi\Tcpdf\Fpdi;
 
 //============================================================+
@@ -33,11 +34,11 @@ use setasign\Fpdi\Tcpdf\Fpdi;
 // Extend the TCPDF class to create custom Header and Footer
 class AssinaturaPage extends Fpdi
 {
-    protected $array;
+    protected AssinaturaModel $model;
 
-    public function setInfo($info)
+    public function setInfo(AssinaturaModel $model)
     {
-        $this->array = $info;
+        $this->model = $model;
     }
 
     //Page header
@@ -64,9 +65,10 @@ class AssinaturaPage extends Fpdi
         $this->SetRightMargin(3);
         $this->SetLeftMargin(3);
         $this->setCellPaddings(2, 2, 2, 2);
-        $this->SetFont('times', 'I', 9);
-        $html = 'Assinado eletronicamente por <b>' . $this->array['nomeservidorarquivo'] . '</b> em ' . $this->array['dataprotocoloassinatura'] . '. Para confirmar a validade deste documento, acesse: <a href="http://intranet.bombeiros.to.gov.br/dist/validadocumento.php?chave='.$this->array['codigovalidadorarquivo'].'">http://intranet.bombeiros.to.gov.br/dist/validadocumento.php</a> e digite o codigo verificador <b>' . $this->array['codigovalidadorarquivo'].'</b>';
-        $this->write2DBarcode('http://intranet.bombeiros.to.gov.br/dist/validadocumento.php?chave='.$this->array['codigovalidadorarquivo'], 'QRCODE,H', 2, $this->getPageHeight()-19, 17, 17, $style, 'L');
+        $this->SetFont('helvetica', 'I', 9);
+        $quemAssina = !empty($this->model->getQuemAssina())?"por <b>" . $this->model->getQuemAssina() . "</b> ":"";
+        $html = "Assinado eletronicamente {$quemAssina}em {$this->model->getDataAssinatura()}. Para confirmar a validade deste documento, acesse: <a href='{$this->model->getUrlValidacao()}?token={$this->model->getToken()}'>{$this->model->getUrlValidacao()}</a> e digite o codigo verificador <b>{$this->model->getToken()}</b>";
+        $this->write2DBarcode($this->model->getUrlValidacao()."?token=".$this->model->getToken(), 'QRCODE,H', 2, $this->getPageHeight()-19, 17, 17, $style, 'L');
         $this->SetFillColor(255, 255, 255);
         $this->MultiCell(0, 20, $html, 1, 'J', 1, 1, '22', '-19', true, 0, true, true, false, '0');
 

@@ -40,8 +40,7 @@ testem.log
 Thumbs.db
 
 # PASTAS
-/public/assets/upload/img/pessoa/*
-/public/assets/upload/files/funcionario/*
+/public/assets/upload/pessoa/*
 /vendor
 /node_modules
 /templates/tmp

@@ -120,7 +120,7 @@ Todo tráfego passo pelo index principal, a aplicação faz um autoloader dentro
         composer update
     3 - Inicie o docker
         docker-compose up
-    4 - Acesse localhost ou fpto.localhost no seu navegador
+    4 - Acesse localhost ou speedphp.localhost no seu navegador
     5 - Criação das pastas de upload
         - /public/files/funcinario
 

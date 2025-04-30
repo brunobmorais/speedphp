@@ -29,120 +29,60 @@ table:not(.table-sm) thead th {
 }
 
 @media screen and (max-width: 600px) {
-    table {
+    table:has(tr td:nth-child(4)) {
         width: 100%;
     }
 
-    table thead {
+    table:has(tr td:nth-child(4)) thead {
         display: none;
     }
 
-    table td {
+    table:has(tr td:nth-child(4)) td {
         border-bottom: 1px solid #efefef;
     }
 
-    table tr {
+    table:has(tr td:nth-child(4)) tr {
         border-bottom: 1px solid #b7b7b7;
-    }
-
-    table tr {
         margin-bottom: 8px;
     }
 
-    table td {
+    table:has(tr td:nth-child(4)) td {
         display: flex;
         flex-wrap: wrap;
     }
 
-    table td::before {
+    table:has(tr td:nth-child(4)) td::before {
         content: attr(data-title);
         font-weight: 600;
         width: 120px;
         font-size: 0.85em;
     }
 
-    table td .td-break {
+    table:has(tr td:nth-child(4)) td .td-break {
         width: 100%;
         text-align: center;
     }
 
-    table td.semtitle {
+    table:has(tr td:nth-child(4)) td.semtitle {
         text-align: center;
     }
 
-    table td.semtitle::before {
+    table:has(tr td:nth-child(4)) td.semtitle::before {
         width: auto;
     }
 
-    table a {
+    table:has(tr td:nth-child(4)) a {
         width: 100%;
         margin-top: 5px;
     }
 
-    .table:not(.table-sm):not(.table-md):not(.dataTable) td, .table:not(.table-sm):not(.table-md):not(.dataTable) th {
+    .table:has(tr td:nth-child(4)):not(.table-sm):not(.table-md):not(.dataTable) td,
+    .table:has(tr td:nth-child(4)):not(.table-sm):not(.table-md):not(.dataTable) th {
         padding: 0.75rem;
         vertical-align: middle;
     }
 
-    .table-responsive table {
+    .table-responsive table:has(tr td:nth-child(4)) {
         min-width: 0px;
     }
-}
-
-@media only screen and (max-width: 800px) {
-
-    /* Force table to not be like tables anymore */
-    #no-more-tables table,
-    #no-more-tables thead,
-    #no-more-tables tbody,
-    #no-more-tables th,
-    #no-more-tables td,
-    #no-more-tables tr {
-        display: block;
-    }
-
-    /* Hide table headers (but not display: none;, for accessibility) */
-    #no-more-tables thead tr {
-        position: absolute;
-        top: -9999px;
-        left: -9999px;
-    }
-
-    #no-more-tables tr { border: 1px solid #FAFAFA; }
-
-    #no-more-tables td {
-        /* Behave  like a "row" */
-        border: none;
-        border-bottom: 1px solid #FAFAFA;
-        position: relative;
-        padding-left: 35%;
-        white-space: normal;
-        text-align:left;
-    }
-
-    #no-more-tables td:before {
-        /* Now like a table header */
-        position: absolute;
-        /* Top/left values mimic padding */
-        left: 6px;
-        width: 45%;
-        padding-right: 10px;
-        white-space: nowrap;
-        text-align:left;
-        font-weight: bold;
-    }
-
-    #no-more-tables td:before {
-        content: attr(data-title);}
-
-    #no-more-tables td[data-title]:before {
-        content: attr(data-title);
-        position: absolute;
-        margin-top: 3px;
-        font-size: 0.85em;
-        line-height: 18px;
-    }
-
-    #no-more-tables td.visible-xs {padding-left:10px; padding-right:10px; display:block !important;}
-    #no-more-tables a {width: 100%; margin-top:5px;  }
 }

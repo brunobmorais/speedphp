@@ -1,8 +1,8 @@
 {
     "id": "/",
-    "short_name": "FPTO",
-    "name": "FPTO",
-    "description": "Fundação Pró-Tocantins",
+    "short_name": "SpeedPHP",
+    "name": "SpeedPHP",
+    "description": "SpeedPHP: The Rapid Development Framework for PHP",
     "lang": "pt-BR",
     "display": "standalone",
     "start_url": "/",

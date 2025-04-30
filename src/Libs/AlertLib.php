@@ -15,89 +15,84 @@ namespace App\Libs;
  */
 class AlertLib
 {
-    var $nomeSessao = "app-alerta";
+    protected const NOME_SESSAO= "ALERTLIB";
 
     public function __construct()
     {
     }
 
-    /*FUNÇÃO ALERT -DANGER -SUCCESS -INFO -WARGING*/
-    public function danger($menssage,$redirect){
-
-        //$alert = "<script>toastr.error('$menssage', 'Ops!');</script>";
-        $alert = "<script>window.onload = function () {iziToast.error({title: 'Ops!', message: '$menssage', position: 'bottomRight'});}</script>";
-
-        $this->setaSessao($alert);
-        header('location:'.$redirect);
-        exit;
-    }
-
-    public function warning($menssage,$redirect){
-
-        //$alert = "<script>toastr.warning('$menssage', 'Atenção!');</script>";
-        $alert = "<script>window.onload = function () {iziToast.warning({title: 'Atenção!', message: '$menssage', position: 'bottomRight'});}</script>";
-
-        $this->setaSessao($alert);
-        header('location:'.$redirect);
-        exit;
-    }
-
-    public function success($menssage,$redirect){
-
-        //$alert = "<script>toastr.success('$menssage', 'Legal!');</script>";
-        $alert = "<script>window.onload = function () {iziToast.success({title: 'Legal!', message: '$menssage', position: 'bottomRight'});}</script>";
-
-        $this->setaSessao($alert);
-        header('location:'.$redirect);
-        exit;
-    }
-
-    public function info($menssage,$redirect){
-
-        //$alert = "<script>toastr.info('$menssage', 'Informação!');</script>";
-        $alert = "<script>window.onload = function () {iziToast.info({title: 'Legal!', message: '$menssage', position: 'bottomRight'});}</script>";
-
-        $this->setaSessao($alert);
-        header('location:'.$redirect);
-        exit;
-    }
-
-    public function apagaMensagem()
+    private function startSession(): void
     {
-        session_name($this->nomeSessao);
-        session_start();
-        if (isset($_SESSION['msg'])) {
-            unset($_SESSION['msg']);
-            unset($_SESSION['alertamsg']);
+        if (session_status() === PHP_SESSION_NONE) {
+            session_name(self::NOME_SESSAO);
+            session_start();
         }
-        session_write_close();
     }
 
-    public function setaSessao($alert)
+    private function endSession(): void
     {
-        session_name($this->nomeSessao);
-        session_start();
-        $_SESSION['alertamsg']= $alert;
-        $_SESSION['msg']=1;
-        session_write_close();
-
-    }
-
-
-    public function verificaMsg()
-    {
-        $msg = null;
-
-        session_name($this->nomeSessao);
-        session_start();
-        if (!empty($_SESSION)){
-            if (!empty($_SESSION['msg']))
-                $msg = $_SESSION['alertamsg'];
+        if (session_status() === PHP_SESSION_ACTIVE) {
+            session_write_close();
         }
-        session_write_close();
+    }
 
-        $this->apagaMensagem();
+    private function setSessionAlert(string $alert): void
+    {
+        $this->startSession();
+        $_SESSION['ALERTLIB_MSG'] = $alert;
+        $this->endSession();
+    }
 
-        return $msg;
+    private function clearSessionAlert(): void
+    {
+        $this->startSession();
+        unset($_SESSION['ALERTLIB_MSG'], $_SESSION['ALERTLIB_SITUACAO']);
+        $this->endSession();
+    }
+
+    public function showAlert(string $type, string $message, string $redirect): void
+    {
+        $title = match ($type) {
+            'danger' => 'Ops!',
+            'warning' => 'Atenção!',
+            'success' => 'Legal!',
+            'info' => 'Informação!',
+            default => 'Notificação'
+        };
+
+        $alert = "<script>window.onload = function () {iziToast.{$type}({title: '{$title}', message: '{$message}', position: 'bottomRight'});}</script>";
+
+        $this->setSessionAlert($alert);
+        header("Location: $redirect");
+        exit;
+    }
+
+    public function danger(string $message, string $redirect): void
+    {
+        $this->showAlert('error', $message, $redirect);
+    }
+
+    public function warning(string $message, string $redirect): void
+    {
+        $this->showAlert('warning', $message, $redirect);
+    }
+
+    public function success(string $message, string $redirect): void
+    {
+        $this->showAlert('success', $message, $redirect);
+    }
+
+    public function info(string $message, string $redirect): void
+    {
+        $this->showAlert('info', $message, $redirect);
+    }
+
+    public function checkAlert(): ?string
+    {
+        $this->startSession();
+        $alert = $_SESSION['ALERTLIB_MSG'] ?? null;
+        $this->endSession();
+        $this->clearSessionAlert();
+        return $alert;
     }
 }

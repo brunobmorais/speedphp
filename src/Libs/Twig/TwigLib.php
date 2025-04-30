@@ -7,6 +7,7 @@ use Performing\TwigComponents\Configuration;
 use Twig\Environment;
 use Twig\Extension\DebugExtension;
 use Twig\Extension\StringLoaderExtension;
+use Twig\Extra\Intl\IntlExtension;
 use Twig\Loader\FilesystemLoader;
 
 class TwigLib

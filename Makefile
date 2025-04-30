@@ -4,7 +4,7 @@
 # Executar comando: make build | login | tag | push
 
 TAG=$(shell git log -1 --format=%h)
-URL="http://speedphp.localhost/config"
+URL="http://viaesporte.localhost/config"
 
 # PEGAR ARGUMENTOS QUANDO PASSAR GIT
 ifeq (push,$(firstword $(MAKECMDGOALS)))
@@ -20,6 +20,7 @@ push:
 	git commit -m "$(RUN_ARGS)"
 	git pull origin main
 	git push origin main
+#curl http://viaesporte.localhost/config/createmodel/$(filter-out $@,$(MAKECMDGOALS))
 
 createmodel:
 	@read -p "Digite o nome da tabela do banco (Ex: PESSOA): " servico; \

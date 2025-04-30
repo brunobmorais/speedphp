@@ -113,7 +113,7 @@ class TableLib
         $this->total = !empty($this->data)?count($this->data):0;
         //$this->mod = $mod;
 
-        $this->pg = $_GET['pg'] ?? 1;
+        $this->pg = empty($_GET['pg']) ? 1 : $_GET["pg"];
 
         $this->npages = floor($this->total / $this->qtd);
 

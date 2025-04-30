@@ -1,0 +1,3 @@
+* To create self-signed signature: openssl req -x509 -nodes -days 365 -newkey rsa:1024 -keyout tcpdf.crt -out tcpdf.crt
+* To export crt to p12: openssl pkcs12 -export -in tcpdf.crt -out tcpdf.p12
+* To convert pfx certificate to pem: openssl pkcs12 -in tcpdf.pfx -out tcpdf.crt -nodes

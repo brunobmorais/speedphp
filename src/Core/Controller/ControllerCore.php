@@ -23,6 +23,8 @@ class ControllerCore
     private $arrayComponentTop = [];
     private $arrayComponentBottom = [];
 
+    private array $servico = [];
+
     public function __construct()
     {
     }
@@ -45,9 +47,9 @@ class ControllerCore
     }
 
     public function getParams($valor) {
-        $return = $_GET[$valor]??null;
+        $return = $_GET[$valor]??"";
         if (is_string($return))
-            return trim($return??'');
+            return trim(htmlspecialchars($return??''));
         if (is_array($return))
             return $return??[];
         if (!isset($valor))
@@ -63,9 +65,9 @@ class ControllerCore
      * @return array|string
      */
     public function postParams($valor){
-        $return = $_POST[$valor]??null;
+        $return = $_POST[$valor]??"";
         if (is_string($return))
-            return trim($return??'');
+            return trim(htmlspecialchars($return??''));
         if (is_array($return))
             return $return??[];
         if (!isset($valor))
@@ -112,8 +114,10 @@ class ControllerCore
         if (!empty($modulo)) {
             $servicos = $moduloDao->buscaServicosUsuario($id,$modulo);
             if (empty($servicos)){
-                $alertaDao->danger("Sem privilégio de acesso!","./");
+                $alertaDao->danger("Sem privilégio de acesso!","/");
             } else {
+                $data["HEAD"]["title"] = $servicos[0]["TITULOMODULO"];
+
                 $data["TITLE"] = $servicos[0]["TITULOMODULO"];
                 $data["TITLEIMAGE"] = $servicos[0]["ICONEMODULO"];
                 $data["TITLEBREADCRUMB"] = "<li class='breadcrumb-item-custom'><a href='/'>Inicio</span></a><i class='mdi mdi-chevron-right mx-1' aria-hidden='true'></i></li><li class='breadcrumb-item-custom '><a href='/" . $modulo . "/'>" . $servicos[0]["TITULOMODULO"] . "</a></li>";
@@ -150,6 +154,8 @@ class ControllerCore
             exit();
         }
 
+        $data["HEAD"]["title"] = $servico["TITULO"];
+
         $data["TITLE"] = $servico["TITULO"];
         $data["TITLEIMAGE"] = $servico["ICONE"];
         $data["TITLEBREADCRUMB"] = "<li class='breadcrumb-item-custom'><a href='/'>Inicio</span></a><i class='mdi mdi-chevron-right mx-1' aria-hidden='true'></i></li><li class='breadcrumb-item-custom '><a href='/" . $moduleUrl . "/'>" . $servico["TITULOMODULO"] . "</a></li><i class='mdi mdi-chevron-right mx-1' aria-hidden='true'></i></li><li class='breadcrumb-item-custom '><a href='/{$moduleUrl}/{$serviceUrl}/'>" . $servico["TITULO"] . "</a></li>";
@@ -159,45 +165,80 @@ class ControllerCore
         $data["SERVICO"]["TEMPLATE"] = $template;
         $data["SERVICO"]["MODULO"] = $moduleUrl;
         $data["SERVICO"]["SERVICONOME"] = $url[2]??"";
+        $this->servico = $data["SERVICO"];
+
 
         return $data;
     }
 
-    /*public function isLogged(){
+    public function getSession(): bool
+    {
+        $usuarioDao = new UsuarioDao();
+        $jwtTokenClass = new JwtLib();
+
+        // 1. Verifica se já existe código de usuário na sessão
+        $codusuarioSessao = SessionLib::getValue("CODUSUARIO");
+        if (!empty($codusuarioSessao)) {
+            // Se já há um usuário logado na sessão, não precisamos refazer token/cookie
+            return true;
+        }
+
+        // 2. Se não existe sessão, tenta recuperar do TOKEN no Cookie
+        $tokenCookie = CookieLib::getValue("TOKEN");
+        if (empty($tokenCookie)) {
+            return false;
+        }
+
+        // 3. Decodifica o token JWT
+        $dataToken = $jwtTokenClass->decode($tokenCookie);
+        if (empty($dataToken) || empty($dataToken->data->id)) {
+            // Se não foi possível decodificar corretamente ou não veio "id", token é inválido
+            return false;
+        }
+
+        // 4. Busca o usuário no banco usando o "id" do token
+        $codUsuarioCookie = $dataToken->data->id;
+        $usuarioModel = $usuarioDao->buscarCodusuario($codUsuarioCookie);
+        if (!$usuarioModel) {
+            // Caso não encontre o usuário no banco, interrompe
+            return false;
+        }
+
+        // 5. Gera um novo token JWT (por exemplo, com prazo de 43200 segundos = 12h)
+        $novoToken = $jwtTokenClass->encode(43200, [
+            "id" => $usuarioModel->getCODUSUARIO()
+        ]);
+
+        // 6. Atualiza o TOKEN no Cookie e configura sessão
+        CookieLib::setValue("TOKEN", $novoToken, true);
+        SessionLib::setDataSession($usuarioModel->getDataSession());
+
+        return true;
+    }
+
+    public function isLogged(){
         $funcoes = new FuncoesLib();
         $cookie = new CookieLib();
         $usuarioDao = new UsuarioDao();
         $jwtTokenClass = new JwtLib();
 
         $codusuarioSessao = SessionLib::getValue("CODUSUARIO");
-        $tokenuser = CookieLib::getValue("TOKEN_JWT");
+        $tokenCookie = CookieLib::getValue("TOKEN");
         if (empty($codusuarioSessao)) {
-            if (empty($tokenuser)) {
+            if (empty($tokenCookie)) {
                 SessionLib::setValue("REDIRECIONA", $funcoes->pegarUrlAtual());
                 $this->redirect("/usuario/logoff");
                 exit();
             } else {
-                $dataToken = $jwtTokenClass->decode($tokenuser);
+                $dataToken = $jwtTokenClass->decode($tokenCookie);
                 if (!empty($dataToken)) {
                     $codusuarioCookie = $dataToken->data->id;
-                    $usuarioResult = $usuarioDao->buscarCodusuario($codusuarioCookie);
-                    $objInstituicao = (new InstituicaoDao())->buscarInstituicoesUsuario($usuarioResult->getCODPESSOA());
-                    $token = $jwtTokenClass->encode(43200, ["id" => $usuarioResult->getCODUSUARIO()]);
+                    $usuarioMOdel = $usuarioDao->buscarCodusuario($codusuarioCookie);
 
-                    if (count($objInstituicao??[]) == 0){
-                        $this->redirect("/usuario/logoff");
-                        exit();
-                    }
+                    $token = $jwtTokenClass->encode(43200, ["id" => $usuarioMOdel->getCODUSUARIO()]);
 
-                    CookieLib::setValue("TOKEN_JWT",$token);
-                    SessionLib::setDataSession($usuarioResult);
-
-                    if (count($objInstituicao??[]) == 1){
-                        $usuarioResult->setCODINSTITUICAO($objInstituicao[0]->CODINSTITUICAO);
-                    } else {
-                        $this->redirect('/usuario/selecionainstituicao');
-                        exit();
-                    }
+                    CookieLib::setValue("TOKEN",$token, true);
+                    SessionLib::setDataSession($usuarioMOdel->getDataSession());
 
                     return true;
                 } else {
@@ -209,9 +250,9 @@ class ControllerCore
         } else {
             return true;
         }
-    }*/
+    }
 
-    public function isLogged(){
+    public function isLogged2(){
         $funcoes = new FuncoesLib();
 
         $codusuarioSessao = SessionLib::getValue("CODUSUARIO");
@@ -252,7 +293,7 @@ class ControllerCore
 
     public function renderComponent(string $component,  array $data = [], $print = false) {
         if (!file_exists(dirname(__DIR__, 3) . "/templates/{$component}")) {
-            throw new \ErrorException("Component >>> /templates/{$component} <<< não encontrado!");
+            return "ERRO COMPONENT >> {$component}";
         }
 
         return (new TwigLib())->renderComponent($component, $data, $print);
@@ -279,10 +320,12 @@ class ControllerCore
 
     public function debug($value){
         if (CONFIG_DISPLAY_ERROR_DETAILS){
-            echo "<pre>";
+            /*echo "<pre>";
             print_r($value);
             echo "</pre>";
-            exit();
+            exit();*/
+            dump($value); exit;
+
         }
     }
 
@@ -291,6 +334,45 @@ class ControllerCore
         header("Cache-Control: no-cache, no-store, must-revalidate");
         header("Pragma: no-cache");
         header("Expires: 0");
+    }
+
+    /**
+     * @param $permissao string|array
+     * @return bool
+     * @string SALVAR, ALTERAR, EXCLUIR, LER, OUTROS
+     */
+    public function checkPermission($permissao)
+    {
+        if (gettype($permissao) != 'array') {
+            return $this->servico[$permissao] == 1;
+
+        }
+        if(is_array($permissao)){
+
+            $count = 0;
+            foreach ($permissao as $chave => $valor) {
+                if (isset($this->servico[$valor]) and $this->servico[$valor] == 1) {
+                    $count++;
+                }
+            }
+            return $count > 0  ;
+        }
+
+        return false;
+    }
+
+    public function returnPostAction($servico="", $id="") {
+        $queryParams = [];
+        if ($this->postParams("pg") !== "") $queryParams[] = "pg=" . urlencode($this->postParams("pg"));
+        if ($this->postParams("b") !== "") $queryParams[] = "b=" . urlencode($this->postParams("b"));
+        if ($this->postParams($id) !== "") $queryParams[] = $id."=" . urlencode($this->postParams($id));
+
+
+        $returnParams = count($queryParams) > 0 ? "?" . implode("&", $queryParams) : "";
+        if (!empty($servico))
+            return "{$this->servico["URL"]}-{$servico}/" . $returnParams;
+        else
+            return "{$this->servico["URL"]}/" . $returnParams;
     }
 
 

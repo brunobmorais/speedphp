@@ -1,5 +1,5 @@
 .text-primary {
-    color: var(--mycolor-primary) !important;
+    color: var(--mycolor-link) !important;
 }
 
 .btn {
@@ -96,6 +96,10 @@
     color: var(--mycolor-primary);
 }
 
+label.btn.btn-link {
+    --bs-btn-color: var(--mycolor-primary);
+}
+
 /*ESTILO PARA FORMULARIO - BOTAO DE UPLOAD */
 .btnInputFile {
     width: auto;
@@ -165,13 +169,6 @@ a:hover {
 .button-inactive {
     color: #000;
     line-height: 16px;
-}
-
-.btn-check:checked+.btn, .btn.active, .btn.show, .btn:first-child:active, :not(.btn-check)+.btn:active {
-    color: var(--mycolor-primary);
-    background-color: transparent;
-    border-color: var(--mycolor-primary);
-    border-radius: 20px;
 }
 
 .btn-sm {

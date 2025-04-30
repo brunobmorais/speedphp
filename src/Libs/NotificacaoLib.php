@@ -76,7 +76,7 @@ class NotificacaoLib
             CONFIG_SITE['url'] . $this->link,
             "Acessar");
 
-        $resultEmail = EmailLib::sendEmail($this->title, $msge, [$email]);
+        $resultEmail = EmailLib::sendEmailPHPMailer($this->title, $msge, [$email]);
 
 
         return true;
@@ -111,7 +111,7 @@ class NotificacaoLib
                 CONFIG_SITE['url'] . $this->link,
                 "Acessar");
 
-            $resultEmail = EmailLib::sendEmail($this->title, $msge, [$email]);
+            $resultEmail = EmailLib::sendEmailPHPMailer($this->title, $msge, [$email]);
 
         }
 
@@ -143,7 +143,7 @@ class NotificacaoLib
             $notificacao = (new SiNotificacaoDao())->novaNotificacao($arrayNotificacao);
 
             // ENVIAR EMAIL
-            $resultEmail = EmailLib::sendEmail($this->title, $this->message, [$email], $this->link);
+            $resultEmail = EmailLib::sendEmailPHPMailer($this->title, $this->message, [$email]);
 
         }
         return true;

@@ -1,11 +1,15 @@
 <?php
+
 namespace App\Libs;
 
 use DateTime;
+use DateTimeZone;
 use Firebase\JWT\JWT;
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 use ReCaptcha\ReCaptcha;
+use chillerlan\QRCode\QRCode;
+use chillerlan\QRCode\QROptions;
 
 
 /**
@@ -71,6 +75,30 @@ class FuncoesLib
     function converteDataEmTimestamp($date)
     {
         return strtotime($date);
+    }
+
+    public function getCurrentDateIso($hoursToAdd = 0)
+    {
+        // Define o fuso horário, caso necessário, se não especificado, usa o fuso horário do sistema
+        $timezone = new DateTimeZone('America/Sao_Paulo');
+        $date = new DateTime('now', $timezone);
+
+        if (!empty($hoursToAdd))
+            $date->modify("+$hoursToAdd hours");
+
+        return $date->format('Y-m-d\TH:i:s.000P');
+    }
+
+    public function getCurrentDateDatabase($hoursToAdd = 0)
+    {
+        // Define o fuso horário, caso necessário, se não especificado, usa o fuso horário do sistema
+        $timezone = new DateTimeZone('America/Sao_Paulo');
+        $date = new DateTime('now', $timezone);
+
+        if (!empty($hoursToAdd))
+            $date->modify("+$hoursToAdd hours");
+
+        return $date->format('Y-m-d H:i:s');
     }
 
     function converteTimestampEmData($timestamp)
@@ -148,6 +176,12 @@ class FuncoesLib
         return number_format($numero, 2, '.', ',');
     }
 
+
+    function formatMoedaBr($numero)
+    {
+        return number_format($numero, 2, ',', '.');
+    }
+
     /**
      * FUNÇÃO PARA FORMATAR A DATA RECEBIDA NO FORMATO DO USUÁRIO
      *
@@ -161,7 +195,7 @@ class FuncoesLib
         return date("m/d/Y", $dataformatada);;
     }
 
-        /**
+    /**
      * FUNÇÃO PARA FORMATAR A DATA RECEBIDA PARA FORMATO BRASILEIRO
      *
      * @param $data
@@ -191,10 +225,31 @@ class FuncoesLib
      * FUNÇÃO FORMATAR DATA PARA BANCO DE DADOS
      *
      */
+    /**
+     * FUNÇÃO FORMATAR DATA PARA BANCO DE DADOS
+     * Converte data no formato DD/MM/AAAA para AAAA-MM-DD
+     *
+     * @param string $date Data no formato brasileiro (DD/MM/AAAA)
+     * @return string Data no formato ISO (AAAA-MM-DD)
+     */
     function formatDataBanco($date)
     {
-        $new = substr($date, 6, 4) . "-" . substr($date, 3, 2) . "-" . substr($date, 0, 2);
-        return $new;
+        // Verifica se a data está vazia
+        if (empty($date)) {
+            return '';
+        }
+
+        // Limpa a string removendo espaços extras
+        $date = trim($date);
+
+        // Verifica se a data está no formato DD/MM/AAAA
+        $data = DateTime::createFromFormat('d/m/Y', $date);
+
+        if ($data) {
+            return $data->format('Y-m-d'); // Saída: 1981-11-20
+        } else {
+            return null;
+        }
     }
 
     /**
@@ -252,32 +307,44 @@ class FuncoesLib
      */
     public function formatUrl($texto)
     {
-        $texto = trim($texto);
-        $texto = $this->textoMinusculo($texto);
         $texto = $this->removeAcentos($texto);
 
-        $texto = str_replace(".", "-", $texto);
-        $texto = str_replace("-", "-", $texto);
-        $texto = str_replace("/", "-", $texto);
-        $texto = str_replace("(", "-", $texto);
-        $texto = str_replace(")", "-", $texto);
-        $texto = str_replace("&", "", $texto);
-        $texto = str_replace("\"", "-", $texto);
-        $texto = str_replace("+", "-", $texto);
-        $texto = str_replace("_", "-", $texto);
+        // Substitui caracteres especiais por hífens ou remove
+        $texto = preg_replace("/[^a-zA-Z0-9\s]/", "-", $texto);
+
+        // Substitui espaços por hífens
         $texto = str_replace(" ", "-", $texto);
-        $texto = str_replace("'", "", $texto);
-        $texto = str_replace("´", "", $texto);
-        $texto = str_replace("@", "", $texto);
-        $texto = str_replace(",", "", $texto);
-        $texto = str_replace("|", "", $texto);
+
+        // Converte para minúsculas
+        $texto = strtolower(trim($texto));
 
         return $texto;
     }
 
-    public function pegarUrlAtual():string{
+    public function pegarUrlAtual(): string
+    {
 
         return $_SERVER['REQUEST_URI'];
+    }
+
+    function getCurrentUrl(): string
+    {
+        $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? "https://" : "http://";
+        $host     = $_SERVER['HTTP_HOST'];
+        $uri      = $_SERVER['REQUEST_URI'];
+
+        return $protocol . $host . $uri;
+    }
+
+    function getCurrentUrlWithoutParameters(): string {
+        $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? "https://" : "http://";
+        $host     = $_SERVER['HTTP_HOST'];
+        $uri      = $_SERVER['REQUEST_URI'];
+
+        // Remove os parâmetros de consulta (tudo após o '?')
+        $uri = strtok($uri, '?');
+
+        return $protocol . $host . $uri;
     }
 
     /**
@@ -391,8 +458,6 @@ class FuncoesLib
         $nome = strtolower($str); // Converter o nome todo para minúsculo
         $saida = ucfirst($nome);
         return $saida;
-
-
     }
 
     /**
@@ -578,12 +643,10 @@ class FuncoesLib
                 if (date("w", $this->dataToTimestamp($xDataInicial)) == "0") {
                     //SE DIA FOR DOMINGO OU FERIADO, SOMA +1
                     $xDataInicial = $this->Soma1dia($xDataInicial);
-
                 } else if (date("w", $this->dataToTimestamp($xDataInicial)) == "6") {
                     //SE DIA FOR SABADO, SOMA +2
                     $xDataInicial = $this->Soma1dia($xDataInicial);
                     $xDataInicial = $this->Soma1dia($xDataInicial);
-
                 } else {
                     //senaum vemos se este dia eh FERIADO
                     for ($i = 0; $i <= 12; $i++) {
@@ -654,7 +717,6 @@ class FuncoesLib
             }
             //retorna o campo formatado
             $retorno = $mascara;
-
         } else {
             //se n?o quer formatado, retorna o campo limpo
             $retorno = $codigoLimpo;
@@ -755,7 +817,8 @@ class FuncoesLib
         error_reporting(E_ALL);
     }
 
-    function validaCampo($campo, $tipo=FILTER_VALIDATE_INT) {
+    function validaCampo($campo, $tipo = FILTER_VALIDATE_INT)
+    {
         // FILTER_VALIDATE_URL;
         // FILTER_VALIDATE_EMAIL
         if (filter_var($campo, $tipo))
@@ -764,12 +827,14 @@ class FuncoesLib
             return false;
     }
 
-    function sanitizaCampo($campo, $tipo=FILTER_SANITIZE_STRING){
+    function sanitizaCampo($campo, $tipo = FILTER_SANITIZE_STRING)
+    {
         return filter_var($campo, $tipo);
     }
 
-    function verificaCampoVazio($valor, $seVazio=""){
-        if (!empty($valor) || ($valor === '0')){
+    function verificaCampoVazio($valor, $seVazio = "")
+    {
+        if (!empty($valor) || ($valor === '0')) {
             $retorno = $this->sanitizaCampo($valor);
         } else {
             $retorno = $seVazio;
@@ -777,23 +842,27 @@ class FuncoesLib
         return $retorno;
     }
 
-    static function inputGet($name){
+    static function inputGet($name)
+    {
         return filter_input(INPUT_GET, $name, FILTER_SANITIZE_STRING);
     }
 
-    static function inputPost($name){
+    static function inputPost($name)
+    {
         return filter_input(INPUT_POST, $name, FILTER_SANITIZE_STRING);
     }
 
-    function base64ParaArquivo($textoBase64,$caminho){
+    function base64ParaArquivo($textoBase64, $caminho)
+    {
         // SALVA ARQUIVO
         $arquivo = base64_decode($textoBase64);
         $nome = $this->geraNomeArquivoBase64($arquivo);
-        file_put_contents($caminho.$nome, $arquivo);
+        file_put_contents($caminho . $nome, $arquivo);
         return $nome;
     }
 
-    function arquivoParaBase64($arquivo){
+    function arquivoParaBase64($arquivo)
+    {
         // SALVA ARQUIVO NA BASE LOCAL
         return base64_encode(file_get_contents($arquivo));
     }
@@ -808,7 +877,7 @@ class FuncoesLib
     {
         $f = finfo_open();
         $mime_type = finfo_buffer($f, $arquivo, FILEINFO_MIME_TYPE);
-        $split = explode( '/', $mime_type );
+        $split = explode('/', $mime_type);
         $extensao = $split[1];
         $nomeArquivo = md5(uniqid(time()) . $this->pegaIpUsuario()) . "." . $extensao;
 
@@ -819,22 +888,18 @@ class FuncoesLib
     {
         $type = (int) is_object($obj) - (int) is_array($obj);
         if ($type === 0) return $obj;
-        foreach ($obj as $key => &$val)
-        {
+        foreach ($obj as $key => &$val) {
             $element = $this->arrayEmMinusculo($val);
-            switch ($type)
-            {
+            switch ($type) {
                 case 1:
-                    if (!is_int($key) && $key !== ($keyLowercase = strtolower($key)))
-                    {
+                    if (!is_int($key) && $key !== ($keyLowercase = strtolower($key))) {
                         unset($obj->{$key});
                         $key = $keyLowercase;
                     }
                     $obj->{$key} = $element;
                     break;
                 case -1:
-                    if (!is_int($key) && $key !== ($keyLowercase = strtolower($key)))
-                    {
+                    if (!is_int($key) && $key !== ($keyLowercase = strtolower($key))) {
                         unset($obj[$key]);
                         $key = $keyLowercase;
                     }
@@ -851,13 +916,15 @@ class FuncoesLib
      * @param mixed $string
      * @return array|string|null
      */
-    public static function clean($string) {
+    public static function clean($string)
+    {
         $string = str_replace(' ', ' ', $string); //
-     
-        return preg_replace('/[^A-Za-z0-9\-\s]/', '', $string); // 
-     }
 
-    function tempoCorrido($time) {
+        return preg_replace('/[^A-Za-z0-9\-\s]/', '', $string); // 
+    }
+
+    function tempoCorrido($time)
+    {
 
         $now = strtotime(date('m/d/Y H:i:s'));
         $time = strtotime($time);
@@ -871,16 +938,17 @@ class FuncoesLib
         $months = round($diff / 2419200);
         $years = round($diff / 29030400);
 
-        if ($seconds <= 60) return"1 min atrás";
-        else if ($minutes <= 60) return $minutes==1 ?'1 min atrás':$minutes.' min atrás';
-        else if ($hours <= 24) return $hours==1 ?'1 hrs atrás':$hours.' hrs atrás';
-        else if ($days <= 7) return $days==1 ?'1 dia atras':$days.' dias atrás';
-        else if ($weeks <= 4) return $weeks==1 ?'1 semana atrás':$weeks.' semanas atrás';
-        else if ($months <= 12) return $months == 1 ?'1 mês atrás':$months.' meses atrás';
-        else return $years == 1 ? 'um ano atrás':$years.' anos atrás';
+        if ($seconds <= 60) return "1 min atrás";
+        else if ($minutes <= 60) return $minutes == 1 ? '1 min atrás' : $minutes . ' min atrás';
+        else if ($hours <= 24) return $hours == 1 ? '1 hrs atrás' : $hours . ' hrs atrás';
+        else if ($days <= 7) return $days == 1 ? '1 dia atras' : $days . ' dias atrás';
+        else if ($weeks <= 4) return $weeks == 1 ? '1 semana atrás' : $weeks . ' semanas atrás';
+        else if ($months <= 12) return $months == 1 ? '1 mês atrás' : $months . ' meses atrás';
+        else return $years == 1 ? 'um ano atrás' : $years . ' anos atrás';
     }
 
-    function verificaRecaptcha($token){
+    function verificaRecaptcha($token)
+    {
 
         $secret = CONFIG_RECAPTCHA['chaveSecreta'];
         $remote_ip = $_SERVER["REMOTE_ADDR"];
@@ -894,17 +962,31 @@ class FuncoesLib
         }
     }
 
-    function ofuscaCampo($texto, $inicio, $final){
-        $qtd = strlen($texto)-$inicio-$final;
+    function ofuscaCampo($texto, $inicio, $final)
+    {
+        $qtd = strlen($texto) - $inicio - $final;
         $asc = str_repeat('*', $qtd);
         return substr_replace($texto, $asc, $inicio, $qtd);
     }
 
     /** Busca por um valor em uma matriz com base na coluna e retorna o index do array */
-    public static function searchArray($value, array $array, string $column_name) {
-        $key =  array_search($value, array_column(json_decode(json_encode($array),TRUE), $column_name ));  
-        return $key ; 
+    public static function searchArray($value, array $array, string $column_name)
+    {
+        $key =  array_search($value, array_column(json_decode(json_encode($array), TRUE), $column_name));
+        return $key;
     }
 
-}
+    public static function gerarQrCodeBase64(string $url, int $size = 300): string
+    {
+        $options = new QROptions([
+            'outputType' => QRCode::OUTPUT_IMAGE_PNG,
+            'scale' => max(1, intval($size / 25)),
+            'margin' => 2,
+        ]);
 
+        $qrcode = new QRCode($options);
+
+        $imageData = $qrcode->render($url); // conteúdo binário da imagem PNG
+        return base64_encode($imageData); // codifica o binário em base64
+    }
+}

@@ -6,5 +6,5 @@ use setasign\Fpdi\Tcpdf\Fpdi;
 
 interface FileInterface
 {
-    public static function render(array $array): Fpdi;
+    public function renderHtml(array $array): Fpdi;
 }

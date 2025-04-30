@@ -30,6 +30,14 @@ class FileLib{
         return $nomeArquivo;
     }
 
+    public function renameFile($from, $to)
+    {
+        $from = $_SERVER['DOCUMENT_ROOT'] . $from;
+        $to = $_SERVER['DOCUMENT_ROOT'] . $to;
+
+        rename($from, $to);
+    }
+
     /**
      * FUNÇÃO DE COPIAR UM ARQUIVO
      *
@@ -75,6 +83,29 @@ class FileLib{
         $nomeArquivo = md5(uniqid(time()) . $funcoesClass->pegaIpUsuario()) . "." . $extensao;
 
         return $nomeArquivo;
+    }
+
+    function generateFileNameBase64($base64)
+    {
+        $funcoesClass = new FuncoesLib();
+
+        // Tenta extrair o tipo MIME do Base64
+        preg_match('/^data:(.*?);base64,/', $base64, $matches);
+
+        if (!empty($matches[1])) {
+            // Obtém o tipo MIME (ex: image/jpeg, application/pdf, etc.)
+            $mimeType = $matches[1];
+            $mimeParts = explode('/', $mimeType);  // Divide em "type/subtype" (ex: image/jpeg)
+
+            if (isset($mimeParts[1])) {
+                // Retorna a extensão como o tipo MIME (ex: jpg, pdf, png)
+                $extension = $mimeParts[1];
+                return md5(uniqid(time()) . $funcoesClass->pegaIpUsuario()) . "." . $extension;
+
+            }
+        }
+
+        return null;
     }
 
     /**
@@ -275,5 +306,19 @@ class FileLib{
             return false;
 
         return true;
+    }
+
+    public function uploadFileBase64(array|string|null $string, string $to)
+    {
+        $caminhoImagem = $_SERVER['DOCUMENT_ROOT'] . $to;
+
+        $name = $this->generateFileNameBase64($string);
+
+        $base64Image = $string;
+        $imageData = explode(',', $base64Image)[1];
+        $imageData = base64_decode($imageData);
+        file_put_contents($caminhoImagem.$name, $imageData);
+
+        return $name;
     }
 }

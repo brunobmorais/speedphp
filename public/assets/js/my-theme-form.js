@@ -20,34 +20,36 @@
 // FIM VALIDACAO BOOTSTRAP
 
 // FORM SUBMIT
-let form = document.querySelector("form");
-
-if (form) {
-    form.addEventListener("submit", (event) => {
-        let submitter = event.submitter;
-        let button = submitter.id;
-        let form = event.target.id
-
-        let textButton = document.getElementById(button).innerHTML;
-        clickBotaoProgressAtivo(button);
-        validaFormId(form);
-        if (document.getElementById(form).checkValidity() && event.returnValue) {
-            (function () {
-                window.onpageshow = function (event) {
-                    if (event.persisted) {
-                        clickBotaoProgressInativo(button, textButton);
-                    }
-                };
-            })();
-
-            return true
-        }
-
+// FORM SUBMIT
+document.querySelectorAll("form").forEach((formElement) => {
+    formElement.addEventListener("submit", (event) => {
         event.preventDefault();
-        clickBotaoProgressInativo(button, textButton);
-        alertError("Preencha todos os campos corretamente!")
-        return false
 
+        const submitter = event.submitter;
+        const buttonId = submitter?.id || null;
+        const formId = formElement.id;
+        const textButton = submitter?.innerHTML || "";
+
+        if (buttonId) clickBotaoProgressAtivo(buttonId);
+        validaFormId(formId);
+
+        if (formElement.checkValidity()) {
+            window.onpageshow = function (event) {
+                if (event.persisted && buttonId) {
+                    clickBotaoProgressInativo(buttonId, textButton);
+                }
+            };
+
+            formElement.submit(); // tudo certo, envia o formulário
+        } else {
+            if (buttonId) clickBotaoProgressInativo(buttonId, textButton);
+            alertError("Preencha todos os campos corretamente!");
+        }
     });
-}
+});
 // FIM FORM SUBMIT
+
+async function formToMap(formData){
+    const value = Object.fromEntries(formData.entries());
+    return value;
+}

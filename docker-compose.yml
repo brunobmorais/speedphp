@@ -3,11 +3,8 @@ networks:
   mynet:
 services:
   php:
-    build:
-      context: ./
-      dockerfile: ./docker/Dockerfile-php82
     restart: always
-    #image: brunobmorais/php7.4-apache
+    image: brunobmorais/php8.3-apache
     volumes:
       - ./:/var/www/html
       - ./docker/config/apache/000-default.conf:/etc/apache2/sites-available/000-default.conf
