@@ -111,57 +111,7 @@ class AppCore
             return;
         }
 
-        // Se não encontrou nem legado nem modular, tenta o controlador padrão
-        // CORREÇÃO: mover a verificação do controlador padrão para cá
-        $defaultControllerName = CONFIG_FRAMEWORK["controller_default"];
-
-        // Tenta o controlador padrão como legado
-        $legacyDefaultClass = "App\\Controllers\\" . $defaultControllerName . "Controller";
-        if (class_exists($legacyDefaultClass)) {
-            $this->controller = new $legacyDefaultClass();
-            $this->controllerName = $defaultControllerName;
-
-            if (in_array($defaultControllerName, $this->controllersSemMetodo)) {
-                $this->params = $urlArray;
-                $this->requestMethodIndex();
-                $this->debug("Controlador padrão legado carregado (sem método)");
-                return;
-            } elseif (!empty($urlArray[0]) && method_exists($this->controller, $urlArray[0])) {
-                $this->method = $urlArray[0];
-                $this->params = array_slice($urlArray, 1);
-                $this->debug("Controlador padrão legado carregado com método específico");
-                return;
-            }
-        }
-
-        // Tenta o controlador padrão como modular
-        $modulePath = dirname(__DIR__, 2) . '/src/Modules/' . $defaultControllerName;
-        $controllerPath = $modulePath . '/' . $defaultControllerName . 'Controller.php';
-
-        if (is_dir($modulePath) && file_exists($controllerPath)) {
-            $controllerClass = 'App\\Modules\\' . $defaultControllerName . '\\' . $defaultControllerName . 'Controller';
-
-            if (class_exists($controllerClass)) {
-                $this->controller = new $controllerClass();
-                $this->controllerName = $defaultControllerName . 'Controller';
-                $this->modulePath = $defaultControllerName;
-
-                if (!empty($urlArray[0]) && method_exists($this->controller, $urlArray[0])) {
-                    $this->method = $urlArray[0];
-                    $this->params = array_slice($urlArray, 1);
-                } else {
-                    $this->requestMethodIndex();
-                    $this->params = $urlArray;
-                }
-
-                $this->debug("Controlador padrão modular carregado");
-                return;
-            }
-        }
-
-        // Se chegou aqui, nem legado nem modular funcionou
-        $this->debug("Nenhum controller encontrado, carregando página 404");
-        $this->load404Controller();
+        $this->loadDefaultController();
     }
 
     /**
@@ -324,7 +274,27 @@ class AppCore
     {
         $defaultControllerName = CONFIG_FRAMEWORK["controller_default"];
 
-        // Tenta o controlador padrão como modular primeiro (invertendo a prioridade)
+        // Primeiro tenta o controlador padrão como legado
+        if ($this->tryLoadDefaultLegacyController($defaultControllerName)) {
+            return;
+        }
+
+        // Se não encontrou no sistema legado, tenta o modular
+        if ($this->tryLoadDefaultModularController($defaultControllerName)) {
+            return;
+        }
+
+        // Se não encontrou em nenhum lugar, exibe erro 404
+        $this->debug("Controlador padrão não encontrado em nenhum lugar");
+        $this->load404Controller();
+    }
+
+    /**
+     * Tenta carregar o controlador padrão modular
+     * @return bool Retorna true se encontrou e carregou o controlador
+     */
+    protected function tryLoadDefaultModularController($defaultControllerName)
+    {
         $modulePath = dirname(__DIR__, 2) . '/src/Modules/' . $defaultControllerName;
         $controllerPath = $modulePath . '/' . $defaultControllerName . 'Controller.php';
 
@@ -338,11 +308,19 @@ class AppCore
                 $this->requestMethodIndex();
                 $this->params = [];
                 $this->debug("Controlador padrão modular carregado");
-                return;
+                return true;
             }
         }
 
-        // Se não existe no sistema modular, verifica se existe no sistema legado
+        return false;
+    }
+
+    /**
+     * Tenta carregar o controlador padrão legado
+     * @return bool Retorna true se encontrou e carregou o controlador
+     */
+    protected function tryLoadDefaultLegacyController($defaultControllerName)
+    {
         $controllerClass = "App\\Controllers\\" . $defaultControllerName . "Controller";
 
         if (class_exists($controllerClass)) {
@@ -351,12 +329,10 @@ class AppCore
             $this->requestMethodIndex();
             $this->params = [];
             $this->debug("Controlador padrão legado carregado");
-            return;
+            return true;
         }
 
-        // Se não encontrou em nenhum lugar, exibe erro 404
-        $this->debug("Controlador padrão não encontrado em nenhum lugar");
-        $this->load404Controller();
+        return false;
     }
 
     /**
