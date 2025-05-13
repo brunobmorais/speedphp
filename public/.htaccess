@@ -1,17 +1,27 @@
 RewriteEngine On
 Options All -Indexes
 
-# Não reescrever para arquivos e pastas existentes
+# Permitir acesso direto a arquivos em .well-known
+RewriteCond %{REQUEST_URI} ^/\.well-known/
+RewriteRule - - [L]
+
+# Ignorar reescrita para arquivos e pastas existentes
 RewriteCond %{REQUEST_FILENAME} -f [OR]
 RewriteCond %{REQUEST_FILENAME} -d
 RewriteRule ^ - [L]
 
-# Não reescrever para arquivos estáticos comuns
-RewriteRule \.(jpg|jpeg|png|gif|ico|css|js|svg|webp|mp4|woff|woff2|ttf|eot|map)$ - [L]
+# Ignorar reescrita para arquivos estáticos com query string
+RewriteCond %{REQUEST_URI} \.(jpg|jpeg|png|gif|ico|css|js|svg|webp|mp4|woff|woff2|ttf|eot|map)$ [NC]
+RewriteRule ^ - [L]
 
-RewriteRule \.(pdf)$ - [F]
-
-# Reescrever todas as outras URLs para index.php
+# Redirecionar URLs sem barra final para barra final
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_URI} !(.*)/$
+RewriteRule ^(.*)$ /$1/ [L,R=301]
+
+# Bloquear acesso a arquivos PDF diretamente
+RewriteRule \.(pdf)$ - [F,NC]
+
+# Redirecionar todas as outras requisições para index.php
 RewriteRule ^(.*)$ index.php [QSA,NC,L]

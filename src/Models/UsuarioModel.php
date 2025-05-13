@@ -1,9 +1,11 @@
 <?php
+
 namespace App\Models;
 
 use BMorais\Database\ModelAbstract;
 
-class UsuarioModel extends ModelAbstract {
+class UsuarioModel extends ModelAbstract
+{
 
 
     protected $CODUSUARIO;
@@ -269,6 +271,4 @@ class UsuarioModel extends ModelAbstract {
             "PRIMEIRONOME" => explode(" ", $this->getNOME())[0],
         ];
     }
-
-
 }

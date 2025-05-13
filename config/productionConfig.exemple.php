@@ -4,8 +4,8 @@ const CONFIG_DATA_LAYER = [
     "driver" => "mysql",
     "host" => "localhost",
     "port" => "3306",
-    "dbname" => "u517977831_speedphp",
-    "username" => "u517977831_speedphp",
+    "dbname" => "",
+    "username" => "",
     "passwd" => '',
     "options" => [
         PDO::MYSQL_ATTR_INIT_COMMAND => "SET time_zone = '-03:00'; SET NAMES UTF8, lc_time_names = 'pt_BR'",

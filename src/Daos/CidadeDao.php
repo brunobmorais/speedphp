@@ -45,6 +45,13 @@ class CidadeDao extends Crud{
         }
     }
 
+    public function buscarEstados()
+    {
+        $sql = "SELECT DISTINCT(UF) AS UF FROM CIDADE ORDER BY UF ASC";
+        $this->executeSQL($sql);
+        return $this->fetchArrayObj();
+    }
+
 
      public function getEstados(){
         try{

@@ -29,12 +29,27 @@ class PerfilDao extends Crud{
         }
     }
 
-    public function buscarPerfisUsuario($codusuario)
+    public function buscarPerfisUsuarioDisponivel($codusuario)
     {
         try {
             $sql = "SELECT P.CODPERFIL, P.NOME, P.NIVEL, P.EXCLUIDO, PU.CODPERFIL_USUARIO
                 FROM SI_PERFIL AS P
                 LEFT JOIN SI_PERFIL_USUARIO AS PU ON PU.CODPERFIL=P.CODPERFIL AND PU.CODUSUARIO=?
+                WHERE P.EXCLUIDO='0'";
+
+            $result = $this->executeSQL($sql,[$codusuario]);
+            return $this->fetchArrayObj($result);
+        } catch (\Error $e) {
+            throw new \Error($e->getMessage());
+        }
+    }
+
+    public function buscarPerfisAtivoUsuario($codusuario)
+    {
+        try {
+            $sql = "SELECT P.CODPERFIL, P.NOME, P.NIVEL, P.EXCLUIDO, PU.CODPERFIL_USUARIO
+                FROM SI_PERFIL AS P
+                INNER JOIN SI_PERFIL_USUARIO AS PU ON PU.CODPERFIL=P.CODPERFIL AND PU.CODUSUARIO=?
                 WHERE P.EXCLUIDO='0'";
 
             $result = $this->executeSQL($sql,[$codusuario]);

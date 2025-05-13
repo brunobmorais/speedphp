@@ -1,225 +1,154 @@
 <?php
 namespace App\Models;
-
 use BMorais\Database\ModelAbstract;
 
-class EnderecoModel extends ModelAbstract {
-
-
-    protected $CODENDERECO;
-    protected $CODCIDADE;
-    protected $CEP;
-    protected $LOGRADOURO;
-    protected $NUMERO;
-    protected $BAIRRO;
-    protected $COMPLEMENTO;
-    protected $LATITUDE;
-    protected $LONGITUDE;
-    protected $EXCLUIDO;
-    protected $CRIADO_EM;
-    protected $ALTERADO_EM;
-
-
-
-    /**
-     * Get the value of CODENDERECO
-     */ 
+class EnderecoModel extends ModelAbstract
+{
+    Protected $CODENDERECO;
+    Protected $CODCIDADE;
+    Protected $CEP;
+    Protected $LOGRADOURO;
+    Protected $NUMERO;
+    Protected $BAIRRO;
+    Protected $COMPLEMENTO;
+    Protected $LATITUDE;
+    Protected $LONGITUDE;
+    Protected $EXCLUIDO;
+    Protected $CRIADO_EM;
+    Protected $ALTERADO_EM;
+    
     public function getCODENDERECO()
     {
         return $this->CODENDERECO;
     }
-
-    /**
-     * Get the value of CODCIDADE
-     */ 
+    
     public function getCODCIDADE()
     {
         return $this->CODCIDADE;
     }
-
-    /**
-     * Get the value of LOGRADOURO
-     */ 
-    public function getLOGRADOURO()
-    {
-        return $this->LOGRADOURO;
-    }
-
-    /**
-     * Set the value of LOGRADOURO
-     *
-     * @return  self
-     */ 
-    public function setLOGRADOURO($LOGRADOURO)
-    {
-        $this->LOGRADOURO = $LOGRADOURO;
-
-        return $this;
-    }
-
-    /**
-     * Set the value of CODCIDADE
-     *
-     * @return  self
-     */ 
-    public function setCODCIDADE($CODCIDADE)
-    {
-        $this->CODCIDADE = $CODCIDADE;
-
-        return $this;
-    }
-
-    /**
-     * Get the value of NUMERO
-     */ 
-    public function getNUMERO()
-    {
-        return $this->NUMERO;
-    }
-
-    /**
-     * Set the value of NUMERO
-     *
-     * @return  self
-     */ 
-    public function setNUMERO($NUMERO)
-    {
-        $this->NUMERO = $NUMERO;
-
-        return $this;
-    }
-
-    /**
-     * Get the value of BAIRRO
-     */ 
-    public function getBAIRRO()
-    {
-        return $this->BAIRRO;
-    }
-
-    /**
-     * Set the value of BAIRRO
-     *
-     * @return  self
-     */ 
-    public function setBAIRRO($BAIRRO)
-    {
-        $this->BAIRRO = $BAIRRO;
-
-        return $this;
-    }
-
-    /**
-     * Get the value of COMPLEMENTO
-     */ 
-    public function getCOMPLEMENTO()
-    {
-        return $this->COMPLEMENTO;
-    }
-
-    /**
-     * Set the value of COMPLEMENTO
-     *
-     * @return  self
-     */ 
-    public function setCOMPLEMENTO($COMPLEMENTO)
-    {
-        $this->COMPLEMENTO = $COMPLEMENTO;
-
-        return $this;
-    }
-
-    /**
-     * Get the value of LATITUDE
-     */ 
-    public function getLATITUDE()
-    {
-        return $this->LATITUDE;
-    }
-
-    /**
-     * Set the value of LATITUDE
-     *
-     * @return  self
-     */ 
-    public function setLATITUDE($LATITUDE)
-    {
-        $this->LATITUDE = $LATITUDE;
-
-        return $this;
-    }
-
-    /**
-     * Get the value of LONGITUDE
-     */ 
-    public function getLONGITUDE()
-    {
-        return $this->LONGITUDE;
-    }
-
-    /**
-     * Set the value of LONGITUDE
-     *
-     * @return  self
-     */ 
-    public function setLONGITUDE($LONGITUDE)
-    {
-        $this->LONGITUDE = $LONGITUDE;
-
-        return $this;
-    }
-
-    /**
-     * Get the value of EXCLUIDO
-     */ 
-    public function getEXCLUIDO()
-    {
-        return $this->EXCLUIDO;
-    }
-
-    /**
-     * Set the value of EXCLUIDO
-     *
-     * @return  self
-     */ 
-    public function setEXCLUIDO($EXCLUIDO)
-    {
-        $this->EXCLUIDO = $EXCLUIDO;
-
-        return $this;
-    }
-
-    /**
-     * Get the value of CRIADO_EM
-     */ 
-    public function getCRIADO_EM()
-    {
-        return $this->CRIADO_EM;
-    }
-
-    /**
-     * Get the value of ALTERADO_EM
-     */ 
-    public function getALTERADO_EM()
-    {
-        return $this->ALTERADO_EM;
-    }
-
-    /**
-     * @return mixed
-     */
+    
     public function getCEP()
     {
         return $this->CEP;
     }
-
-    /**
-     * @param mixed $CEP
-     * @return EnderecoModel
-     */
-    public function setCEP($CEP)
+    
+    public function getLOGRADOURO()
+    {
+        return $this->LOGRADOURO;
+    }
+    
+    public function getNUMERO()
+    {
+        return $this->NUMERO;
+    }
+    
+    public function getBAIRRO()
+    {
+        return $this->BAIRRO;
+    }
+    
+    public function getCOMPLEMENTO()
+    {
+        return $this->COMPLEMENTO;
+    }
+    
+    public function getLATITUDE()
+    {
+        return $this->LATITUDE;
+    }
+    
+    public function getLONGITUDE()
+    {
+        return $this->LONGITUDE;
+    }
+    
+    public function getEXCLUIDO()
+    {
+        return $this->EXCLUIDO;
+    }
+    
+    public function getCRIADO_EM()
+    {
+        return $this->CRIADO_EM;
+    }
+    
+    public function getALTERADO_EM()
+    {
+        return $this->ALTERADO_EM;
+    }
+    
+    
+    public function setCODENDERECO($CODENDERECO):self
+    {
+        $this->CODENDERECO = $CODENDERECO;
+        return $this;
+    }
+    
+    public function setCODCIDADE($CODCIDADE):self
+    {
+        $this->CODCIDADE = $CODCIDADE;
+        return $this;
+    }
+    
+    public function setCEP($CEP):self
     {
         $this->CEP = $CEP;
         return $this;
     }
+    
+    public function setLOGRADOURO($LOGRADOURO):self
+    {
+        $this->LOGRADOURO = $LOGRADOURO;
+        return $this;
+    }
+    
+    public function setNUMERO($NUMERO):self
+    {
+        $this->NUMERO = $NUMERO;
+        return $this;
+    }
+    
+    public function setBAIRRO($BAIRRO):self
+    {
+        $this->BAIRRO = $BAIRRO;
+        return $this;
+    }
+    
+    public function setCOMPLEMENTO($COMPLEMENTO):self
+    {
+        $this->COMPLEMENTO = $COMPLEMENTO;
+        return $this;
+    }
+    
+    public function setLATITUDE($LATITUDE):self
+    {
+        $this->LATITUDE = $LATITUDE;
+        return $this;
+    }
+    
+    public function setLONGITUDE($LONGITUDE):self
+    {
+        $this->LONGITUDE = $LONGITUDE;
+        return $this;
+    }
+    
+    public function setEXCLUIDO($EXCLUIDO):self
+    {
+        $this->EXCLUIDO = $EXCLUIDO;
+        return $this;
+    }
+    
+    public function setCRIADO_EM($CRIADO_EM):self
+    {
+        $this->CRIADO_EM = $CRIADO_EM;
+        return $this;
+    }
+    
+    public function setALTERADO_EM($ALTERADO_EM):self
+    {
+        $this->ALTERADO_EM = $ALTERADO_EM;
+        return $this;
+    }
+    
+    
 }

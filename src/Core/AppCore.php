@@ -6,17 +6,18 @@ use App\Api\Api;
 use App\Controllers\ErroController;
 
 /**
- * Esta classe é responsável por obter da URL o controller, método (ação) e os parâmetros
- * e verificar a existência dos mesmo.
+ * Esta classe é responsável por obter da URL o controlador, método e parâmetros
+ * utilizando uma estrutura modular e escalável.
  */
 class AppCore
 {
-    protected $controller = 'Home';
-    protected $controllerName = 'Home';
+    protected $controller;
+    protected $controllerName;
+    protected $modulePath = '';
     protected $method = 'index';
     protected $page404 = false;
     protected $params = [];
-    private $funcaoSemMetodo = false;
+    private $debugString = "";
     private $controllersSemMetodo = CONFIG_FRAMEWORK["controller_without_method"];
 
     // Método construtor
@@ -24,55 +25,370 @@ class AppCore
     {
         $urlArray = $this->parseUrl();
 
+        // Verificar se é uma chamada para API
         if (!empty($urlArray[0]) && $urlArray[0] === "api") {
             Api::run();
             return;
         }
 
-        if (!empty($urlArray)) {
-            if ($this->isValidController($urlArray[0])) {
-                $this->getControllerFromUrl($urlArray);
-                $this->getMethodOrParamsFromUrl($urlArray);
-                $this->getParamsFromUrl($urlArray);
-            } else {
-                // Se não for um controlador válido, assume que é um método do HomeController
-                $this->controller = "App\\Controllers\\".CONFIG_FRAMEWORK["controller_default"]."Controller";
-                $this->controllerName = CONFIG_FRAMEWORK["controller_default"];
-                $this->controller = new $this->controller();
+        // Processar a URL para determinar o controlador, método e parâmetros
+        $this->processUrl($urlArray);
 
-                if (in_array(CONFIG_FRAMEWORK["controller_default"], $this->controllersSemMetodo)) {
-                    $this->params = $urlArray;
-                    $this->method = "index";
-                } elseif (method_exists($this->controller, $urlArray[0])) {
+        // Se um controlador foi encontrado, chamar o método com os parâmetros
+        if (!empty($this->debugString)) {
+            echo $this->debugString;
+            exit();
+        }
+
+        if ($this->controller) {
+            $response = call_user_func_array([$this->controller, $this->method], [$this->params]);
+
+            if (!empty($response)) {
+                $this->handleError($response);
+            }
+        }
+    }
+
+    /**
+     * Processa a URL para determinar controlador, método e parâmetros
+     */
+    protected function processUrl($urlArray)
+    {
+        if (empty($urlArray[0])) {
+            // URL vazia, carregar controlador padrão
+            $this->loadDefaultController();
+            return;
+        }
+
+        $this->debug("Processando URL", $urlArray);
+
+        // Primeiro tenta carregar o controlador específico usando o sistema legado
+        $legacyResult = $this->tryLoadLegacyController($urlArray);
+
+        if ($legacyResult === true) {
+            // Controller legado encontrado com método válido
+            $this->debug("Controller legado encontrado e carregado com método válido");
+            return;
+        }
+        else if ($legacyResult === 'method_not_found') {
+            // Controller legado encontrado, mas método não existe
+            // Tenta encontrar no sistema modular se existe um submódulo correspondente
+            $this->debug("Controller legado encontrado, mas método não existe. Tentando sistema modular");
+
+            if (count($urlArray) > 1) {
+                // Verifica se existe um submódulo correspondente no módulo
+                $firstSegment = $urlArray[0];
+                $secondSegment = $urlArray[1];
+
+                // Verifica se existe módulo e submódulo correspondentes
+                $modulePath = dirname(__DIR__, 2) . '/src/Modules/' . ucfirst($firstSegment);
+                $subModulePath = $modulePath . '/' . ucfirst($secondSegment);
+
+                if (is_dir($modulePath) && is_dir($subModulePath)) {
+                    $this->debug("Encontrada estrutura modular correspondente", [
+                        'Módulo' => $modulePath,
+                        'Submódulo' => $subModulePath
+                    ]);
+
+                    // Tenta carregar o controller do submódulo
+                    if ($this->tryLoadModularController($urlArray)) {
+                        $this->debug("Controller modular de submódulo carregado com sucesso");
+                        return;
+                    }
+                }
+            }
+
+            // Se chegou aqui, não encontrou um submódulo correspondente
+            // Carregando página 404 porque o método não foi encontrado no legado
+            $this->debug("Método não encontrado no legado e submódulo não existe. Carregando 404");
+            $this->load404Controller();
+            return;
+        }
+
+        // Se não encontrou usando o sistema legado, tenta o modular
+        if ($this->tryLoadModularController($urlArray)) {
+            $this->debug("Controller modular encontrado e carregado");
+            return;
+        }
+
+        // Se não encontrou nem legado nem modular, tenta o controlador padrão
+        // CORREÇÃO: mover a verificação do controlador padrão para cá
+        $defaultControllerName = CONFIG_FRAMEWORK["controller_default"];
+
+        // Tenta o controlador padrão como legado
+        $legacyDefaultClass = "App\\Controllers\\" . $defaultControllerName . "Controller";
+        if (class_exists($legacyDefaultClass)) {
+            $this->controller = new $legacyDefaultClass();
+            $this->controllerName = $defaultControllerName;
+
+            if (in_array($defaultControllerName, $this->controllersSemMetodo)) {
+                $this->params = $urlArray;
+                $this->requestMethodIndex();
+                $this->debug("Controlador padrão legado carregado (sem método)");
+                return;
+            } elseif (!empty($urlArray[0]) && method_exists($this->controller, $urlArray[0])) {
+                $this->method = $urlArray[0];
+                $this->params = array_slice($urlArray, 1);
+                $this->debug("Controlador padrão legado carregado com método específico");
+                return;
+            }
+        }
+
+        // Tenta o controlador padrão como modular
+        $modulePath = dirname(__DIR__, 2) . '/src/Modules/' . $defaultControllerName;
+        $controllerPath = $modulePath . '/' . $defaultControllerName . 'Controller.php';
+
+        if (is_dir($modulePath) && file_exists($controllerPath)) {
+            $controllerClass = 'App\\Modules\\' . $defaultControllerName . '\\' . $defaultControllerName . 'Controller';
+
+            if (class_exists($controllerClass)) {
+                $this->controller = new $controllerClass();
+                $this->controllerName = $defaultControllerName . 'Controller';
+                $this->modulePath = $defaultControllerName;
+
+                if (!empty($urlArray[0]) && method_exists($this->controller, $urlArray[0])) {
                     $this->method = $urlArray[0];
                     $this->params = array_slice($urlArray, 1);
                 } else {
-                    // Se o método também não existir, redireciona para erro 404
-                    $this->page404 = true;
-                    $this->controller = new ErroController();
-                    $this->method = 'index';
+                    $this->requestMethodIndex();
+                    $this->params = $urlArray;
                 }
+
+                $this->debug("Controlador padrão modular carregado");
+                return;
             }
-        } else {
-            $this->controller = "App\\Controllers\\".CONFIG_FRAMEWORK["controller_default"]."Controller";
-            $this->controller = new $this->controller();
-            $this->method = 'index';
-            $this->params = [];
         }
 
-        $response = call_user_func_array([$this->controller, $this->method], [$this->params]);
-
-        if (!empty($response)) {
-            $this->handleError($response);
-        }
+        // Se chegou aqui, nem legado nem modular funcionou
+        $this->debug("Nenhum controller encontrado, carregando página 404");
+        $this->load404Controller();
     }
 
-    private function isValidController($controller)
+    /**
+     * Tenta carregar um controlador usando a estrutura modular
+     */
+    protected function tryLoadModularController($urlArray)
     {
-        return file_exists(dirname(__DIR__, 2) . '/src/Controllers/' . ucfirst($controller) . 'Controller.php');
+        if (empty($urlArray)) {
+            return false;
+        }
+
+        $currentPath = dirname(__DIR__, 2) . '/src/Modules';
+        $validPath = [];
+        $controllerClass = null;
+        $lastValidController = null;
+        $remainingSegments = $urlArray;
+
+        $this->debug("Tentando encontrar o controlador mais específico", $urlArray);
+
+        // Itera pelos segmentos para encontrar o controlador mais específico
+        foreach ($urlArray as $index => $segment) {
+            $folderSegment = ucfirst($segment);
+            $currentPath .= '/' . $folderSegment;
+
+            // Verifica se o segmento corresponde a uma pasta válida
+            if (is_dir($currentPath)) {
+                $validPath[] = $folderSegment;
+
+                // Verifica se o controlador existe neste nível
+                $controllerPath = $currentPath . '/' . $folderSegment . 'Controller.php';
+                if (file_exists($controllerPath)) {
+                    $controllerClass = 'App\\Modules\\' . implode('\\', $validPath) . '\\' . $folderSegment . 'Controller';
+
+                    if (class_exists($controllerClass)) {
+                        $lastValidController = [
+                            'class' => $controllerClass,
+                            'name' => $folderSegment . 'Controller',
+                            'index' => $index
+                        ];
+                    }
+                }
+            } else {
+                // Se o caminho deixa de ser válido, para a busca
+                break;
+            }
+        }
+
+        // Se encontramos um controlador válido, usamos o mais específico
+        if ($lastValidController) {
+            $this->controller = new $lastValidController['class']();
+            $this->controllerName = $lastValidController['name'];
+            $this->modulePath = implode('\\', array_slice($urlArray, 0, $lastValidController['index'] + 1));
+
+            // Define os segmentos restantes como método e parâmetros
+            $remainingSegments = array_slice($urlArray, $lastValidController['index'] + 1);
+            $this->determineMethodAndParams($remainingSegments);
+
+            $this->debug("Controller mais específico encontrado e carregado: " . $lastValidController['class'], [
+                'Método' => $this->method,
+                'Parâmetros' => $this->params
+            ]);
+
+            return true;
+        }
+
+        // Se nenhum controlador foi encontrado, retorna falso
+        $this->debug("Nenhum controlador modular encontrado");
+        return false;
+    }
+    /**
+     * Tenta carregar um controlador usando a estrutura legada
+     * @return bool|string Retorna true se encontrou controller e método, 'method_not_found' se encontrou
+     * controller mas não encontrou o método, ou false se não encontrou o controller
+     */
+    protected function tryLoadLegacyController($urlArray)
+    {
+        // Verifica se o primeiro segmento é um controlador válido
+        if ($this->isValidLegacyController($urlArray[0])) {
+            $this->controllerName = ucfirst($urlArray[0]);
+            $controllerClass = 'App\\Controllers\\' . $this->controllerName . 'Controller';
+            $this->controller = new $controllerClass();
+
+            // Determina o método e parâmetros
+            if (in_array($this->controllerName, $this->controllersSemMetodo)) {
+                $this->params = array_slice($urlArray, 1);
+                $this->requestMethodIndex();
+                return true;
+            } else if (!empty($urlArray[1])) {
+                $methodName = str_replace("-", "", $urlArray[1]);
+
+                if (method_exists($this->controller, $methodName)) {
+                    $this->method = strtolower($methodName);
+                    $this->params = array_slice($urlArray, 2);
+                    return true;
+                } else {
+                    // Controller encontrado, mas método não existe
+                    $this->debug("Controller legado encontrado, mas método '$methodName' não existe");
+                    return 'method_not_found';
+                }
+            } else {
+                // Sem segmentos adicionais, use o método padrão
+                $this->requestMethodIndex();
+                $this->params = [];
+                return true;
+            }
+        }
+
+        // CORREÇÃO: Não verificar controlador padrão aqui
+        return false;
     }
 
-    private function handleError(mixed $error): void
+    /**
+     * Verifica se um controlador legado existe
+     */
+    protected function isValidLegacyController($controller)
+    {
+        // Adicionar debug para verificar caminhos
+        $basePath = dirname(__DIR__, 2);
+        $controllerPath = $basePath . '/src/Controllers/' . ucfirst($controller) . 'Controller.php';
+
+        $this->debug("Verificando controlador legado", [
+            'Controller' => $controller,
+            'Base Path' => $basePath,
+            'Controller Path' => $controllerPath,
+            'File Exists' => file_exists($controllerPath) ? 'true' : 'false'
+        ]);
+
+        return file_exists($controllerPath);
+    }
+
+    /**
+     * Determina o método e parâmetros para controladores modulares
+     */
+    protected function determineMethodAndParams($remainingSegments)
+    {
+        if (empty($remainingSegments)) {
+            // Sem mais segmentos, use o método padrão
+            $this->requestMethodIndex();
+            $this->params = [];
+            return;
+        }
+
+        $methodName = $remainingSegments[0];
+        $formattedMethodName = str_replace("-", "", $methodName);
+
+        if (method_exists($this->controller, $formattedMethodName)) {
+            $this->method = $formattedMethodName;
+            $this->params = array_slice($remainingSegments, 1);
+        } else {
+            // Se o método não existe, use o método padrão e inclua todos os segmentos como parâmetros
+            $this->requestMethodIndex();
+            $this->params = $remainingSegments;
+        }
+    }
+
+    /**
+     * Carrega o controlador padrão
+     */
+    protected function loadDefaultController()
+    {
+        $defaultControllerName = CONFIG_FRAMEWORK["controller_default"];
+
+        // Tenta o controlador padrão como modular primeiro (invertendo a prioridade)
+        $modulePath = dirname(__DIR__, 2) . '/src/Modules/' . $defaultControllerName;
+        $controllerPath = $modulePath . '/' . $defaultControllerName . 'Controller.php';
+
+        if (is_dir($modulePath) && file_exists($controllerPath)) {
+            $controllerClass = 'App\\Modules\\' . $defaultControllerName . '\\' . $defaultControllerName . 'Controller';
+
+            if (class_exists($controllerClass)) {
+                $this->controller = new $controllerClass();
+                $this->controllerName = $defaultControllerName . 'Controller';
+                $this->modulePath = $defaultControllerName;
+                $this->requestMethodIndex();
+                $this->params = [];
+                $this->debug("Controlador padrão modular carregado");
+                return;
+            }
+        }
+
+        // Se não existe no sistema modular, verifica se existe no sistema legado
+        $controllerClass = "App\\Controllers\\" . $defaultControllerName . "Controller";
+
+        if (class_exists($controllerClass)) {
+            $this->controller = new $controllerClass();
+            $this->controllerName = $defaultControllerName;
+            $this->requestMethodIndex();
+            $this->params = [];
+            $this->debug("Controlador padrão legado carregado");
+            return;
+        }
+
+        // Se não encontrou em nenhum lugar, exibe erro 404
+        $this->debug("Controlador padrão não encontrado em nenhum lugar");
+        $this->load404Controller();
+    }
+
+    /**
+     * Carrega o controlador de erro 404
+     */
+    protected function load404Controller()
+    {
+        $this->page404 = true;
+        $this->controller = new ErroController();
+        $this->requestMethodIndex();
+        $this->params = [];
+    }
+
+    /**
+     * Processa a URL para obter os segmentos
+     */
+    protected function parseUrl()
+    {
+        $REQUEST_URI = explode('?', $_SERVER['REQUEST_URI']);
+        $REQUEST_URI = explode('/', substr($REQUEST_URI[0], 1));
+        // Filtra e preserva as chaves originais para manter a ordem
+        $filteredArray = array_filter($REQUEST_URI, function($value) {
+            return $value !== '';
+        });
+        // Reindexar o array para evitar índices não sequenciais
+        return array_values($filteredArray);
+    }
+
+    /**
+     * Trata erros de resposta
+     */
+    protected function handleError($error)
     {
         if (CONFIG_DISPLAY_ERROR_DETAILS) {
             throw new \ErrorException($error instanceof \Throwable ? $error->getMessage() : $error);
@@ -81,42 +397,60 @@ class AppCore
         }
     }
 
-    private function parseUrl()
+    /**
+     * Método auxiliar para depuração
+     */
+    protected function debug($message, $data = null)
     {
-        $REQUEST_URI = explode('?', $_SERVER['REQUEST_URI']);
-        $REQUEST_URI = explode('/', substr($REQUEST_URI[0], 1));
-        return $REQUEST_URI;
-    }
+        if (defined('DEBUG_ROUTER') && DEBUG_ROUTER === true) {
+            $this->debugString .= "<pre style='background:#f5f5f5; padding:10px; border:1px solid #ddd; margin:5px;'>";
+            $this->debugString .= "<strong>DEBUG:</strong> " . $message . "\n";
 
-    private function getControllerFromUrl($url)
-    {
-        $this->controllerName = ucfirst($url[0]);
-        $this->controller = 'App\\Controllers\\' . $this->controllerName . "Controller";
-        $this->controller = new $this->controller();
-    }
-
-    private function getMethodOrParamsFromUrl($url)
-    {
-        if (in_array($this->controllerName, $this->controllersSemMetodo)) {
-            $this->params = array_slice($url, 1);
-            $this->method = 'index';
-        } elseif (!empty($url[1]) && isset($url[1])) {
-            $url[1] = str_replace("-", "", $url[1]);
-            if (method_exists($this->controller, $url[1]) && !$this->page404) {
-                $this->method = strtolower($url[1]);
-            } else {
-                $this->page404 = true;
-                $this->controller = new ErroController();
-                $this->method = 'index';
+            if ($data !== null) {
+                $this->debugString .= "Data: ";
+                $this->debugString .= print_r($data, true);
             }
-        } else {
-            $this->method = 'index';
+
+            $this->debugString .= "</pre>";
         }
     }
 
-    private function getParamsFromUrl($url)
-    {
-        $startIndex = in_array($this->controllerName, $this->controllersSemMetodo) ? 1 : 2;
-        $this->params = array_slice($url, $startIndex);
+    /**
+     * Função adicional para depuração avançada dos caminhos de controladores legados
+     */
+    protected function debugLegacyControllerPath($controller) {
+        if (defined('DEBUG_ROUTER') && DEBUG_ROUTER === true) {
+            $basePath = dirname(__DIR__, 2);
+            $controllerPath = $basePath . '/src/Controllers/' . ucfirst($controller) . 'Controller.php';
+
+            $this->debugString .= "<pre style='background:#ffe6e6; padding:10px; border:1px solid #ffcccc; margin:5px;'>";
+            $this->debugString .= "<strong>DEBUG LEGACY PATH:</strong>\n";
+            $this->debugString .= "Base Path: " . $basePath . "<br>";
+            $this->debugString .= "Controller Path: " . $controllerPath . "<br>";
+            $this->debugString .= "File Exists: " . (file_exists($controllerPath) ? 'true' : 'false') . "<br>";
+
+            // Verificar se o diretório existe
+            $controllerDir = $basePath . '/src/Controllers/';
+            $this->debugString .= "Controller Directory: " . $controllerDir . "<br>";
+            $this->debugString .= "Directory Exists: " . (is_dir($controllerDir) ? 'true' : 'false') . "<br>";
+
+            // Listar arquivos no diretório
+            if (is_dir($controllerDir)) {
+                $this->debugString .= "Files in directory:<br>";
+                $files = scandir($controllerDir);
+                foreach ($files as $file) {
+                    $this->debugString .= "- " . $file . "<br>";
+                }
+            }
+
+            $this->debugString .= "</pre>";
+        }
+    }
+
+    protected function requestMethodIndex() {
+        if ($_SERVER['REQUEST_METHOD'] === 'GET')
+            $this->method = 'index';
+        else
+            $this->method = 'action';
     }
 }

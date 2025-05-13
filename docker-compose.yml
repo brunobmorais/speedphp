@@ -20,21 +20,23 @@ services:
   mysql:
     image: mysql:latest
     command:
-      --default-authentication-plugin=mysql_native_password
+      #--default-authentication-plugin=mysql_native_password
+      #--mysql-native-password=ON
       --sql_mode=STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION
     restart: always
     volumes:
-      - ./docker/volumes/mysql/database:/var/lib/mysql
+      #- ./docker/volumes/mysql/database:/var/lib/mysql
       - ./docker/config/mysql/dump/database.sql:/docker-entrypoint-initdb.d/dump.sql
-    ports:
-      - "3306:3306"
     networks:
       - mynet
+    ports:
+      - "3306:3306"
     environment:
       MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: database
+      MYSQL_DATABASE: speedphp
       MYSQL_USER: user
       MYSQL_PASSWORD: user
+      TZ: America/Sao_Paulo
   phpmyadmin:
     image: phpmyadmin:latest
     environment:

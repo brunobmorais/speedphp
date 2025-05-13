@@ -1,220 +1,130 @@
 <?php
 namespace App\Models;
-
 use BMorais\Database\ModelAbstract;
 
-class PessoaModel extends ModelAbstract {
-
-
-    protected $CODUSUARIO;
-    protected $CODENDERECO ;
-    protected $IMAGEM;
-    protected $TIPOPESSOA; 
-    protected $CODPESSOA;
-    protected $CPF;
-    protected $TELEFONE ; 
-    protected $NOME;
-    protected $SENHA;
-    protected $EMAIL;
-    protected $SITUACAO;
-
-    /**
-     * @return mixed
-     */
-    public function getCODUSUARIO()
-    {
-        return $this->CODUSUARIO;
-    }
-
-    /**
-     * @param mixed $CODUSUARIO
-     * @return PessoaModel
-     */
-    public function setCODUSUARIO($CODUSUARIO)
-    {
-        $this->CODUSUARIO = $CODUSUARIO;
-        return $this;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getCODENDERECO()
-    {
-        return $this->CODENDERECO;
-    }
-
-    /**
-     * @param mixed $CODENDERECO
-     * @return PessoaModel
-     */
-    public function setCODENDERECO($CODENDERECO)
-    {
-        $this->CODENDERECO = $CODENDERECO;
-        return $this;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getIMAGEM()
-    {
-        return $this->IMAGEM;
-    }
-
-    /**
-     * @param mixed $IMAGEM
-     * @return PessoaModel
-     */
-    public function setIMAGEM($IMAGEM)
-    {
-        $this->IMAGEM = $IMAGEM;
-        return $this;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getTIPOPESSOA()
-    {
-        return $this->TIPOPESSOA;
-    }
-
-    /**
-     * @param mixed $TIPOPESSOA
-     * @return PessoaModel
-     */
-    public function setTIPOPESSOA($TIPOPESSOA)
-    {
-        $this->TIPOPESSOA = $TIPOPESSOA;
-        return $this;
-    }
-
-    /**
-     * @return mixed
-     */
+class PessoaModel extends ModelAbstract
+{
+    Protected $CODPESSOA;
+    Protected $CODENDERECO;
+    Protected $IMAGEM;
+    Protected $TIPOPESSOA;
+    Protected $NOME;
+    Protected $TELEFONE;
+    Protected $EMAIL;
+    Protected $EXCLUIDO;
+    Protected $CRIADO_EM;
+    Protected $ALTERADO_EM;
+    
     public function getCODPESSOA()
     {
         return $this->CODPESSOA;
     }
-
-    /**
-     * @param mixed $CODPESSOA
-     * @return PessoaModel
-     */
-    public function setCODPESSOA($CODPESSOA)
+    
+    public function getCODENDERECO()
     {
-        $this->CODPESSOA = $CODPESSOA;
-        return $this;
+        return $this->CODENDERECO;
     }
-
-    /**
-     * @return mixed
-     */
-    public function getCPF()
+    
+    public function getIMAGEM()
     {
-        return $this->CPF;
+        return $this->IMAGEM;
     }
-
-    /**
-     * @param mixed $CPF
-     * @return PessoaModel
-     */
-    public function setCPF($CPF)
+    
+    public function getTIPOPESSOA()
     {
-        $this->CPF = $CPF;
-        return $this;
+        return $this->TIPOPESSOA;
     }
-
-    /**
-     * @return mixed
-     */
-    public function getTELEFONE()
-    {
-        return $this->TELEFONE;
-    }
-
-    /**
-     * @param mixed $TELEFONE
-     * @return PessoaModel
-     */
-    public function setTELEFONE($TELEFONE)
-    {
-        $this->TELEFONE = $TELEFONE;
-        return $this;
-    }
-
-    /**
-     * @return mixed
-     */
+    
     public function getNOME()
     {
         return $this->NOME;
     }
-
-    /**
-     * @param mixed $NOME
-     * @return PessoaModel
-     */
-    public function setNOME($NOME)
+    
+    public function getTELEFONE()
     {
-        $this->NOME = $NOME;
-        return $this;
+        return $this->TELEFONE;
     }
-
-    /**
-     * @return mixed
-     */
-    public function getSENHA()
-    {
-        return $this->SENHA;
-    }
-
-    /**
-     * @param mixed $SENHA
-     * @return PessoaModel
-     */
-    public function setSENHA($SENHA)
-    {
-        $this->SENHA = $SENHA;
-        return $this;
-    }
-
-    /**
-     * @return mixed
-     */
+    
     public function getEMAIL()
     {
         return $this->EMAIL;
     }
-
-    /**
-     * @param mixed $EMAIL
-     * @return PessoaModel
-     */
-    public function setEMAIL($EMAIL)
+    
+    public function getEXCLUIDO()
+    {
+        return $this->EXCLUIDO;
+    }
+    
+    public function getCRIADO_EM()
+    {
+        return $this->CRIADO_EM;
+    }
+    
+    public function getALTERADO_EM()
+    {
+        return $this->ALTERADO_EM;
+    }
+    
+    
+    public function setCODPESSOA($CODPESSOA):self
+    {
+        $this->CODPESSOA = $CODPESSOA;
+        return $this;
+    }
+    
+    public function setCODENDERECO($CODENDERECO):self
+    {
+        $this->CODENDERECO = $CODENDERECO;
+        return $this;
+    }
+    
+    public function setIMAGEM($IMAGEM):self
+    {
+        $this->IMAGEM = $IMAGEM;
+        return $this;
+    }
+    
+    public function setTIPOPESSOA($TIPOPESSOA):self
+    {
+        $this->TIPOPESSOA = $TIPOPESSOA;
+        return $this;
+    }
+    
+    public function setNOME($NOME):self
+    {
+        $this->NOME = $NOME;
+        return $this;
+    }
+    
+    public function setTELEFONE($TELEFONE):self
+    {
+        $this->TELEFONE = $TELEFONE;
+        return $this;
+    }
+    
+    public function setEMAIL($EMAIL):self
     {
         $this->EMAIL = $EMAIL;
         return $this;
     }
-
-    /**
-     * @return mixed
-     */
-    public function getSITUACAO()
+    
+    public function setEXCLUIDO($EXCLUIDO):self
     {
-        return $this->SITUACAO;
-    }
-
-    /**
-     * @param mixed $SITUACAO
-     * @return PessoaModel
-     */
-    public function setSITUACAO($SITUACAO)
-    {
-        $this->SITUACAO = $SITUACAO;
+        $this->EXCLUIDO = $EXCLUIDO;
         return $this;
     }
-
-
+    
+    public function setCRIADO_EM($CRIADO_EM):self
+    {
+        $this->CRIADO_EM = $CRIADO_EM;
+        return $this;
+    }
+    
+    public function setALTERADO_EM($ALTERADO_EM):self
+    {
+        $this->ALTERADO_EM = $ALTERADO_EM;
+        return $this;
+    }
+    
+    
 }

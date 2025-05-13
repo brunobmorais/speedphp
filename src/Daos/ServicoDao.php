@@ -2,8 +2,9 @@
 namespace App\Daos;
 
 use BMorais\Database\Crud;
+use BMorais\Database\CrudBuilder;
 
-class ServicoDao extends Crud{
+class ServicoDao extends CrudBuilder {
 
 
     public function __construct()
@@ -29,6 +30,34 @@ class ServicoDao extends Crud{
             throw new \Error($e->getMessage());
         }
     }
+
+    public function buscaServicosProtocoloUsuario()
+    {
+        try {
+            $obj = $this->query("SELECT DISTINCT(S.CODSERVICO), 
+                S.TITULO, S.DESCRICAO, S.ICONE, S.CONTROLLER, S.ORDEM,
+                M.TITULO as TITULOMODULO, M.ICONE AS ICONEMODULO, M.CONTROLLER AS CONTROLLERMODULO
+                FROM SI_SERVICO AS S
+                INNER JOIN SI_MODULO AS M ON M.CODMODULO=S.CODMODULO 
+                AND S.SITUACAO='1' 
+                AND M.SITUACAO='1' 
+                AND M.CONTROLLER=?
+                ORDER BY S.ORDEM, S.TITULO", array('organizador'))
+                ->executeQuery()
+                ->fetchArrayAssoc();
+
+            if (!empty($obj)) {
+                return $obj;
+            } else {
+                return false;
+            }
+
+        } catch (\Error $e) {
+            throw new \Error($e->getMessage());
+        }
+
+    }
+
 
     public function buscarServicosPrivilegios($codusuario)
     {

@@ -1,62 +1,240 @@
-<html><head>
-    <meta http-equiv="X-UA-Compatible" content="IE=5; IE=8; IE=9; IE=10;IE=edge">
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <meta http-equiv="content-language" content="pt-br" />
-    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
-    <meta name="Robots" content="INDEX,FOLLOW">
-    <meta name="author" content="app"/>
-    <meta name="keywords" content="app">
-    <meta name="description" content="App">
-
-    <title>SEM INTERNET</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="description" content="Página de erro de conexão">
+    <title>SEM CONEXÃO</title>
 
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
             display: flex;
             justify-content: center;
             align-items: center;
+            min-height: 100vh;
             flex-direction: column;
-            font-family: sans-serif;
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+            padding: 20px;
+            text-align: center;
         }
 
-        h1 {
-            margin: 0;
-            padding: 0;
+        .offline-container {
+            max-width: 500px;
+            padding: 30px;
+            background-color: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            animation: fadeIn 0.5s ease-in;
         }
 
-        button {
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .logo {
+            width: 120px;
+            height: auto;
+            margin-bottom: 20px;
+        }
+
+        h2 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 22px;
+            line-height: 1.4;
+        }
+
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 20px 0;
+            color: #666;
+            font-size: 16px;
+        }
+
+        .status-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background-color: #f44336;
+            margin-right: 8px;
+            display: inline-block;
+        }
+
+        .retry-button {
             width: 200px;
             font-weight: bold;
-            font-size: 18px;
+            font-size: 16px;
             border: none;
-            border-radius: 22px;
-            padding-top: 9px;
-            padding-bottom: 11px;
-            background-image: linear-gradient(to right, #1A6CDD, #1A6CDD);
+            border-radius: 25px;
+            padding: 12px 15px;
+            background-image: linear-gradient(to right, #9400d3, #9400d3);
             color: white;
-            height: 44px;
-            margin-top: 2em;
+            margin: 15px 0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .retry-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 10px rgba(26, 108, 221, 0.3);
+        }
+
+        .retry-button:active {
+            transform: translateY(0);
+        }
+
+        .retry-icon {
+            margin-right: 10px;
+            display: inline-block;
+        }
+
+        .tips {
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+            font-size: 14px;
+            color: #666;
+        }
+
+        .tips ul {
+            text-align: left;
+            margin-top: 10px;
+            padding-left: 20px;
+        }
+
+        .tips li {
+            margin-bottom: 8px;
+        }
+
+        @media (max-width: 480px) {
+            .offline-container {
+                padding: 20px;
+            }
+
+            h2 {
+                font-size: 18px;
+            }
+
+            .logo {
+                width: 100px;
+            }
         }
     </style>
 </head>
 
-<body cz-shortcut-listen="true">
-<img src="/assets/img/logo.png" alt="logo" style="width: 100px">
-<h2 style="text-align: center">Oooops! Aconteceu um erro, tente novamente mais tarde!</h2>
+<body>
+<div class="offline-container">
+    <img src="/assets/img/logo.png" alt="Logo" class="logo" onerror="this.src='data:image/svg+xml;charset=UTF-8,%3Csvg xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22 width%3D%22120%22 height%3D%2260%22 viewBox%3D%220 0 120 60%22%3E%3Crect fill%3D%22%231A6CDD%22 width%3D%22120%22 height%3D%2260%22%2F%3E%3Ctext fill%3D%22%23FFFFFF%22 font-family%3D%22Arial%22 font-weight%3D%22bold%22 font-size%3D%2220%22 x%3D%2230%22 y%3D%2235%22%3ELOGO%3C%2Ftext%3E%3C%2Fsvg%3E'">
 
-<button onclick="reload()">Tentar novamente</button>
+    <h2>Oops! Parece que você está sem conexão com a internet</h2>
+
+    <div class="status-indicator">
+        <span class="status-dot" id="status-dot"></span>
+        <span id="connection-status">Desconectado</span>
+    </div>
+
+    <button class="retry-button" onclick="checkConnection()">
+        <span class="retry-icon">↻</span>
+        Tentar novamente
+    </button>
+
+    <div class="tips">
+        <p><strong>Dicas para resolver:</strong></p>
+        <ul>
+            <li>Verifique sua conexão Wi-Fi ou dados móveis</li>
+            <li>Verifique se o modo avião está desativado</li>
+            <li>Tente se conectar a outra rede</li>
+        </ul>
+    </div>
+</div>
 
 <script>
-    function reload() {
+    // Verifica o status da conexão assim que a página carrega
+    document.addEventListener('DOMContentLoaded', checkConnectionStatus);
+
+    // Adiciona listeners para detectar mudanças na conexão
+    window.addEventListener('online', updateConnectionStatus);
+    window.addEventListener('offline', updateConnectionStatus);
+
+    function checkConnectionStatus() {
+        updateConnectionStatus();
+
+        // Atualiza o status a cada 10 segundos
+        setInterval(updateConnectionStatus, 10000);
+    }
+
+    function updateConnectionStatus() {
+        const statusDot = document.getElementById('status-dot');
+        const statusText = document.getElementById('connection-status');
+
         if (navigator.onLine) {
-            location.reload();
+            statusDot.style.backgroundColor = '#4CAF50';
+            statusText.textContent = 'Conectado';
+        } else {
+            statusDot.style.backgroundColor = '#f44336';
+            statusText.textContent = 'Desconectado';
         }
-        else {
-            window.alert("Você está sem internet!")
+    }
+
+    function checkConnection() {
+        updateConnectionStatus();
+
+        if (navigator.onLine) {
+            // Adiciona efeito visual ao botão enquanto recarrega
+            const button = document.querySelector('.retry-button');
+            button.innerHTML = '<span class="retry-icon">↻</span> Recarregando...';
+            button.style.opacity = '0.8';
+
+            // Pequeno atraso para mostrar a animação
+            setTimeout(() => {
+                location.reload();
+            }, 500);
+        } else {
+            // Cria uma notificação temporária
+            const container = document.querySelector('.offline-container');
+            const notification = document.createElement('div');
+            notification.textContent = 'Você ainda está sem internet!';
+            notification.style.color = '#f44336';
+            notification.style.padding = '10px';
+            notification.style.marginTop = '10px';
+            notification.style.fontSize = '14px';
+            notification.style.fontWeight = 'bold';
+
+            // Remove notificações anteriores
+            const oldNotification = document.querySelector('.notification');
+            if (oldNotification) {
+                container.removeChild(oldNotification);
+            }
+
+            // Adiciona classe para referência futura
+            notification.className = 'notification';
+
+            container.appendChild(notification);
+
+            // Remove a notificação após 3 segundos
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.parentNode.removeChild(notification);
+                }
+            }, 3000);
         }
     }
 </script>
-
-
-</body></html>
+</body>
+</html>
