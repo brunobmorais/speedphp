@@ -2,7 +2,10 @@
 
 namespace App\Libs\Template;
 
+use App\Controllers\OrganizadorController;
+use App\Daos\UsuarioDao;
 use App\Libs\CookieLib;
+use App\Libs\FuncoesLib;
 use App\Libs\JwtLib;
 use App\Libs\LocalStorageClass;
 use App\Libs\SessionLib;
@@ -15,18 +18,23 @@ class LoggedTemplate implements TemplateInterface
     public function build(string $view = "", array $data = [], array $css = [], array $js = [])
     {
         try {
+            $this->controller->getSession();
+
             $data["THEME"] = empty(CookieLib::getValue("theme")) ? '' : (CookieLib::getValue("theme") == "dark" ? 'data-bs-theme="dark" class="dark-mode"' : '');
-            $this->setHead($data['TITLE'] ?? "");
             SessionLib::setValue("TOKEN_JWT", (new JwtLib())->encode());
 
-            $data['head'] = $this->head();
+            $data["HEAD"]["title"] = !empty($data["HEAD"]['title']) ? CONFIG_HEADER['title']." › ".$data["HEAD"]['title']:CONFIG_HEADER['title'];
+            $data["HEAD"]["url"] = (new FuncoesLib())->getCurrentUrlWithoutParameters();
+            $data['head'] = $this->head($data);
             $data['navbar'] = $this->navbar($data);
             $data['title'] = $this->breadcrumb($data);
             $data['sidebar'] = $this->sidebar($data);
             $data['main'] = $this->render($view, $data, false);
             $data['main'] .= $this->servicesJS($data, false);
             //$data['menu'] = $this->navigationBottom($data['MENU'] ?? 0, $data); // ADICIONAR MENU NA PARTE DEBAIXO DA TELA NO MOBILE
-            $data['footer'] = $this->footer();
+            //$data['footer'] = $this->footer();
+            $data['footer'] = $this->render("components/theme/footer-logged",
+                ["nameFull" => CONFIG_DEVELOPER['nameFull']], false);
             $data['javascript'] = $this->javascript($view);
             $data['css'] = $this->addCssJsPage($css, "css");
             $data['js'] = $this->addCssJsPage($js, "js");

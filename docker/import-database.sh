@@ -1,10 +1,10 @@
 #!/bin/bash
 
 # Variáveis de conexão e nomes dos bancos de dados
-REMOTE_HOST=""
-REMOTE_USER=""
-REMOTE_PASS=""
-DB_NAMES=("") # Nomes dos bancos de dados para backup
+REMOTE_HOST="193.203.175.34"
+REMOTE_USER="u576166589_speedphp_user"
+REMOTE_PASS="H[4sZ@U#]a"
+DB_NAMES=("u576166589_speedphp") # Nomes dos bancos de dados para backup
 TEST_DB_NAMES=("speedphp") # Bancos de teste no Docker
 
 # Função para verificar a conexão com o banco de dados remoto

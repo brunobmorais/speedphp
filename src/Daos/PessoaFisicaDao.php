@@ -161,7 +161,7 @@ class PessoaFisicaDao extends CrudBuilder
             }
 
             // CADASTRAR USUÁRIO
-            $senha = substr($pessoaFisica->getCPF(), 0, 2) . "@viaesporte";
+            $senha = substr($pessoaFisica->getCPF(), 0, 2) . "@".CONFIG_SITE["name"];
             $result = $this->executeSQL('INSERT INTO SI_USUARIO (CODPESSOA, SENHA, SITUACAO) VALUES (?,?,?)', [$codpessoa, (new FuncoesLib())->create_password_hash($senha), 1]);
             $codusuario = $this->lastInsertId();
             if (!$result) {

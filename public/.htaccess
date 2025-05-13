@@ -1,6 +1,10 @@
 RewriteEngine On
 Options All -Indexes
 
+# --- Ou permitir arquivos em .well-known sem reescrita ---
+RewriteCond %{REQUEST_URI} \.well-known/
+RewriteRule - - [L]
+
 # Não reescrever para arquivos e pastas existentes
 RewriteCond %{REQUEST_FILENAME} -f [OR]
 RewriteCond %{REQUEST_FILENAME} -d

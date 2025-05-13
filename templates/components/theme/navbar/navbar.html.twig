@@ -1,31 +1,9 @@
-<nav class="navbar navbar-expand-lg navbar-bg nav-down fixed-top navbar-dark d-flex flex-wrap align-content-center"
-     style="background: {{ URL == 'http://viaesporte.localhost'?'#242424':'' }}"
-    id="navbar">
-    <li class="container">
+<nav class="navbar navbar-expand-lg navbar-bg nav-down fixed-top navbar-dark d-flex flex-wrap align-content-center" id="navbar">
+    <div class="container">
         <div class="col">
-            <a href="/" class="navbar-brand d-none d-md-inline-block"><img alt="logo" src="/assets/img/logo_white.png"
-                    height="30px" /> {{ URL == 'http://viaesporte.localhost'?'Dev':'' }}</a>
-            <a href="/" class="navbar-brand d-inline-block d-md-none"><img alt="logo"
-                    src="/assets/img/logo_quadrada_branca.png" height="42px" /> {{ URL == 'http://viaesporte.localhost'?'Dev':'' }}</a>
+            <a href="/" class="navbar-brand"><img alt="logo" src="/assets/img/logo_white.png" height="42px" /></a>
         </div>
         <ul class="navbar-nav flex-row flex-wrap ms-md-auto">
-            <li class="nav-item d-inline-block d-none">
-                <a href="#" class="nav-link nav-link-navbar">
-                    <div class="nlCadaLink d-flex flex-column align-items-center">
-                        <span class="nlIcone mdi mdi-calendar-multiselect-outline"></span>
-                        <div class="nlLink font-weight-light text-uppercase">CALENDÁRIO</div>
-                    </div>
-                </a>
-            </li>
-            <li class="nav-item d-inline-block">
-                <a href="{{ PERFILUSUARIO.POSSUIEVENTO?"/organizador/":"/promo/" }}" class="nav-link nav-link-navbar">
-                    <div class="nlCadaLink d-flex flex-column align-items-center">
-                        <span class="nlIcone mdi mdi-laptop-account"></span>
-                        <div class="nlLink font-weight-light text-uppercase">{{ PERFILUSUARIO.POSSUIEVENTO?"Painel do":"" }} Organizador </div>
-                    </div>
-                </a>
-            </li>
-
             <li class="nav-item dropdown">
                 {% if PRIMEIRONOME %}
                 <a href="#" data-toggle="dropdown" class="nav-link nav-link-navbar dropdown-toggle"
@@ -45,35 +23,12 @@
                         </a>
                     </li>
                     <li>
-                        <a href="/atleta/" class="dropdown-item font-weight-light">
-                            <i class="mdi mdi-18px mdi-ticket-confirmation-outline"></i> Minhas Inscrições
-                        </a>
+                        <a href="/institucional/sobre/" class="dropdown-item font-weight-light"><span class="mdi mdi-18px mdi-information-slab-box-outline"></span> Sobre</a>
                     </li>
                     <li>
-                        {% if PERFILUSUARIO.POSSUIEVENTO %}
-                        <a href="/organizador/" class="dropdown-item font-weight-light">
-                            <i class="mdi mdi-18px mdi-calendar-check-outline"></i> Área do organizador
-                        </a>
-                        {% else %}
-                        <a href="/organizador/evento" class="dropdown-item font-weight-light">
-                            <i class="mdi mdi-18px mdi-calendar-check-outline"></i> Cadastrar um evento
-                        </a>
-                        {% endif %}
+                        <a href="/institucional/privacidade/" class="dropdown-item font-weight-light"><span class="mdi mdi-18px mdi-information-slab-box-outline"></span> Termo de Uso</a>
                     </li>
-                    {% if PERFILUSUARIO.ADMINISTRADOR %}
-                        <li>
-                            <a href="/sistema/" class="dropdown-item font-weight-light">
-                                <i class="mdi mdi-18px mdi-cog-outline"></i> Administração
-                            </a>
-                        </li>
-                    {% endif %}
-                    <li>
-                        <a href="/atleta/suporte/" class="dropdown-item font-weight-light"><span class="mdi mdi-18px mdi-chat-outline"></span> Suporte</a>
-                    </li>
-                    <li>
-                        <a href="/institucional/sobre/" target="_blank" class="dropdown-item font-weight-light"><span class="mdi mdi-18px mdi-information-slab-box-outline"></span> Sobre a Via Esporte</a>
-                    </li>
-                    <li class="d-none">
+                    <li class="">
                         <div class="dropdown-item font-weight-light">
                             <i class="mdi mdi-18px mdi-brightness-5"></i> Modo escuro
                             <label class="custom-switch mt-2 float-end">

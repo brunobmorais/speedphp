@@ -27,7 +27,7 @@ const CONFIG_COLOR = [
 ];
 
 const CONFIG_SITE = [
-    "name" => "App",
+    "name" => "speedphp",
     "nameFull" => "Nome Site Completo",
     "email" => "naoresponda@framework.bmorais.com",
     "phone" => "+55 63 0000-00000",

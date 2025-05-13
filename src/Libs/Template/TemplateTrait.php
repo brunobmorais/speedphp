@@ -2,8 +2,6 @@
 
 namespace App\Libs\Template;
 
-use App\Controllers\EventoController;
-use App\Controllers\OrganizadorController;
 use App\Core\Controller\ControllerCore;
 use App\Daos\UsuarioDao;
 use App\Libs\AlertLib;
@@ -58,9 +56,6 @@ Trait TemplateTrait
         $menuAtivo == 3 ? $menu[3] = "navigation-menu-item-active" : $menu[3] = "";
         $menuAtivo == 4 ? $menu[4] = "navigation-menu-item-active" : $menu[4] = "";
 
-        $data["PERFILUSUARIO"]["ADMINISTRADOR"] = (new UsuarioDao())->isAdministrador();
-        $data["PERFILUSUARIO"]["ORGANIZADOR"] = (new UsuarioDao())->isOrganizadorEvento();
-        $data["PERFILUSUARIO"]["POSSUIEVENTO"] = (new OrganizadorController())->hasEventoColaborador();
         $data["menu1"] = $menu[1];
         $data["menu2"] = $menu[2];
         $data["menu3"] = $menu[3];
@@ -83,10 +78,6 @@ Trait TemplateTrait
         $urlNavbar = explode('/', $urlNavbar);
         $urlNavbar = $urlNavbar[0] ?? '';
         $btnVoltarNavbar = $urlNavbar != "" ? "" : "d-none";
-
-        $data["PERFILUSUARIO"]["ADMINISTRADOR"] = (new UsuarioDao())->isAdministrador();
-        $data["PERFILUSUARIO"]["ORGANIZADOR"] = (new UsuarioDao())->isOrganizadorEvento();
-        $data["PERFILUSUARIO"]["POSSUIEVENTO"] = (new OrganizadorController())->hasEventoColaborador();
 
         $data["BTNVOLTAR"] = $btnVoltarNavbar;
         $data["PRIMEIRONOME"] = $primeiroNome;
@@ -135,11 +126,7 @@ Trait TemplateTrait
 
     protected function sidebar($data = [])
     {
-        $data["PERFILUSUARIO"]["ADMINISTRADOR"] = (new UsuarioDao())->isAdministrador();
-        $data["PERFILUSUARIO"]["ORGANIZADOR"] = (new UsuarioDao())->isOrganizadorEvento();
-        $data["PERFILUSUARIO"]["POSSUIEVENTO"] = (new OrganizadorController())->hasEventoColaborador();
         return $this->render("components/theme/sidebar",$data, false);
-
     }
 
     protected function breadcrumb($data = []){
