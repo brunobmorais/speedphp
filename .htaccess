@@ -1,21 +1,19 @@
-<IfModule mod_rewrite.c>
-    RewriteEngine On
+RewriteEngine On
+Options All -Indexes
 
-    # Bloquear acesso a arquivos PDF diretamente
-    RewriteRule \.(pdf)$ - [F]
+# --- Ou permitir arquivos em .well-known sem reescrita ---
+RewriteCond %{REQUEST_URI} ^/\.well-known/
+RewriteRule - - [L]
 
-    # Redirecionar arquivos estáticos diretamente para a pasta public
-    RewriteCond %{REQUEST_URI} \.(jpg|jpeg|png|gif|ico|css|js|svg|webp|mp4|woff|woff2|ttf|eot|map)$
-    RewriteRule (.*) public/$1 [L]
+# Não reescrever para arquivos e pastas existentes
+RewriteCond %{REQUEST_FILENAME} -f [OR]
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteRule ^ - [L]
 
-    # Redirecionar raiz e qualquer outra URL para a public/
-    RewriteRule ^$ public/ [L]
-    RewriteRule (.*) public/$1 [L]
-</IfModule>
+# Não reescrever para arquivos estáticos comuns
+RewriteRule \.(jpg|jpeg|png|gif|ico|css|js|svg|webp|mp4|woff|woff2|ttf|eot|map)$ - [L]
 
-# Bloquear acesso a arquivos e pastas sensíveis
-RedirectMatch 404 /\.git
-RedirectMatch 404 /README\.md
-RedirectMatch 404 /composer\.(json|lock)
-RedirectMatch 404 /\.gitignore
-RedirectMatch 404 /(docs|logs|docker)
+# Reescrever todas as outras URLs para index.php
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)$ index.php [QSA,NC,L]
