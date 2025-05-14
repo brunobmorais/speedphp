@@ -31,7 +31,7 @@ class AppCore
 
         $this->processUrl($urlArray);
 
-        if (!empty($this->debugString)) {
+        if (DEBUG_ROUTER === true) {
             echo $this->debugString;
             exit();
         }
@@ -47,12 +47,12 @@ class AppCore
 
     protected function processUrl($urlArray)
     {
+        $this->debug("Processando URL", $urlArray);
+
         if (empty($urlArray[0])) {
             $this->loadDefaultController();
             return;
         }
-
-        $this->debug("Processando URL", $urlArray);
 
         $legacyResult = $this->tryLoadLegacyController($urlArray);
 
@@ -62,22 +62,8 @@ class AppCore
         } elseif ($legacyResult === 'method_not_found') {
             $this->debug("Método não encontrado no controller legado. Tentando submódulo...");
 
-            if (count($urlArray) > 1) {
-                $firstSegment = $urlArray[0];
-                $secondSegment = $urlArray[1];
-                $modulePath = dirname(__DIR__, 2) . '/src/Modules/' . ucfirst($firstSegment);
-                $subModulePath = $modulePath . '/' . ucfirst($secondSegment);
-
-                if (is_dir($modulePath) && is_dir($subModulePath)) {
-                    $this->debug("Submódulo encontrado", [
-                        'Módulo' => $modulePath,
-                        'Submódulo' => $subModulePath
-                    ]);
-
-                    if ($this->tryLoadModularController($urlArray)) {
-                        return;
-                    }
-                }
+            if ($this->tryLoadModularController($urlArray)) {
+                return;
             }
 
             $this->debug("404: método não encontrado nem submódulo existente");
@@ -124,53 +110,63 @@ class AppCore
         return false;
     }
 
-    protected function tryLoadModularController($urlArray)
-    {
-        $currentPath = dirname(__DIR__, 2) . '/src/Modules';
-        $validPath = [];
-        $lastValidController = null;
-
-        foreach ($urlArray as $index => $segment) {
-            $folderSegment = ucfirst($segment);
-            $currentPath .= '/' . $folderSegment;
-
-            if (is_dir($currentPath)) {
-                $validPath[] = $folderSegment;
-                $controllerPath = $currentPath . '/' . $folderSegment . 'Controller.php';
-
-                if (file_exists($controllerPath)) {
-                    $controllerClass = 'App\\Modules\\' . implode('\\', $validPath) . '\\' . $folderSegment . 'Controller';
-
-                    if (class_exists($controllerClass)) {
-                        $lastValidController = [
-                            'class' => $controllerClass,
-                            'name' => $folderSegment . 'Controller',
-                            'index' => $index
-                        ];
-                    }
-                }
-            } else {
-                break;
-            }
-        }
-
-        if ($lastValidController) {
-            $this->controller = new $lastValidController['class']();
-            $this->controllerName = $lastValidController['name'];
-            $this->modulePath = implode('\\', array_slice($urlArray, 0, $lastValidController['index'] + 1));
-            $remainingSegments = array_slice($urlArray, $lastValidController['index'] + 1);
-            $this->determineMethodAndParams($remainingSegments);
-
-            $this->debug("Controller modular carregado: " . $lastValidController['class'], [
-                'Método' => $this->method,
-                'Parâmetros' => $this->params
-            ]);
-            return true;
-        }
-
-        $this->debug("Nenhum controller modular encontrado");
+protected function tryLoadModularController($urlArray)
+{
+    if (empty($urlArray)) {
+        $this->debug("Array de URL vazio, ignorando carregamento modular");
         return false;
     }
+
+    $baseModulesPath = dirname(__DIR__, 2) . '/src/Modules';
+    $validPath = [];
+    $lastValidController = null;
+    $currentPath = $baseModulesPath;
+
+    foreach ($urlArray as $index => $segment) {
+        // Ignora segmentos vazios
+        if (empty($segment)) continue;
+
+        $folderSegment = ucfirst($segment);
+        $potentialPath = $currentPath . '/' . $folderSegment;
+
+        // Verifica se o diretório existe antes de continuar
+        if (!is_dir($potentialPath)) {
+            break;
+        }
+
+        // Atualiza o caminho apenas quando confirmamos que é válido
+        $currentPath = $potentialPath;
+        $validPath[] = $folderSegment;
+
+        // Verificação direta do controlador sem construções redundantes
+        $controllerPath = $currentPath . '/' . $folderSegment . 'Controller.php';
+        $controllerClass = 'App\\Modules\\' . implode('\\', $validPath) . '\\' . $folderSegment . 'Controller';
+
+        if (file_exists($controllerPath) && class_exists($controllerClass)) {
+            $lastValidController = [
+                'class' => $controllerClass,
+                'name' => $folderSegment . 'Controller',
+                'index' => $index
+            ];
+        }
+    }
+
+    if ($lastValidController) {
+        $this->controller = new $lastValidController['class']();
+        $this->controllerName = $lastValidController['name'];
+        $this->modulePath = implode('\\', array_slice($urlArray, 0, $lastValidController['index'] + 1));
+        $this->determineMethodAndParams(array_slice($urlArray, $lastValidController['index'] + 1));
+
+        $this->debug("Controller modular carregado: " . $lastValidController['class'], [
+            'Método' => $this->method,
+            'Parâmetros' => $this->params
+        ]);
+        return true;
+    }
+
+    $this->debug("Nenhum controller modular encontrado");
+    return false;
+}
 
     protected function isValidLegacyController($controller)
     {
@@ -285,16 +281,15 @@ class AppCore
 
     protected function debug($message, $data = null)
     {
-        if (defined('DEBUG_ROUTER') && DEBUG_ROUTER === true) {
-            $this->debugString .= "<pre style='background:#f5f5f5; padding:10px; border:1px solid #ddd; margin:5px;'>";
-            $this->debugString .= "<strong>DEBUG:</strong> " . $message . "\n";
+        $this->debugString .= "<pre style='background:#f5f5f5; padding:10px; border:1px solid #ddd; margin:5px;'>";
+        $this->debugString .= "<strong>DEBUG:</strong> " . $message . "\n";
 
-            if ($data !== null) {
-                $this->debugString .= "Data: ";
-                $this->debugString .= print_r($data, true);
-            }
-
-            $this->debugString .= "</pre>";
+        if ($data !== null) {
+            $this->debugString .= "Data: ";
+            $this->debugString .= print_r($data, true);
         }
+
+        $this->debugString .= "</pre>";
+
     }
 }
