@@ -60,8 +60,9 @@ Todo tráfego passo pelo index principal, a aplicação faz um autoloader dentro
     │   │   └── PushNotificationClass.php
     │   │   └── SessionLib.php
     │   │   └── VariavelClass.php
-    │   └── Models/
-    │       └── UsuarioModel.php
+    │   ├── Models/
+    │   │    └── UsuarioModel.php
+    │   └── Modules
     │
     ├── template/
     │
@@ -129,7 +130,7 @@ Todo tráfego passo pelo index principal, a aplicação faz um autoloader dentro
 
 ## CREDENCIAIS DE ACESSO
     login: 000.000.000-00
-    senha: 123456
+    senha: 123@@123
 
 ## ACESSAR BANCO DE DADOS PHPMYADMIN
     Url: http://phpmyadmin.localhost:8080/
