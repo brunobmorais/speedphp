@@ -5,6 +5,8 @@ use App\Components\NavbarComponents;
 use App\Core\Controller\ControllerCore;
 use App\Core\Controller\ControllerInterface;
 use App\Core\PageCore;
+use App\Daos\AcessoDao;
+use App\Enums\LocalAcesso;
 use App\Libs\Template\TemplateAbstract;
 
 class InstitucionalController extends ControllerCore implements ControllerInterface
@@ -34,6 +36,24 @@ class InstitucionalController extends ControllerCore implements ControllerInterf
                     "configSiteAndress" => CONFIG_SITE['andress'],
                     "configSiteCnpj" => CONFIG_SITE['cnpj'],
                 ]
+            );
+        } catch (\Error $e) {
+            return $e;
+        }
+    }
+
+    public function sobre($args = null)
+    {
+
+        try {
+            $data['HEAD']['title'] = "Sobre a Via Esporte";
+            $data['TITLE'] = "Sobre a Via Esporte";
+
+            // CARREGA VIEW
+            return $this->render(
+                TemplateAbstract::NOT_LOGGED,
+                'institucional/sobre',
+                $data
             );
         } catch (\Error $e) {
             return $e;
