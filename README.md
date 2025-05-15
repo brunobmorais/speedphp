@@ -6,7 +6,7 @@ SpeedPHP: The Rapid Development Framework for PHP
 ## DEMONSTRAÇÃO
 <a href="https://framework.bmorais.com" target="_blank">https://speedphp.bmorais.com</a>
 login: 000.000.000-00
-senha: 123456
+senha: 123@@123
 
 ## COMO FUNCIONA O FRAMEWORK?
 https://seudominio.com/controller/metodo-controle/parametro1/parametro2/param....

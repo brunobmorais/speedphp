@@ -23,7 +23,7 @@ class InstitucionalController extends ControllerCore implements ControllerInterf
             // CARREGA VIEW
             return $this->render(
                 TemplateAbstract::NOT_LOGGED,
-                'sistema/privacidade',
+                'institucional/privacidade',
                 ['TITLE' => "Termo de uso e privacidade",
                     "configSiteName" => CONFIG_SITE['name'],
                     "configSiteNameFull" => CONFIG_SITE['nameFull'],
