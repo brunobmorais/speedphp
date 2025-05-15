@@ -1,5 +1,5 @@
 
-{% include "components/page_table_default/page_table_default.html.twig" %}
+{% embed "components/pages/table/table.html.twig" %}{% endembed %}
 
 <form id="formSituacaoUsuario" action="{{ SERVICO.URL }}-situacao-action/"
       method="post" enctype='multipart/form-data'>

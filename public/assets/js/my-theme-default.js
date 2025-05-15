@@ -360,6 +360,11 @@ function formatUrl(texto) {
     return texto;
 }
 
+function formatDatePtBr(dataISO) {
+    const [ano, mes, dia] = dataISO.split('-');
+    return `${dia}/${mes}/${ano}`;
+}
+
 function formatGoogleMaps(texto) {
     texto = texto.replace(/[^\w\-]+/g, '%20');
     return texto;

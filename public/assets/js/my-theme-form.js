@@ -20,7 +20,6 @@
 // FIM VALIDACAO BOOTSTRAP
 
 // FORM SUBMIT
-// FORM SUBMIT
 document.querySelectorAll("form").forEach((formElement) => {
     formElement.addEventListener("submit", (event) => {
         event.preventDefault();
@@ -31,7 +30,10 @@ document.querySelectorAll("form").forEach((formElement) => {
         const textButton = submitter?.innerHTML || "";
 
         if (buttonId) clickBotaoProgressAtivo(buttonId);
-        validaFormId(formId);
+
+        // Modificação aqui - passamos o elemento do formulário diretamente
+        // ao invés de tentar buscá-lo pelo ID
+        validaFormElement(formElement);
 
         if (formElement.checkValidity()) {
             window.onpageshow = function (event) {
@@ -48,6 +50,15 @@ document.querySelectorAll("form").forEach((formElement) => {
     });
 });
 // FIM FORM SUBMIT
+
+// Função modificada para receber o elemento diretamente em vez do ID
+function validaFormElement(formElement) {
+    if (formElement.checkValidity() === false) {
+        event.preventDefault();
+        event.stopPropagation();
+    }
+    formElement.classList.add('was-validated');
+}
 
 async function formToMap(formData){
     const value = Object.fromEntries(formData.entries());

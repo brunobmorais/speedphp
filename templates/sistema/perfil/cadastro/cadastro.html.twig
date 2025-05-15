@@ -34,8 +34,8 @@
 
                                 <div class="row">
                                     <div class="col">
-                                        <input type="hidden" name="pg" value="{{ GETPARAMS.pg }}">
-                                        <input type="hidden" name="buscar" value="{{ GETPARAMS.buscar }}">
+                                        <input type="hidden" name="pg" value="{{ GET.pg }}">
+                                        <input type="hidden" name="b" value="{{ GET.b }}">
                                         {% if(SERVICO.EXCLUIR=="1" and PERFIL.CODPERFIL!="") %}
                                             <button type="button" onclick="excluirItemTabela('{{ PERFIL.CODPERFIL }}')" class="btn btn-outline-secondary btn-round btn-lg col-md-3 col-lg-2 col-12 mt-2"><span class="mdi mdi-trash-can-outline"></span> Excluir</button>
                                         {% endif %}
@@ -47,7 +47,7 @@
                                                 </button>
                                             {% endif %}
                                             <button type="button"
-                                                    onclick="window.location.href='{{ SERVICO.URL }}/?pg={{ GETPARAMS.pg }}&buscar={{ GETPARAMS.buscar }}'"
+                                                    onclick="window.location.href='{{ SERVICO.URL }}/?pg={{ GET.pg }}&b={{ GET.b }}'"
 
                                                     class="btn btn-lg btn-outline-secondary btn-round col-md-3 col-lg-2 col-12 float-end mt-2 me-md-2 me-0">
                                                 <span class="mdi mdi-close"></span> Voltar
@@ -63,10 +63,10 @@
                                 </div>
                             </form>
                             <form action="{{ SERVICO.URL }}-action" name="formExcluir" id="formExcluir" method="post">
-                                <input type="hidden" name="pg" value="{{ GETPARAMS.pg }}">
-                                <input type="hidden" name="buscar" value="{{ GETPARAMS.buscar }}">
+                                <input type="hidden" name="pg" value="{{ GET.pg }}">
+                                <input type="hidden" name="b" value="{{ GET.b }}">
                                 <input type="hidden" name="action" value="delete">
-                                <input type="hidden" name="idExcluir" id="idExcluir" value="">
+                                <input type="hidden" name="ID_DELETE" id="ID_DELETE" value="">
                             </form>
                         </div>
                     </div>

@@ -13,6 +13,11 @@ class AlterarsenhaController extends ControllerCore implements ControllerModuleI
 {
     public function index($args = [])
     {
+
+    }
+    
+    public function action($args = [])
+    {
         $this->isLogged();
         $this->validateRequestMethod("POST");
 
@@ -41,10 +46,5 @@ class AlterarsenhaController extends ControllerCore implements ControllerModuleI
         } else {
             $alerta->danger("Erro ao buscar usuário", '/usuario/meusdados');
         }
-    }
-    
-    public function action($args = [])
-    {
-        // Código do método action
     }
 }

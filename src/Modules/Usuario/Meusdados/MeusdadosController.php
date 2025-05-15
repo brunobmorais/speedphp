@@ -23,8 +23,6 @@ class MeusdadosController extends ControllerCore implements ControllerModuleInte
     public function index($args = null)
     {
         try {
-            (new AcessoDao())->setVisita(LocalAcesso::MEUS_DADOS);
-
             $this->isLogged();
 
             $data['HEAD']['title'] = "Meus Dados";
@@ -36,7 +34,7 @@ class MeusdadosController extends ControllerCore implements ControllerModuleInte
             $data['PESSOA'] = $pessoaObj;
 
             return $this->render(
-                TemplateAbstract::ATLETA,
+                TemplateAbstract::LOGGED,
                 'usuario/meusdados',
                 $data
             );

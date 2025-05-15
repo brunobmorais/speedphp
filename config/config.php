@@ -9,6 +9,8 @@ if (strpos($_SERVER['SERVER_NAME'],"localhost") || $_SERVER['SERVER_NAME'] == "l
 const CONFIG_VERSION_CODE = "2.0.0";
 
 const CONFIG_MAINTENANCE = false;
+const DEBUG_ROUTER = false;
+
 
 const CONFIG_SECURITY = [
     "domain" => 'seudominio.com',

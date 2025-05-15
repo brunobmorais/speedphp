@@ -1,0 +1,128 @@
+{% set badgeClass = '' %}
+{% if REPASSE.SITUACAO == 1 %}
+    {% set badgeClass = 'text-bg-warning' %}
+{% elseif REPASSE.SITUACAO == 2 %}
+    {% set badgeClass = 'text-bg-success' %}
+{% elseif REPASSE.SITUACAO == 3 %}
+    {% set badgeClass = 'text-bg-danger' %}
+{% elseif REPASSE.SITUACAO == 4 %}
+    {% set badgeClass = 'text-bg-secondary' %}
+{% else %}
+    {% set badgeClass = 'text-bg-dark' %}
+{% endif %}
+<main>
+    <div class="container my-container">
+        <div class="card shadow-1">
+            <div class="card-header">
+                <h4>
+                    <a href="{{ SERVICO.URL }}/?pg={{ GET.pg }}&b={{ GET.b }}"
+                       class="btn btn-link p-0">
+                        <span class="mdi mdi-24px mdi-chevron-left"></span>
+                    </a>
+                    Detalhes da solicitação</h4>
+            </div>
+            <div class="card-body">
+                <section class="section">
+                    <form id="formRepasse" class="needs-validation" novalidate method="post" enctype="multipart/form-data" action="{{ SERVICO.URL }}-detalhes-action/">
+                        <input type="hidden" name="ACTION" value="update">
+                        <input type="hidden" name="CODEVENTO_REPASSE" value="{{ REPASSE.CODEVENTO_REPASSE }}">
+                        <input type="hidden" name="pg" value="{{ GET.pg }}">
+                        <input type="hidden" name="b" value="{{ GET.b }}">
+                        <div class="row">
+                            <div class="form-group col-md-4 col-12">
+                                <label class="mb-0">Solicitante</label>
+                                <p>{{ REPASSE.NOME_SOLICITANTE }}</p>
+                            </div>
+                            <div class="form-group col-md-4 col-12">
+                                <label class="mb-0">Data Solicitação</label>
+                                <p>{{ REPASSE.CRIADO_EM|date("d/m/Y H:i") }}</p>
+                            </div>
+                            <div class="form-group col-md-4 col-12">
+                                <label class="mb-0">Valor do Saque</label>
+                                <p>R$ {{ REPASSE.VALOR_SAQUE|length>0?REPASSE.VALOR_SAQUE|number_format(2, ',', '.'):"" }}</p>
+                            </div>
+                            <div class="form-group col-md-4 col-12">
+                                <label class="mb-0">Situação</label>
+                                <p>
+                                    <span class="badge {{ badgeClass }}">{{ REPASSE.NOME_SITUACAO }}</span>
+                                    – {{ REPASSE.ALTERADO_EM|date("d/m/Y H:i") }}
+                                </p>
+                            </div>
+
+                            <div class="form-group col-md-4 col-12">
+                                <label class="mb-0">Chave Pix</label>
+                                <p>{{ REPASSE.PIX_TIPO }} - {{ REPASSE.PIX_CHAVE }}</p>
+                            </div>
+
+                            <div class="form-group col-md-4 col-12">
+                                <label class="mb-0">Nome do Responsável Pix</label>
+                                <p>{{ REPASSE.PIX_RESPONSAVEL }}</p>
+                            </div>
+
+                            <div class="form-group col-md-12">
+                                <label class="mb-0">Observações</label>
+                                <p>{{ REPASSE.OBS|default("Nenhuma observação") }}</p>
+                            </div>
+                            <div>
+                                {% if REPASSE.CODARQUIVO_COMPROVANTE_PIX|length>0 %}
+                                    {% set ARQUIVO = getDaos('ArquivoDao','buscarArquivoId',[REPASSE.CODARQUIVO_COMPROVANTE_PIX]) %}
+                                    {% set link = getLibs("DownloadLib","createLink",[ARQUIVO.NOME_ARQUIVO, 'arquivo'])%}
+                                    <a href="{{ link }}" target="_blank" class="btn btn-link ps-0"><span class="mdi mdi-file-outline"></span> {{ ARQUIVO.NOME_TIPOARQUIVO }} </a>
+                                {% endif %}
+                                {% if REPASSE.CODARQUIVO_NOTAFISCAL|length>0 %}
+                                    {% set ARQUIVO = getDaos('ArquivoDao','buscarArquivoId',[REPASSE.CODARQUIVO_NOTAFISCAL]) %}
+                                    {% set link = getLibs("DownloadLib","createLink",[ARQUIVO.NOME_ARQUIVO, 'arquivo'])%}
+                                    <a href="{{ link }}" target="_blank" class="btn btn-link ps-0"><span class="mdi mdi-file-outline"></span> {{ ARQUIVO.NOME_TIPOARQUIVO }} </a>
+                                {% endif %}
+                            </div>
+                            <div class="section-title col-12">PARECER</div>
+
+                            <div class="form-group col-12 col-md-4">
+                                <label class="col-12">Situação *</label>
+                                <div class="btn-group" role="group" aria-label="Basic radio toggle button group">
+                                    <input type="radio" class="btn-check" name="SITUACAO" id="rdSituacao2"
+                                           autocomplete="off"
+                                           value="2" {{ REPASSE.SITUACAO|length>0?(REPASSE.SITUACAO == "2"?"checked":""):"checked" }}>
+                                    <label class="btn btn-outline-secondary" for="rdSituacao2">Paga</label>
+
+                                    <input type="radio" class="btn-check" name="SITUACAO" id="rdSituacao3"
+                                           autocomplete="off"
+                                           value="3" {{ REPASSE.SITUACAO|length>0?(REPASSE.SITUACAO == "3"?"checked":""):"checked" }}>
+                                    <label class="btn btn-outline-secondary" for="rdSituacao3">Cancelada</label>
+
+                                    <input type="radio" class="btn-check" name="SITUACAO" id="rdSituacao4"
+                                           autocomplete="off"
+                                           value="4" {{ REPASSE.SITUACAO|length>0?(REPASSE.SITUACAO == "4"?"checked":""):"checked" }}>
+                                    <label class="btn btn-outline-secondary" for="rdSituacao4">Negada</label>
+                                </div>
+                                <div class="invalid-feedback">
+                                    Preencha o campo corretamente
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="ileComprovante" class="form-label">Comprovante de transferência</label>
+                                <input class="form-control" type="file" id="fileComprovante" name="CODARQUIVO_COMPROVANTE_PIX" accept=".pdf">
+                            </div>
+                            <div class="form-group">
+                                <label for="fileNotaFiscal" class="form-label">Nota Fiscal</label>
+                                <input class="form-control" type="file" id="fileNotaFiscal" name="CODARQUIVO_NOTAFISCAL" accept=".pdf">
+                            </div>
+
+                            <div class="d-grid gap-2 d-md-flex justify-content-md-end my-4">
+                                <a href="/organizador/financeiro/"
+                                   class="btn btn-outline-secondary">
+                                    <span class="mdi mdi-chevron-left"></span> Voltar
+                                </a>
+                                <button type="submit" class="btn btn-primary">
+                                    <span class="mdi mdi-check-outline"></span> Salvar
+                                </button>
+                            </div>
+                        </div>
+
+                    </form>
+                </section>
+            </div>
+        </div>
+    </div>
+</main>

@@ -1,0 +1,25 @@
+{% set first_row = obj|first %}
+{% if first_row is not empty %}
+    <div class="table-responsive">
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                {% for key, value in first_row %}
+                    <th scope="col">{{ first_row }}</th>
+                {% endfor %}
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in obj %}
+                <tr>
+                    {% for key, value in row %}
+                        <td>{{ value }}</td>
+                    {% endfor %}
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    </div>
+{% else %}
+    <p>Nenhum dado disponível.</p>
+{% endif %}

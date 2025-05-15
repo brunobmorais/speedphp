@@ -5,7 +5,12 @@
                 <div class="col-12 p-0">
                     <div class="card sombra-1">
                         <div class="card-header">
-                            <h4>{{ TITLE_CARD_COMPONENT }}</h4>
+                            <h4>
+                                <a href="{{ SERVICO.URL }}/?pg={{ GET.pg }}&b={{ GET.b }}"
+                                   class="btn btn-link p-0">
+                                    <span class="mdi mdi-24px mdi-chevron-left"></span>
+                                </a>
+                                {{ CARD_TITLE }}</h4>
                         </div>
                         <div class="card-body pt-4">
                             <form id="formCadastro" class="needs-validation" novalidate
@@ -72,7 +77,7 @@
 
                                 <div class="row">
                                     <input type="hidden" name="pg" value="{{ GET.pg }}">
-                                    <input type="hidden" name="buscar" value="{{ GET.buscar }}">
+                                    <input type="hidden" name="b" value="{{ GET.b }}">
                                     {% if(MODULO.CODMODULO!="") %}
                                         <input type="hidden" name="CODMODULO" value="{{ MODULO.CODMODULO }}">
                                         <input type="hidden" name="action" value="update">
@@ -95,7 +100,7 @@
                                             </button>
                                         {% endif %}
                                         <button type="button"
-                                                onclick="window.location.href='{{ SERVICO.URL }}/?pg={{ GETPARAMS.pg }}&buscar={{ GETPARAMS.buscar }}'"
+                                                onclick="window.location.href='{{ SERVICO.URL }}/?pg={{ GET.pg }}&b={{ GET.b }}'"
                                                 class="btn btn-lg btn-outline-secondary btn-round col-md-3 col-12 col-lg-2 float-right mt-2 me-md-2 me-0 float-end">
                                             <span class="mdi mdi-close"></span> Voltar
                                         </button>
@@ -104,10 +109,10 @@
                                 </div>
                             </form>
                             <form action="{{ SERVICO.URL }}-action" name="formExcluir" id="formExcluir" method="post">
-                                <input type="hidden" name="pg" value="{{ GETPARAMS.pg }}">
-                                <input type="hidden" name="buscar" value="{{ GETPARAMS.buscar }}">
+                                <input type="hidden" name="pg" value="{{ GET.pg }}">
+                                <input type="hidden" name="b" value="{{ GET.b }}">
                                 <input type="hidden" name="action" value="delete">
-                                <input type="hidden" name="idExcluir" id="idExcluir" value="">
+                                <input type="hidden" name="ID_DELETE" id="ID_DELETE" value="">
                             </form>
                         </div>
                     </div>

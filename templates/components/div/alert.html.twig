@@ -1,0 +1,7 @@
+{% set id = id|default(random()) %}
+<div class="alert alert-{{ type|default("warning") }} {{ class|default('') }}" id="{{ id }}" role="alert">
+    <h6 class="alert-heading">
+        {{ title }}
+    </h6>
+    {{ slot }}
+</div>

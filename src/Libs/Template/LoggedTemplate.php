@@ -32,9 +32,7 @@ class LoggedTemplate implements TemplateInterface
             $data['main'] = $this->render($view, $data, false);
             $data['main'] .= $this->servicesJS($data, false);
             //$data['menu'] = $this->navigationBottom($data['MENU'] ?? 0, $data); // ADICIONAR MENU NA PARTE DEBAIXO DA TELA NO MOBILE
-            //$data['footer'] = $this->footer();
-            $data['footer'] = $this->render("components/theme/footer-logged",
-                ["nameFull" => CONFIG_DEVELOPER['nameFull']], false);
+            $data['footer'] = $this->footer();
             $data['javascript'] = $this->javascript($view);
             $data['css'] = $this->addCssJsPage($css, "css");
             $data['js'] = $this->addCssJsPage($js, "js");

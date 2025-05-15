@@ -16,7 +16,6 @@ class NovasenhaController extends ControllerCore implements ControllerModuleInte
     public function index($args = [])
     {
         try {
-            (new AcessoDao())->setVisita(LocalAcesso::NOVA_SENHA);
 
             $siCodigoValidador = new SICodigoValidadorDao();
             $jwtLib = new JwtLib();

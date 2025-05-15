@@ -6,6 +6,8 @@
     --mycolor-navbar: #F46434;
     --mycolor-bg: #F5F6FA;
     --mycolor-card: #FFFFFF;
+    --mycolor-black-white: #000000;
+    --mycolor-light: #ececec;
 }    
 .dark-mode:root {
     --mycolor-primary: #BB86FC;
@@ -15,4 +17,6 @@
     --mycolor-navbar: #1F252F;
     --mycolor-bg: #0D111E;
     --mycolor-card: #1F252F;
+    --mycolor-black-white: #FFFFFF;
+
 }

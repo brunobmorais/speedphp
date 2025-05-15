@@ -2,6 +2,8 @@
 
 namespace App\Libs\Template;
 
+use App\Controllers\EventoController;
+use App\Controllers\OrganizadorController;
 use App\Core\Controller\ControllerCore;
 use App\Daos\UsuarioDao;
 use App\Libs\AlertLib;

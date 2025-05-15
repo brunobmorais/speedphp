@@ -1,8 +1,0 @@
-
-{% macro menu_sidebar(href='perfil',icon = 'mdi-home-outline', title = '' ) %}
-	<li>
-		<a href="/gestaopessoas/funcionarios-{{href}}/?id={{GET.id}}&pg={{GET.pg ? GET.pg : '1' }}" class="nav-link link-dark {{ "/gestaopessoas/funcionarios-"~href~"/" == (SERVER.REQUEST_URI|split("?")[0])??"" ?'active-sidebar' : '' }}">
-			<span class="mdi {{icon}}"></span> {{title}}
-		</a>
-	</li>
-{% endmacro %}

@@ -1,93 +1,137 @@
 <main>
     <div class="container my-container">
         <section class="section">
-            <div class="card shadow-1">
-                <div class="card-body pt-4">
-                    <form id="formInformacoesUsuario" class="needs-validation" novalidate
-                          action="/usuario/meusdadosaction"
-                          method="post" enctype='multipart/form-data'>
+            <div class="card shadow-1 mt-1">
+                <div class="card-body">
+                    <section class="section">
                         <div class="row">
-                            <div class="col-sm-12 col-lg-12 p-0">
-                                <div class="form-group col-12 col-md-6 float-left">
-                                    <label class="form-label">Nome</label>
-                                    <input name="NOME" id="nome_rs" type="text" class="form-control" required
-                                           placeholder="Seu nome completo" readonly
-                                           value="{{ SESSION.NOME }}"/>
+                            <h6 class="text-uppercase border-bottom border-1 p-2 pt-0 mb-3 tituloCadaCard">
+                                <span class="mdi mdi-account mdi-24px p-0"></span>
+                                Meus Dados
+                            </h6>
+                            <div class="row justify-content-center">
+                                <div class="col-12 text-center">
+                                    <div class="form-group">
+                                        <img src="/assets/upload/pessoa/{{ PESSOA.IMAGEM }}" class="img rounded-circle shadow-2"
+                                             alt="foto usuario" style="height: 100px" id="imgPerfil" />
+                                    </div>
+                                    <div class="text-center">
+                                        <label
+                                                onclick="setarCodPessoa_UrlRetorno_InputImgPerfil('{{SESSION.CODPESSOA}}','/usuario/meusdados/}}','{{ PESSOA.IMAGEM }}')"
+                                                for="fileImgPerfil"
+                                                class="cursor-pointer btn btn-link d-flex align-items-center gap-1 justify-content-center mt-0 pt-0">
+                                            <span class="mdi mdi-camera mdi-18px" aria-hidden="true"></span>
+                                            Alterar
+                                        </label>
+                                    </div>
+                                </div>
+                                <small id="fotoText" />
+                            </div>
+                        </div>
+                        <form id="formInformacoesUsuario" class="needs-validation" novalidate action="./"
+                              method="post" enctype='multipart/form-data'>
+
+                            <div class="row">
+                                <div class="form-group col-12 col-md-12 float-left">
+                                    <label class="form-label">Nome completo</label>
+                                    <input name="NOME" id="nome" type="text" class="form-control" placeholder="Nome completo"
+                                           required autocomplete="nope" value="{{ PESSOA.NOME }}" />
                                     <div class="invalid-feedback">
                                         Preencha o campo corretamente
                                     </div>
                                 </div>
-                                <div class="form-group col-12 col-md-12 float-left">
+                            </div>
+
+                            <div class="row">
+
+                                <div class="form-group col-12 col-md-4 float-left">
                                     <label class="form-label">CPF</label>
-                                    <input name="CPF" id="cpf_cnpj" type="text" class="form-control"
-                                           placeholder="000.000.000-00" readonly
-                                           onkeyup="mascara(this,cpfCnpj)"
-                                           maxlength="18"
-                                           value="{{ SESSION.CPF }}"/>
+                                    <input name="CPF" id="cpf" type="text" class="form-control" onkeyup="buscaPessoaFisicaCPF()"
+                                           disabled placeholder="000.000.000-00" required onkeydown="mascara(this,mcpf)" minlength='14'
+                                           maxlength="14"
+                                           value="{{ PESSOA ? getLibs('FuncoesLib', 'formatCpfUsuario', [PESSOA.CPF]) : '' }}" />
+                                    <div class="invalid-feedback">
+                                        Preencha o campo corretamente
+                                    </div>
+                                </div>
+                                <div class="form-group col-12 col-md-4 float-left">
+                                    <label class="form-label">Data de Nascimento</label>
+                                    <input name="DATANASCIMENTO" id="datanascimento" type="text" class="form-control" required
+                                           value="{{ PESSOA ? PESSOA.DATANASCIMENTO|date('d/m/Y') : '' }}"
+                                           onkeyup="mascara(this, mdata)" maxlength="10" minlength="10" autocomplete="bday" />
+                                    <div class="invalid-feedback">
+                                        Preencha o campo corretamente
+                                    </div>
+                                </div>
+                                <div class="form-group col-12 col-md-4 float-left">
+                                    <label class="form-label">Gênero</label>
+                                    <select name="SEXO" id="sexo" class="form-control form-select" required>
+                                        {% set sexos = { 'M' : 'Masculino', 'F' : 'Feminino', 'N' : 'Não Informado'} %}
+                                        <option value="" disabled selected>Selecione uma opção</option>
+                                        {% for chave, valor in sexos %}
+
+                                            <option value="{{ chave }}" {{ chave==PESSOA.SEXO ? 'selected' : '' }}>
+                                                {{ valor }}</option>
+
+                                        {% endfor %}
+
+                                    </select>
+                                    <div class="invalid-feedback">
+                                        Preencha o campo corretamente
+                                    </div>
+                                </div>
+                                <div class="form-group col-12 col-md-6 float-left">
+                                    <label class="form-label">Telefone (WhatsApp)</label>
+                                    <input name="TELEFONE" id="telefone" type="text" class="form-control"
+                                           placeholder="(63) 90000-0000" onkeydown="mascara(this,mtel)" maxlength="15" minlength="15"
+                                           autocomplete="nope" pattern="\([0-9]{2}\) [0-9]{4,5}-[0-9]{4}$"
+                                           value="{{ PESSOA.TELEFONE }}" />
+                                    <div class="invalid-feedback">
+                                        Preencha o campo corretamente
+                                    </div>
+                                </div>
+
+                                <div class="form-group col-12 col-md-6 float-left">
+                                    <label class="form-label">E-mail</label>
+                                    <input name="EMAIL" id="email" type="email" class="form-control" placeholder="email@email.com"
+                                           required value="{{ PESSOA.EMAIL }}" />
                                     <div class="invalid-feedback">
                                         Preencha o campo corretamente
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-sm-12 col-lg-12 p-0">
-                                <div class="section-title col-12">Contato</div>
-                                <div class="form-group col-12 col-md-12 float-left">
-                                    <label class="form-label">Email</label>
-                                    <input name="EMAIL" id="email" type="email" class="form-control"
-                                           placeholder="nome@exemplo.com" required
-                                           autocomplete="nope"
-                                           value="{{ SESSION.EMAIL }}"/>
-                                    <div class="invalid-feedback">
-                                        Preencha o campo corretamente
-                                    </div>
+
+                            {% embed "pessoa/components/div_endereco.twig" %}{% endembed %}
+
+
+                            <div class="row">
+                                <div class="d-grid gap-2 d-md-block">
+                                    <button class="btn btn-outline-primary" type="button" data-bs-toggle="modal"
+                                            data-bs-target="#modalAlterarSenha">Alterar Senha
+                                    </button>
                                 </div>
 
-
+                                <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-2">
+                                    <button class="btn btn-primary" type="submit" id="btnSalvar">Salvar</button>
+                                </div>
                             </div>
 
-                        </div>
-
-                        <div class="row">
-                            <div class="col-12">
-                                <a href="javascript:void(0)"
-                                   class="btn btn-outline-primary btn-lg col-md-3 col-lg-2" data-bs-toggle="modal"
-                                   data-bs-target="#modalAlterarSenha">
-                                    Alterar senha
-                                </a>
-
-                            </div>
-                        </div>
-
-                        <div class="row">
-                            <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                                <a href="/usuario"
-                                   class="btn btn-lg btn-link btn-round col-md-3 col-lg-2 float-right mr-md-2 mt-2">
-                                    Voltar
-                                </a>
-                                <button type="submit" id="btnSalvarUsuario"
-                                        class="btn btn-lg btn-primary btn-round col-md-3 col-lg-2 float-right mt-2">
-                                    Alterar
-                                </button>
-                            </div>
-                        </div>
-                        <input type="hidden" name="CODPESSOA" value="{{ SESSAO.CODPESSOA }}"/>
-                        <input type="hidden" name="CODUSUARIO" value="{{ SESSAO.CODUSUARIO }}"/>
-                    </form>
+                            <input type="hidden" name="CODPESSOA" value="{{ SESSION.CODPESSOA }}" />
+                            <input type="hidden" name="CODUSUARIO" value="{{ SESSION.CODUSUARIO }}" />
+                        </form>
+                    </section>
                 </div>
             </div>
         </section>
     </div>
 </main>
 
-
-<!--MODAL ALTERAR SENHA-->
-<div class="modal fade" id="modalAlterarSenha" data-hash="#alterar-senha" aria-labelledby="modalAlterarSenha"
-     aria-hidden="true">
+<div class="modal fade" id="modalAlterarSenha" data-hash="#alterar-senha" aria-labelledby="modalAlterarSenha">
     <div class="modal-dialog modal-lg modal-dialog-telaCheia" role="document">
         <div class="modal-content modal-lg modal-content-telaCheia">
             <div class="modal-header">
                 <h5 class="modal-title fs-5" id="exampleModalLabel">Alterar senha</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" />
             </div>
             <div class="modal-body pl-1 pr-1">
                 <form id="formUsuarioSeguranca" class="needs-validation" novalidate action="/usuario/alterarsenha"
@@ -123,15 +167,11 @@
 
                     <div class="row mt-5">
                         <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                            <input type="hidden" name="codpessoa" value="{{ SESSAO.CODPESSOA }}"/>
-                            <input type="hidden" name="codusuario" value="{{ SESSAO.CODUSUARIO }}"/>
-                            <a href="javascript:void(0)"
-                               class="btn btn-lg btn-link btn-round col-md-3 col-lg-2 float-right mr-md-2 mt-2"
-                               data-bs-dismiss="modal">
-                                Voltar
-                            </a>
+                            <input type="hidden" name="codpessoa" value="{{ SESSION.CODPESSOA }}" />
+                            <input type="hidden" name="codusuario" value="{{ SESSION.CODUSUARIO }}" />
+
                             <button type="button" id="btnAlterarSenha"
-                                    onclick="alterarSenha('btnAlterarSenha','formUsuarioSeguranca')"
+                                    onclick="verificaAlterarSenha('btnAlterarSenha','formUsuarioSeguranca')"
                                     class="btn btn-lg btn-primary btn-round col-md-3 col-lg-2 float-right mt-2">
                                 Alterar
                             </button>
@@ -144,12 +184,19 @@
     </div>
 </div>
 
+<x-div.modal title="Recorte da imagem" id="modalRecortarImagem" size="modal-xl">
+    <div class="crop-container w-100">
+        <img id="cropperImage">
+    </div>
+    <button type="button" class="btn btn-outline-primary float-end mt-3" id="cropButton">Confirmar Recorte</button>
+</x-div.modal>
+
 <script>
 
-    function alterarSenha(nameButton, nameForm) {
+    function verificaAlterarSenha(nameButton, nameForm) {
 
         clickBotaoProgressAtivo(nameButton);
-        validaForm();
+        validaFormId(nameForm);
         if (document.getElementById(nameForm).checkValidity()) {
             if (document.getElementById('novasenha').value === document.getElementById('repetirsenha').value)
                 document.getElementById(nameForm).submit();
@@ -162,6 +209,8 @@
             clickBotaoProgressInativo(nameButton, "Alterar");
         }
     }
+
+
 
 
 </script>

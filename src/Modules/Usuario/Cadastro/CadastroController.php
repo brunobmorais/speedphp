@@ -15,7 +15,6 @@ class CadastroController extends ControllerCore implements ControllerModuleInter
     public function index($args = [])
     {
         try {
-            (new AcessoDao())->setVisita(LocalAcesso::CADASTRO);
             $data['HEAD']['title'] = "Cadastro";
             //SessionLib::apagaSessao();
             SessionLib::setValue("CSRF", Uuid::uuid4()->toString());

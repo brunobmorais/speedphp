@@ -2,14 +2,22 @@
     <x-div.card>
         <form id="formUsuarioCadastro" class="needs-validation" novalidate
               action="{{ SERVICO.URL }}-cadastro-action" method="post"
-              enctype='multipart/form-data' onsubmit="return checkCPF();">
+              enctype='multipart/form-data'>
             <input hidden name='CODPESSOA' value='{{ PESSOA.CODPESSOA }}'>
 
             <div class="row">
                 <div class="section-title col-12">Informações</div>
                 {% embed "pessoa/components/div_pessoa.twig" %}
-                    {% block divInfoAdicional %}
-                        {% embed  "pessoa/components/div_pessoafisica.twig" %}{% endembed %}
+                    {% block top %}
+                        {% if PESSOA.CPFCNPJ|length == 11 %}
+                            <div id="divPessoaFisica">
+                                {% include "pessoa/components/div_pessoafisica.twig" %}
+                            </div>
+                        {% else %}
+                            <div id="divPessoaJuridica">
+                                {% include "pessoa/components/div_pessoajuridica.twig" %}
+                            </div>
+                        {% endif %}
                     {% endblock %}
                 {% endembed %}
                 {% embed "pessoa/components/div_endereco.twig" with { required: ''} %}{% endembed %}
@@ -19,7 +27,7 @@
                 <div class="col-12">
                     <div class="d-grid gap-2 d-md-flex justify-content-md-end col-12">
 
-                        <button type="submit" id="btnSalvarUsuario"
+                        <button type="button" onclick="verificaCPFCNPJ()" id="btnSalvarPessoa"
                                 class="btn btn-lg btn-primary btn-round col-md-3 col-lg-2 float-right mt-2">
                             Salvar
                         </button>
@@ -29,3 +37,14 @@
         </form>
     </x-div.card>
 </x-theme.main.container>
+
+<script>
+    async function verificaCPFCNPJ() {
+        let result = await checkDocumento();
+        console.log(result);
+        if (result) {
+            console.log("OK");
+            document.getElementById("formUsuarioCadastro").submit();
+        }
+    }
+</script>

@@ -14,7 +14,6 @@ class EsquecisenhaController extends ControllerCore implements ControllerModuleI
     public function index($args = null)
     {
         try {
-            (new AcessoDao())->setVisita(LocalAcesso::ESQUECI_SENHA);
             $data['HEAD']['title'] = "Esqueci Senha";
             return $this->render(
                 TemplateAbstract::BLANK,

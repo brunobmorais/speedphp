@@ -1,0 +1,14 @@
+<main>
+    <div class="container my-container">
+        <div class="card shadow-1">
+            <div class="card-header">
+                <h4>Financeiro e repasses do evento</h4>
+            </div>
+            <div class="card-body">
+                {% include BUTTON_TABLE|default("components/pages/blank/blank.html.twig") %}
+
+                {{ TABLE_COMPONENT | raw }}
+            </div>
+        </div>
+    </div>
+</main>

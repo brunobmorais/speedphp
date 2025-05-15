@@ -1,0 +1,199 @@
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<div class="container mb-5">
+    <hr>
+    <h6 class="d-flex flex-wrap align-items-center gap-2 p-2">Estatísticas Via Esporte</h6>
+
+    <!-- Cards de Estatísticas -->
+    <div class="row pt-2">
+        <!-- Total de Inscrições -->
+        <div class="col-12 col-sm-6 col-lg-4">
+            <div class="card p-3">
+                <span class="fw-bold">Total de Inscrições</span>
+                <h1 class="fw-bold" id="totalInscricoes"></h1>
+                <span id="inscricoesUltimoMes"></span>
+            </div>
+        </div>
+
+        <!-- Total de Atletas -->
+        <div class="col-12 col-sm-6 col-lg-4">
+            <div class="card p-3">
+                <span class="fw-bold">Total de Atletas</span>
+                <h1 class="fw-bold" id="totalAtletas"></h1>
+            </div>
+        </div>
+
+        <!-- Eventos em Andamento -->
+        <div class="col-12 col-sm-6 col-lg-4">
+            <div class="card p-3">
+                <span class="fw-bold">Eventos em Andamento</span>
+                <h1 class="fw-bold" id="eventosAndamento"></h1>
+                <span id="totalEventos"></span>
+            </div>
+        </div>
+
+        <!-- Arrecadação Total -->
+        <div class="col-12 col-sm-6 col-lg-4">
+            <div class="card p-3">
+                <span class="fw-bold">Arrecadação Total</span>
+                <h1 class="fw-bold" id="arrecadacaoTotal"></h1>
+                <span id="lucroTotal"></span>
+            </div>
+        </div>
+
+        <!-- Saldo Atual -->
+        <div class="col-12 col-sm-6 col-lg-4">
+            <div class="card p-3">
+                <span class="fw-bold">Saldo Atual</span>
+                <h1 class="fw-bold" id="saldoAgora"></h1>
+            </div>
+        </div>
+
+        <!-- Total de Repasses -->
+        <div class="col-12 col-sm-6 col-lg-4">
+            <div class="card p-3">
+                <span class="fw-bold">Total de Repasses</span>
+                <h1 class="fw-bold" id="totalRepasses"></h1>
+                <span id="repassesUltimos30Dias"></span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Gráficos -->
+    <!-- Acessos e Inscrições por Dia -->
+    <div class="row mt-5">
+        <div class="col-12 col-lg-6">
+            <canvas id="chartAcessosPorDia"></canvas>
+        </div>
+        <div class="col-12 col-lg-6">
+            <canvas id="chartInscricoesPorDia"></canvas>
+        </div>
+    </div>
+
+    <!-- Volume por Meio de Pagamento -->
+    <div class="row mt-5">
+        <div class="col-12 col-lg-6 offset-lg-3">
+            <canvas id="pieMeiosPagamento"></canvas>
+        </div>
+    </div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
+
+<script>
+    // Dados das consultas
+    const estatisticasInscricoes = {{ ESTATISTICAS_INSCRICOES | json_encode | raw }};
+    const estatisticasEventos = {{ ESTATISTICAS_EVENTOS | json_encode | raw }};
+    const estatisticasInscricaoPagamento = {{ ESTATISTICAS_INSCRICAO_PAGAMENTO | json_encode | raw }};
+    const estatisticasAcessos = {{ ESTATISTICAS_ACESSOS | json_encode | raw }};
+    const estatisticasInscricoesPorDia = {{ ESTATISTICAS_INSCRICOES_POR_DIA | json_encode | raw }};
+    const estatisticasPagamentosPorMeioPagamento = {{ ESTATISTICAS_PAGAMENTOS_POR_MEIO_PAGAMENTO | json_encode | raw }};
+
+    // Função para encontrar valores por tipo
+    function getValorPorTipo(array, tipo) {
+        const item = array.find(obj => obj.tipo === tipo);
+        return item ? parseFloat(item.valor) : 0;
+    }
+
+    // Atualizar os valores dos cards
+    document.getElementById("totalInscricoes").innerText = getValorPorTipo(estatisticasInscricoes, "total_inscricoes");
+    document.getElementById("inscricoesUltimoMes").innerText = `Último mês: ${getValorPorTipo(estatisticasInscricoes, "inscricoes_ultimo_mes")}`;
+    document.getElementById("totalAtletas").innerText = getValorPorTipo(estatisticasInscricoes, "total_atletas");
+
+    document.getElementById("eventosAndamento").innerText = getValorPorTipo(estatisticasEventos, "Eventos em Andamento");
+    document.getElementById("totalEventos").innerText = `Total: ${getValorPorTipo(estatisticasEventos, "Total de Eventos")}`;
+
+    document.getElementById("arrecadacaoTotal").innerText = `R$ ${getValorPorTipo(estatisticasInscricaoPagamento, "arrecadacao_total").toFixed(2)}`;
+    document.getElementById("lucroTotal").innerText = `Lucro: R$ ${getValorPorTipo(estatisticasInscricaoPagamento, "lucro_total").toFixed(2)}`;
+
+    document.getElementById("saldoAgora").innerText = `R$ ${getValorPorTipo(estatisticasInscricaoPagamento, "saldo_agora").toFixed(2)}`;
+
+    document.getElementById("totalRepasses").innerText = `R$ ${getValorPorTipo(estatisticasInscricaoPagamento, "total_repasses").toFixed(2)}`;
+    document.getElementById("repassesUltimos30Dias").innerText = `Últimos 30 dias: R$ ${getValorPorTipo(estatisticasInscricaoPagamento, "repasses_ultimos_30_dias").toFixed(2)}`;
+
+    // Gráfico de Acessos por Dia
+    const acessosLabels = estatisticasAcessos.map(item => item.DATA_ACESSO);
+    const acessosData = estatisticasAcessos.map(item => parseInt(item.TOTAL_ACESSOS));
+
+    new Chart(document.getElementById("chartAcessosPorDia"), {
+        type: "line",
+        data: {
+            labels: acessosLabels,
+            datasets: [{
+                label: "Acessos",
+                data: acessosData,
+                borderColor: "blue",
+                backgroundColor: "rgba(0, 0, 255, 0.2)",
+                tension: 0.4,
+            }],
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: { display: true },
+                title: { display: true, text: "Acessos nos Últimos 15 Dias" },
+            },
+            scales: {
+                x: { title: { display: true, text: "Data" } },
+                y: { title: { display: true, text: "Número de Acessos" }, beginAtZero: true },
+            },
+        },
+    });
+
+    // Gráfico de Inscrições por Dia
+    const inscricoesLabels = estatisticasInscricoesPorDia.map(item => item.DIA);
+    const inscricoesData = estatisticasInscricoesPorDia.map(item => parseInt(item.TOTAL_INSCRICOES));
+
+    new Chart(document.getElementById("chartInscricoesPorDia"), {
+        type: "line",
+        data: {
+            labels: inscricoesLabels,
+            datasets: [{
+                label: "Inscrições",
+                data: inscricoesData,
+                borderColor: "green",
+                backgroundColor: "rgba(0, 255, 0, 0.2)",
+                tension: 0.4,
+            }],
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: { display: true },
+                title: { display: true, text: "Inscrições nos Últimos 15 Dias" },
+            },
+            scales: {
+                x: { title: { display: true, text: "Data" } },
+                y: { title: { display: true, text: "Número de Inscrições" }, beginAtZero: true },
+            },
+        },
+    });
+
+    // Gráfico de Volume por Meio de Pagamento
+    const meiosPagamentoLabels = estatisticasPagamentosPorMeioPagamento.map(item => item.MEIO_PAGAMENTO);
+    const meiosPagamentoData = estatisticasPagamentosPorMeioPagamento.map(item => parseInt(item.TOTAL_PAGAMENTOS));
+
+    new Chart(document.getElementById("pieMeiosPagamento"), {
+        type: "pie",
+        data: {
+            labels: meiosPagamentoLabels,
+            datasets: [{
+                label: "Volume por Meio de Pagamento",
+                data: meiosPagamentoData,
+                backgroundColor:
+                    ["#FF6384", "#36A2EB", "#FFCE56", "#4BC0C0", "#9966FF", "#FF9F40"],
+            }],
+            options: {
+                plugins: {
+                    legend:
+                    {
+                        display: true
+                    }, title:
+                    {
+                        display: true, text: "Volume por Meio"
+                    }
+                }
+            }
+        }
+    });
+</script>

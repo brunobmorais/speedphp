@@ -1,0 +1,9 @@
+function formatarParaMoedaBrasileira(valor) {
+    if (isNaN(valor)) {
+        throw new Error("O valor fornecido não é um número válido.");
+    }
+    return valor.toLocaleString('pt-BR', {
+        style: 'currency',
+        currency: 'BRL'
+    });
+}

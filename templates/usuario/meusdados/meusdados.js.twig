@@ -1,0 +1,29 @@
+function setarCodPessoa_UrlRetorno_InputImgPerfil(codPessoa, urlRetorno, imgPerfil) {
+    // Pega os elementos pelo ID
+    const inputCodPessoa = document.getElementById('codPessoa');
+    const inputUrlRetorno = document.getElementById('urlRetorno');
+    const inputImgPerfil = document.getElementById('inputImgPerfil');
+
+    // Seta os valores
+    inputCodPessoa.value = codPessoa;
+    inputUrlRetorno.value = urlRetorno;
+    inputImgPerfil.value = imgPerfil;
+
+    // Opcional: log para confirmar que foi setado
+    console.log('Valores setados:', { codPessoa, urlRetorno, inputImgPerfil });
+}
+
+function loadImage(file, img, width, height) {
+    if (file.files && file.files[0]) {
+        var reader = new FileReader();
+
+        reader.onload = function (e) {
+            let image = new Image(); // Cria um novo objeto de imagem
+            image.src = e.target.result;
+            image.onload = function () {  // Espera a imagem carregar
+
+            };
+        };
+        reader.readAsDataURL(file.files[0]);
+    }
+}

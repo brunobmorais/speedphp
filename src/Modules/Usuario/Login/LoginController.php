@@ -16,7 +16,6 @@ class LoginController extends ControllerCore implements ControllerModuleInterfac
     public function index($args = null)
     {
         try {
-            (new AcessoDao())->setVisita(LocalAcesso::LOGIN);
 
             $data['HEAD']['title'] = "Login";
             //SessionLib::apagaSessao();

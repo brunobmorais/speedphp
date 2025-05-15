@@ -1,0 +1,86 @@
+{% if PESSOA.CODPESSOA %}
+    {% set objPessoaJuridica = getDaos('PessoaJuridicaDao', 'buscarPessoa', [PESSOA.CODPESSOA])|first %}
+{% endif %}
+
+{% block top %}{% endblock %}
+<div class="row">
+    <input type="hidden" name="TIPOPESSOA" value='J'>
+    <input type="hidden" name="CODPESSOA_JURIDICA" value='{{ objPessoaJuridica.CODPESSOA_JURIDICA }}'>
+
+    <div class="form-group col-12 col-md-6 float-left">
+        <label class="form-label">CNPJ</label>
+        <input name="CNPJ" id="cnpj" type="text" class="form-control"
+               onkeyup="buscaPessoaJurificaCNPJ()"
+               placeholder="00.000.000/0000-00"
+               required
+               onkeydown="mascara(this,mcnpj)" minlength='18' maxlength="18"
+               value="{{  objPessoaJuridica ? getLibs('FuncoesLib', 'formatCpfCnpjUsuario', [objPessoaJuridica.CNPJ]) : ''  }}"/>
+        <div class="invalid-feedback">
+            Preencha o campo corretamente
+        </div>
+    </div>
+
+    <div class="form-group col-12 col-md-6 float-left">
+        <label class="form-label">Nome Fantasia</label>
+        <input name="NOMEFANTASIA" id="nomefantasia" type="text" class="form-control" required autocomplete="nope" value="{{ objPessoaJuridica ? objPessoaJuridica.NOMEFANTASIA : ''}}"/>
+        <div class="invalid-feedback">
+            Preencha o campo corretamente
+        </div>
+    </div>
+</div>
+{% block bottom %}{% endblock %}
+
+<script>
+    function checkCNPJ(){
+        let cnpj = document.getElementById("cnpj").value;
+        if (!validaCNPJ(cnpj)) {
+            alertError('CNPJ inválido!');
+            return false
+        }
+        return true
+
+    }
+
+    async function buscaPessoaJurificaCNPJ(){
+        const cnpj = removeCaracteres(document.getElementById("cnpj").value);
+
+        console.log(cnpj);
+        if (document.querySelector("#cnpj").checkValidity() === true && cnpj.length == 14) {
+
+            if (!validaCNPJ(cnpj)){
+                alertError("CNPJ inválido!");
+                return;
+            }
+
+            let pessoaLOCAL = await buscaPessoaJuridicaService(cnpj);
+
+            if (!pessoaLOCAL) {
+                return;
+            }
+
+            preencherCadastrar(pessoaLOCAL)
+
+
+        }
+    }
+
+    function preencherCadastrar(data){
+
+        document.getElementById("nome").value = data.razao_social;
+        document.getElementById("nomefantasia").value = data.estabelecimento.nome_fantasia;
+        document.getElementById("email").value = data.estabelecimento.email;
+
+        document.getElementById("telefone").value = "("+data.estabelecimento.ddd1+") "+data.estabelecimento.telefone1;
+        document.getElementById("telefone").value = mcel(document.getElementById("telefone").value);
+
+        document.getElementById("cep").value = mcep(data.estabelecimento.cep);
+
+        document.getElementById("logradouro").value = data.estabelecimento.logradouro;
+        document.getElementById("numero").value = data.estabelecimento.numero??"s/n";
+        document.getElementById("bairro").value = data.estabelecimento.bairro;
+        document.getElementById("estado").value = data.estabelecimento.estado.sigla;
+        buscarMunicipio(data.estabelecimento.cidade.nome);
+        document.getElementById("complemento").value = data.estabelecimento.complemento??"";
+    }
+</script>
+
