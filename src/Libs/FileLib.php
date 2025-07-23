@@ -152,7 +152,7 @@ class FileLib{
      *
      * @return string
      */
-    function uploadImage($file, $destinoFoto, $fotoAtual, $imgDefault = "default.png")
+    function uploadImage($file, $destinoFoto, $fotoAtual = "default.png", $imgDefault = "default.png")
     {
 
 
@@ -227,7 +227,7 @@ class FileLib{
             list($largura, $altura) = @getimagesize($caminho_imagem);
 
             // Nova largura e altura
-            $proporcao = 600;
+            $proporcao = 1080;
             $nova_largura = $proporcao;
             $nova_altura = (int)(($altura * $proporcao) / $largura);
 

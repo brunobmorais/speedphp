@@ -191,21 +191,21 @@ class FuncoesLib
     function formatDataUsuario($data)
     {
         date_default_timezone_set("America/Araguaina");
-        $dataformatada = strtotime($data);
-        return date("m/d/Y", $dataformatada);;
-    }
 
-    /**
-     * FUNÇÃO PARA FORMATAR A DATA RECEBIDA PARA FORMATO BRASILEIRO
-     *
-     * @param $data
-     * @return string
-     */
-    function formatDataUsuarioAmigavel($data)
-    {
-        date_default_timezone_set("America/Araguaina");
-        $dataformatada = strtotime($data);
-        return date("d/m/Y", $dataformatada);;
+        // Verifica se a data não é null, vazia ou inválida
+        if (empty($data) || $data === null) {
+            return ''; // ou return null; dependendo da sua necessidade
+        }
+
+        try {
+            // Usa DateTime que é mais robusto
+            $dateTime = new DateTime($data);
+            $dateTime->setTimezone(new DateTimeZone("America/Araguaina"));
+            return $dateTime->format("d/m/Y");
+        } catch (Exception $e) {
+            // Em caso de erro na conversão
+            return ''; // ou return 'Data inválida';
+        }
     }
 
     /**
@@ -217,8 +217,21 @@ class FuncoesLib
     function formatDataHoraUsuario($data)
     {
         date_default_timezone_set("America/Araguaina");
-        $dataformatada = new DateTime($data);
-        return $dataformatada->format('d/m/Y H:i:s');
+
+        // Verifica se a data não é null, vazia ou inválida
+        if (empty($data) || $data === null) {
+            return ''; // ou return null; dependendo da sua necessidade
+        }
+
+        try {
+            // Usa DateTime que é mais robusto
+            $dateTime = new DateTime($data);
+            $dateTime->setTimezone(new DateTimeZone("America/Araguaina"));
+            return $dateTime->format("d/m/Y H:i:s");
+        } catch (Exception $e) {
+            // Em caso de erro na conversão
+            return ''; // ou return 'Data inválida';
+        }
     }
 
     /**

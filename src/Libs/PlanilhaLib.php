@@ -112,7 +112,7 @@ class PlanilhaLib
             for ($row = $startRow; $row <= $highestRow; $row++) {
                 $rowData = [];
                 for ($col = 1; $col <= $highestColumnIndex; $col++) {
-                    $cellValue = $worksheet->getCell([$col, $row])->getFormattedValue();
+                    $cellValue = trim($worksheet->getCell([$col, $row])->getFormattedValue());
                     $rowData[$headers[$col - 1]] = $cellValue;
                 }
                 $data[] = $rowData;
