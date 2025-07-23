@@ -27,7 +27,7 @@ class EmailLib
      * @param bool $copy;
      * @return bool
      */
-    public static function sendEmailPHPMailer(string $subject, string $body, array $address, array $copy = [], string $reply = null, array $file = []):bool
+    public static function sendEmailPHPMailer(string $subject, string $body, array $address, array $copy = [], ?string $reply = null, array $file = []):bool
     {
         $phpmailer = new PHPMailer();
 
@@ -83,7 +83,7 @@ class EmailLib
      * @param bool $copy
      * @return bool
      */
-    public static function sendEmail(string $subject, string $body, array $address, array $copy = [], string $reply = null, $file = [] ): bool
+    public static function sendEmail(string $subject, string $body, array $address, array $copy = [], ?string $reply = null, $file = [] ): bool
     {
         if (empty($address)) {
             return false;
@@ -145,7 +145,7 @@ class EmailLib
      * @param array $emailData Dados do e-mail (destinatário, assunto, corpo, etc)
      * @return bool Retorna verdadeiro se o processo de background foi iniciado
      */
-    public static function sendEmailPHPMailerBackground(string $subject, string $body, array $address, array $copy = [], string $reply = null, array $file = [],  ):bool
+    public static function sendEmailPHPMailerBackground(string $subject, string $body, array $address, array $copy = [], ?string $reply = null, array $file = [],  ):bool
     {
         // Criar array com os dados do e-mail
         $emailData = [
