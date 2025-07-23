@@ -4,7 +4,7 @@ networks:
 services:
   php:
     restart: always
-    image: brunobmorais/php8.3-apache
+    image: brunobmorais/php8.4-apache
     volumes:
       - ./:/var/www/html
       - ./docker/config/apache/000-default.conf:/etc/apache2/sites-available/000-default.conf
