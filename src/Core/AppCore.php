@@ -75,7 +75,8 @@ class AppCore
             return;
         }
 
-        $this->loadDefaultController();
+        // MUDANÇA: passar a URL como parâmetros para o controller padrão
+        $this->loadDefaultController($urlArray);
     }
 
     protected function tryLoadLegacyController($urlArray)
@@ -200,18 +201,18 @@ protected function tryLoadModularController($urlArray)
         }
     }
 
-    protected function loadDefaultController()
+    protected function loadDefaultController($params = [])
     {
         $default = CONFIG_FRAMEWORK["controller_default"];
 
-        if ($this->tryLoadDefaultLegacyController($default)) return;
-        if ($this->tryLoadDefaultModularController($default)) return;
+        if ($this->tryLoadDefaultLegacyController($default, $params)) return;
+        if ($this->tryLoadDefaultModularController($default, $params)) return;
 
         $this->debug("Controlador padrão não encontrado");
         $this->load404Controller();
     }
 
-    protected function tryLoadDefaultLegacyController($default)
+    protected function tryLoadDefaultLegacyController($default, $params = [])
     {
         $controllerClass = "App\\Controllers\\" . $default . "Controller";
 
@@ -219,7 +220,7 @@ protected function tryLoadModularController($urlArray)
             $this->controller = new $controllerClass();
             $this->controllerName = $default;
             $this->requestMethodIndex();
-            $this->params = [];
+            $this->params = $params;
             $this->debug("Controlador padrão legado carregado");
             return true;
         }
@@ -227,7 +228,7 @@ protected function tryLoadModularController($urlArray)
         return false;
     }
 
-    protected function tryLoadDefaultModularController($default)
+    protected function tryLoadDefaultModularController($default, $params = [])
     {
         $modulePath = dirname(__DIR__, 2) . '/src/Modules/' . $default;
         $controllerPath = $modulePath . '/' . $default . 'Controller.php';
@@ -240,7 +241,7 @@ protected function tryLoadModularController($urlArray)
                 $this->controllerName = $default . 'Controller';
                 $this->modulePath = $default;
                 $this->requestMethodIndex();
-                $this->params = [];
+                $this->params = $params;
                 $this->debug("Controlador padrão modular carregado");
                 return true;
             }
