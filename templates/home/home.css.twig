@@ -1,6 +1,6 @@
 
 .card-menu {
-    border-radius: 12px !important;
+    border-radius: 15px !important;
     max-height: 140px;
     min-height: 140px;
     /*box-shadow: rgb(0 0 0 / 16%) 0px 2px 8px !important;*/
@@ -16,10 +16,53 @@
     color: #FFF;
 }
 
-.mdi-36px.mdi-set, .mdi-36px.mdi::before
-{
-    font-size: 32px;
-    color: #484848;
+/* Estilo para o círculo ao redor do ícone */
+.icon-circle {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: #E9E9E9; /* Cor de fundo padrão */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 0px;
+    transition: all 0.3s ease;
+}
+/* Cores diferentes para cada tipo de módulo (opcional) */
+.icon-circle.color-blue {
+    background-color: #e3f2fd;
+    color: #1976d2;
+}
+
+.icon-circle.color-green {
+    background-color: #e8f5e8;
+    color: #388e3c;
+}
+
+.icon-circle.color-orange {
+    background-color: #fff3e0;
+    color: #f57c00;
+}
+
+.icon-circle.color-purple {
+    background-color: #f3e5f5;
+    color: #7b1fa2;
+}
+
+.icon-circle.color-red {
+    background-color: #ffebee;
+    color: #d32f2f;
+}
+
+/* Ajuste do tamanho do ícone dentro do círculo */
+.icon-circle i {
+    font-size: 28px;
+    color: #373737;
+}
+
+
+.card-menu-body {
+    padding: 20px !important;
 }
 
 .dark-mode .mdi-36px.mdi-set, .mdi-36px.mdi::before {
@@ -51,14 +94,23 @@
 /*MOBILE*/
 @media (max-width: 576px) {
 
-    .mdi-36px.mdi-set, .mdi-36px.mdi::before
-    {
-        font-size: 23px;
-    }
-
     .card-menu{
         max-height: 90px;
         min-height: 90px;
+    }
+
+    .card-menu-body {
+        padding: 14px !important;
+    }
+
+    /* Estilo para o círculo ao redor do ícone */
+    .icon-circle {
+        width: 30px;
+        height: 30px;
+    }
+
+    .icon-circle i {
+        font-size: 20px;
     }
 
     .card-menu-titulo{
