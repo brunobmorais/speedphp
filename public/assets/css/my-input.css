@@ -49,6 +49,9 @@
     padding: 10px 15px;
     height: 42px;
 }
+textarea.form-control, .form-control:not(.form-control-sm):not(.form-control-lg){
+    font-size: 14px;
+}
 
 .form-group .form-check .form-check-label .control-label, .form-group > label {
     font-weight: 600;
