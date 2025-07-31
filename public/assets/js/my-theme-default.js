@@ -440,17 +440,17 @@ function primeiraLetraMaiusculaCadaPalavra(text) {
 function primeiraLetraMaiusculaTexto(text) {
     var loweredText = text.toLowerCase();
     var words = loweredText.split(" ");
-        var w = words[0];
+    var w = words[0];
 
-        var firstLetter = w[0];
+    var firstLetter = w[0];
 
-        if (w.length > 2) {
-            w = firstLetter.toUpperCase() + w.slice(1);
-        } else {
-            w = firstLetter + w.slice(1);
-        }
+    if (w.length > 2) {
+        w = firstLetter.toUpperCase() + w.slice(1);
+    } else {
+        w = firstLetter + w.slice(1);
+    }
 
-        words[0] = w;
+    words[0] = w;
     return words.join(" ");
 }
 
@@ -1001,8 +1001,8 @@ function updateSelect2(placeholder = " Selecione "){
     });
 }
 
-function modalTemCerteza(formId){
-    Swal.fire({
+async function modalTemCerteza(formId) {
+    const result = await Swal.fire({
         title: 'Atenção',
         icon: 'warning',
         html: 'Tem certeza que deseja executar essa ação!',
@@ -1014,16 +1014,20 @@ function modalTemCerteza(formId){
         confirmButtonText: 'Sim',
         confirmButtonAriaLabel: 'sim',
         confirmButtonColor: '#9400d3',
-    }).then((result) => {
-        if (result.isConfirmed) {
-            validaForm()
-            if (document.getElementById(formId).checkValidity()){
-                document.getElementById(formId).submit();
-            } else {
-                alertError("Preencha todos os campos corretamente");
-            }
+    });
+
+    if (result.isConfirmed) {
+        validaForm()
+        if (document.getElementById(formId).checkValidity()) {
+            document.getElementById(formId).submit();
+            return true;
+        } else {
+            alertError("Preencha todos os campos corretamente");
+            return false;
         }
-    })
+    }
+
+    return false;
 }
 
 function verificaModeDark() {
