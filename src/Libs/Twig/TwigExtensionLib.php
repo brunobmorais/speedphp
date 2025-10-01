@@ -97,11 +97,12 @@ class TwigExtensionLib extends \Twig\Extension\AbstractExtension implements \Twi
             'GET' => $_GET ?? [],
             'POST' => $_POST ?? [],
             'SERVER' => $_SERVER ?? [],
+            'COOKIE' => $_COOKIE ?? [],
             'CONFIG_COLOR' => CONFIG_COLOR ?? [],
             'CONFIG_SITE' => CONFIG_SITE ?? [],
             'CONFIG_PAYMENT' => CONFIG_PAYMENT ?? [],
             'CONFIG_HEADER' => CONFIG_HEADER ?? [],
-            'CONFIG_VERSION_CODE' => CONFIG_VERSION_CODE
+            'CONFIG_VERSION_CODE' => CONFIG_VERSION_CODE,
         ];
     }
 

@@ -90,4 +90,7 @@ const CONFIG_PAYMENT = [
     "client_id" => ""
 ];
 
-const CONFIG_KEY_API_GOOGLE = "ChaveKeyGoolge";
+const CONFIG_KEY_API = array(
+    "google" => "ChaveKeyGoolge",
+    "chatgpt" => ""
+);
