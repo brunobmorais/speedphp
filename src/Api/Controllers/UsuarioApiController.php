@@ -73,6 +73,7 @@ class UsuarioApiController
                     $token = $jwtTokenClass->encode(43200, $data); // 30 dias de validade
 
                     $redireciona = !empty(SessionLib::getValue('REDIRECIONA')) ? SessionLib::getValue('REDIRECIONA') : '/';
+                    SessionLib::regenerate(); // ✅ Novo ID de sessão
                     SessionLib::setDataSession($usuarioResult->getDataSession());
                     CookieLib::setValue("TOKEN", $token, 30, true);
 
@@ -176,6 +177,7 @@ class UsuarioApiController
 
                 $redireciona = !empty(SessionLib::getValue('REDIRECIONA')) ? SessionLib::getValue('REDIRECIONA') : '/atleta';
 
+                SessionLib::regenerate(); // ✅ Novo ID de sessão
                 SessionLib::setDataSession($usuarioResult->getDataSession());
                 CookieLib::setValue("TOKEN", $token, 30, true);
 

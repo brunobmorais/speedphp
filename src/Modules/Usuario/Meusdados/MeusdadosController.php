@@ -66,6 +66,7 @@ class MeusdadosController extends ControllerCore implements ControllerModuleInte
 
         if ($result) {
             $resultUsuarioModel = $usuarioDao->buscarCodusuario($_POST['CODUSUARIO']);
+            SessionLib::regenerate(); // ✅ Novo ID de sessão
             SessionLib::setDataSession($resultUsuarioModel->getDataSession());
             $alertaClass->success("Atualização realizada com sucesso!", "/usuario/meusdados");
         } else {

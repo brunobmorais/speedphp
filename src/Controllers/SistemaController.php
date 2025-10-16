@@ -953,6 +953,7 @@ class SistemaController extends ControllerCore implements ControllerInterface
 
             $data['id'] = $codusuario;
             $token = $jwtTokenClass->encode(1440, $data);
+            SessionLib::regenerate(); // ✅ Novo ID de sessão
             CookieLib::setValue("TOKEN", $token, 30, true);
             SessionLib::setDataSession($usuarioModel->getDataSession());
 

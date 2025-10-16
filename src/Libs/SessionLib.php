@@ -13,89 +13,149 @@ use App\Models\UsuarioModel;
 class SessionLib
 {
     protected const NOME_SESSAO = "SESSION-APP";
+    private static bool $started = false;
 
     public function __construct()
     {
     }
 
-    public static function start(): void{
+    public static function start(): void
+    {
+        if (self::$started) {
+            return; // Já foi iniciada nesta requisição
+        }
+
         if (session_status() === PHP_SESSION_NONE) {
+            // ✅ CONFIGURAÇÕES DE SEGURANÇA
+            ini_set('session.cookie_httponly', '1');
+            ini_set('session.use_only_cookies', '1');
+            ini_set('session.cookie_samesite', 'Lax');
+
+            // Se usar HTTPS, descomente:
+            // ini_set('session.cookie_secure', '1');
+
+            // Tempo de vida: 30 minutos
+            ini_set('session.gc_maxlifetime', '1800');
+            ini_set('session.cookie_lifetime', '1800');
+
             session_name(self::NOME_SESSAO);
             session_start();
-            ob_start();
+
+            self::$started = true;
+
+            // ✅ Regenerar ID periodicamente (previne fixação)
+            if (!isset($_SESSION['_session_created'])) {
+                $_SESSION['_session_created'] = time();
+            } elseif (time() - $_SESSION['_session_created'] > 1800) {
+                session_regenerate_id(true);
+                $_SESSION['_session_created'] = time();
+            }
         }
     }
 
-    private static function end(): void{
-        if (session_status() === PHP_SESSION_ACTIVE) {
-            session_write_close();
-            ob_end_flush();
-        }
-    }
+    // ✅ REMOVER - Não fechar sessão durante a requisição
+    // private static function end(): void
+    // {
+    //     if (session_status() === PHP_SESSION_ACTIVE) {
+    //         session_write_close();
+    //         ob_end_flush();
+    //     }
+    // }
 
     public static function apagaSessao(): void
     {
         self::start();
 
-        session_unset(); // Eliminar todas as vari�veis da sess�o
-        session_destroy(); // Destruir a sess�o
+        // ✅ Limpar cookie de sessão também
+        if (isset($_COOKIE[self::NOME_SESSAO])) {
+            setcookie(
+                self::NOME_SESSAO,
+                '',
+                time() - 3600,
+                '/',
+                '',
+                false, // secure
+                true   // httponly
+            );
+        }
 
-        self::end();
+        session_unset();
+        session_destroy();
+
+        self::$started = false;
     }
 
-    public static function setValue(string $name, $value)
+    public static function setValue(string $name, $value): void
     {
         self::start();
-        $_SESSION[$name]= $value;
-        self::end();
+        $_SESSION[$name] = $value;
+        // ✅ NÃO FECHAR - deixar aberta
     }
 
     public static function getValue($name)
     {
         self::start();
-        $value = $_SESSION[$name] ?? null;
-        self::end();
-        return $value;
+        return $_SESSION[$name] ?? null;
+        // ✅ NÃO FECHAR - deixar aberta
     }
 
-    public static function apagaCampo($nomeCampo)
+    public static function apagaCampo($nomeCampo): void
     {
         self::start();
         unset($_SESSION[$nomeCampo]);
-        self::end();
+        // ✅ NÃO FECHAR - deixar aberta
     }
 
-    /*public function verificaLoginSessao()
+    public static function setDataSession(array $dados): void
     {
-        $email = $this->pegarCampo("EMAIL");
-
-        if ((!isset($email)) || empty($email)) {
-            header("location: /login/logoff");
-            exit;
-        } else {
-            return true;
-        }
-    }*/
-
-    public static function setDataSession(array $dados){
-
         self::apagaSessao();
+        self::start(); // ✅ Reiniciar após destruir
 
         foreach ($dados as $key => $value) {
-            self::setValue($key, $value);
+            $_SESSION[$key] = $value; // ✅ Acesso direto já que já iniciamos
         }
     }
 
-    public static function getDataSession(array $keys = []){
+    public static function getDataSession(array $keys = []): array
+    {
+        self::start();
 
         // Se $keys for vazio, busca todos os dados de sessão
         $keys = empty($keys) ? array_keys($_SESSION) : $keys;
 
         $dados = [];
         foreach ($keys as $key) {
-            $dados[$key] = self::getValue($key);
+            $dados[$key] = $_SESSION[$key] ?? null; // ✅ Acesso direto
         }
 
         return $dados;
+    }
+
+    /**
+     * ✅ NOVO: Verificar se sessão existe e é válida
+     */
+    public static function isValid(): bool
+    {
+        self::start();
+        return isset($_SESSION['_session_created']);
+    }
+
+    /**
+     * ✅ NOVO: Obter ID da sessão (para debug)
+     */
+    public static function getId(): string
+    {
+        self::start();
+        return session_id();
+    }
+
+    /**
+     * ✅ NOVO: Regenerar ID de sessão (após login)
+     */
+    public static function regenerate(): void
+    {
+        self::start();
+        session_regenerate_id(true);
+        $_SESSION['_session_created'] = time();
     }
 }

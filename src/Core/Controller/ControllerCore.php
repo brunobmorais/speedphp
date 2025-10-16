@@ -211,6 +211,7 @@ class ControllerCore
 
         // 6. Atualiza o TOKEN no Cookie e configura sessão
         CookieLib::setValue("TOKEN", $novoToken, true);
+        SessionLib::regenerate(); // ✅ Novo ID de sessão
         SessionLib::setDataSession($usuarioModel->getDataSession());
 
         return true;
@@ -238,6 +239,7 @@ class ControllerCore
                     $token = $jwtTokenClass->encode(43200, ["id" => $usuarioMOdel->getCODUSUARIO()]);
 
                     CookieLib::setValue("TOKEN",$token, true);
+                    SessionLib::regenerate(); // ✅ Novo ID de sessão
                     SessionLib::setDataSession($usuarioMOdel->getDataSession());
 
                     return true;
