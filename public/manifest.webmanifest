@@ -9,18 +9,6 @@
     "orientation": "portrait",
     "theme_color": "#ffffff",
     "background_color": "#FFFFFF",
-    "screenshots": [{
-            "src": "/assets/img/print/desktop1.png",
-            "type": "image/png",
-            "sizes": "1600x881",
-            "form_factor": "wide"
-        },{
-            "src": "/assets/img/print/mobile1.png",
-            "type": "image/png",
-            "sizes": "437x916",
-            "form_factor": "narrow"
-        }
-    ],
     "icons": [
         {
             "src": "/assets/img/icon/android-icon-36x36.png",
