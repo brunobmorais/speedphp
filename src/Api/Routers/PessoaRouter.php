@@ -6,7 +6,6 @@ namespace App\Api\Routers;
 use App\Api\Controllers\PessoaApiController;
 use App\Api\Controllers\PrevisaoDoTempoApiController;
 use App\Api\Controllers\ProtocoloApiController;
-use App\Api\Controllers\UsuarioApiController;
 use App\Api\Lib\ResponseClass;
 use App\Api\Lib\RouterClass;
 

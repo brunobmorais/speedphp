@@ -3,9 +3,7 @@
 namespace App\Api\Routers;
 
 
-use App\Api\Controllers\MercadoPagoApiController;
 use App\Api\Controllers\TelegramApiController;
-use App\Api\Controllers\UsuarioApiController;
 use App\Api\Lib\ResponseClass;
 use App\Api\Lib\RouterClass;
 

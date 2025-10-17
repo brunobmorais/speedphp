@@ -4,6 +4,7 @@ async function requisicaoHttp(url, metodo = 'GET', body = null, headers = {'Cont
 
         let resp = await fetch(url, {
             method: metodo,
+            credentials: 'include',
             body: body,
             headers: headers
         }).catch(error =>{

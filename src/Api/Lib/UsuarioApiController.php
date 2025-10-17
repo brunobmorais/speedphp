@@ -1,14 +1,10 @@
 <?php
 
-namespace App\Api\Controllers;
+namespace App\Api\Lib;
 
-use App\Api\Lib\RequestClass;
 use App\Daos\CidadeDao;
-
 use App\Daos\LogDao;
-
 use App\Daos\PessoaDao;
-
 use App\Daos\SICodigoValidadorDao;
 use App\Daos\UsuarioDao;
 use App\Libs\CookieLib;
@@ -21,7 +17,6 @@ use App\Libs\TemplateEmailLib;
 use App\Models\EnderecoModel;
 use App\Models\PessoaFisicaModel;
 use App\Models\PessoaModel;
-
 use App\Models\UsuarioModel;
 
 class UsuarioApiController
@@ -38,11 +33,20 @@ class UsuarioApiController
             $cpf = $func->removeCaracteres($request->getJsonParams()['cpf'] ?? "");
             $senha = $request->getJsonParams()['senha'] ?? "";
             $csrf = $request->getJsonParams()['csrf'] ?? "";
-            $csrfSession = SessionLib::getValue("CSRF");
 
-            if ($csrf != $csrfSession || empty($csrfSession)) {
+            // Validar CSRF
+            $csrfValidation = SessionLib::validateCsrfToken($csrf);
+
+            if (!$csrfValidation['valid']) {
                 $retorno['error'] = true;
-                $retorno['message'] = "Token inválido";
+                $retorno['message'] = $csrfValidation['message'];
+                $retorno['errorCode'] = $csrfValidation['error'];
+
+                if ($csrfValidation['error'] === 'SESSION_EXPIRED' || $csrfValidation['error'] === 'CSRF_NOT_FOUND') {
+                    $retorno['newCsrfToken'] = SessionLib::generateCsrfToken();
+                    $retorno['requiresReload'] = true;
+                }
+
                 return $retorno;
             }
 

@@ -5,7 +5,7 @@
     RewriteRule \.(pdf)$ - [F]
 
     # Redirecionar arquivos estáticos diretamente para a pasta public
-    RewriteCond %{REQUEST_URI} \.(jpg|jpeg|png|gif|ico|css|js|svg|webp|mp4|woff|woff2|ttf|eot|map)$
+    RewriteCond %{REQUEST_URI} \.(jpg|jpeg|png|gif|ico|css|js|svg|webp|mp4|woff|woff2|ttf|eot|map|json)$
     RewriteRule (.*) public/$1 [L]
 
     # Redirecionar raiz e qualquer outra URL para a public/
