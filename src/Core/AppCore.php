@@ -54,28 +54,24 @@ class AppCore
             return;
         }
 
+        // MUDANÇA: Tenta primeiro carregar o modular com o caminho completo
+        if ($this->tryLoadModularController($urlArray)) {
+            return;
+        }
+
+        // Se não encontrou no modular, tenta o legado
         $legacyResult = $this->tryLoadLegacyController($urlArray);
 
         if ($legacyResult === true) {
             $this->debug("Controller legado carregado com sucesso");
             return;
         } elseif ($legacyResult === 'method_not_found') {
-            $this->debug("Método não encontrado no controller legado. Tentando submódulo...");
-
-            if ($this->tryLoadModularController($urlArray)) {
-                return;
-            }
-
-            $this->debug("404: método não encontrado nem submódulo existente");
+            $this->debug("404: método não encontrado no controller legado");
             $this->load404Controller();
             return;
         }
 
-        if ($this->tryLoadModularController($urlArray)) {
-            return;
-        }
-
-        // MUDANÇA: passar a URL como parâmetros para o controller padrão
+        // Se não encontrou nem no modular nem no legado, carrega o controller padrão
         $this->loadDefaultController($urlArray);
     }
 
@@ -111,63 +107,72 @@ class AppCore
         return false;
     }
 
-protected function tryLoadModularController($urlArray)
-{
-    if (empty($urlArray)) {
-        $this->debug("Array de URL vazio, ignorando carregamento modular");
+    protected function tryLoadModularController($urlArray)
+    {
+        if (empty($urlArray)) {
+            $this->debug("Array de URL vazio, ignorando carregamento modular");
+            return false;
+        }
+
+        $baseModulesPath = dirname(__DIR__, 2) . '/src/Modules';
+        $validPath = [];
+        $lastValidController = null;
+        $currentPath = $baseModulesPath;
+
+        foreach ($urlArray as $index => $segment) {
+            // Ignora segmentos vazios
+            if (empty($segment)) continue;
+
+            $folderSegment = ucfirst($segment);
+            $potentialPath = $currentPath . '/' . $folderSegment;
+
+            // Verifica se o diretório existe antes de continuar
+            if (!is_dir($potentialPath)) {
+                $this->debug("Diretório não existe: " . $potentialPath);
+                break;
+            }
+
+            // Atualiza o caminho apenas quando confirmamos que é válido
+            $currentPath = $potentialPath;
+            $validPath[] = $folderSegment;
+
+            // Verificação direta do controlador sem construções redundantes
+            $controllerPath = $currentPath . '/' . $folderSegment . 'Controller.php';
+            $controllerClass = 'App\\Modules\\' . implode('\\', $validPath) . '\\' . $folderSegment . 'Controller';
+
+            $this->debug("Verificando controller modular", [
+                'Path' => $controllerPath,
+                'Class' => $controllerClass,
+                'Existe arquivo' => file_exists($controllerPath) ? 'sim' : 'não',
+                'Existe classe' => class_exists($controllerClass) ? 'sim' : 'não'
+            ]);
+
+            if (file_exists($controllerPath) && class_exists($controllerClass)) {
+                $lastValidController = [
+                    'class' => $controllerClass,
+                    'name' => $folderSegment . 'Controller',
+                    'index' => $index
+                ];
+                $this->debug("Controller modular encontrado em: " . $controllerPath);
+            }
+        }
+
+        if ($lastValidController) {
+            $this->controller = new $lastValidController['class']();
+            $this->controllerName = $lastValidController['name'];
+            $this->modulePath = implode('\\', array_slice($urlArray, 0, $lastValidController['index'] + 1));
+            $this->determineMethodAndParams(array_slice($urlArray, $lastValidController['index'] + 1));
+
+            $this->debug("Controller modular carregado: " . $lastValidController['class'], [
+                'Método' => $this->method,
+                'Parâmetros' => $this->params
+            ]);
+            return true;
+        }
+
+        $this->debug("Nenhum controller modular encontrado");
         return false;
     }
-
-    $baseModulesPath = dirname(__DIR__, 2) . '/src/Modules';
-    $validPath = [];
-    $lastValidController = null;
-    $currentPath = $baseModulesPath;
-
-    foreach ($urlArray as $index => $segment) {
-        // Ignora segmentos vazios
-        if (empty($segment)) continue;
-
-        $folderSegment = ucfirst($segment);
-        $potentialPath = $currentPath . '/' . $folderSegment;
-
-        // Verifica se o diretório existe antes de continuar
-        if (!is_dir($potentialPath)) {
-            break;
-        }
-
-        // Atualiza o caminho apenas quando confirmamos que é válido
-        $currentPath = $potentialPath;
-        $validPath[] = $folderSegment;
-
-        // Verificação direta do controlador sem construções redundantes
-        $controllerPath = $currentPath . '/' . $folderSegment . 'Controller.php';
-        $controllerClass = 'App\\Modules\\' . implode('\\', $validPath) . '\\' . $folderSegment . 'Controller';
-
-        if (file_exists($controllerPath) && class_exists($controllerClass)) {
-            $lastValidController = [
-                'class' => $controllerClass,
-                'name' => $folderSegment . 'Controller',
-                'index' => $index
-            ];
-        }
-    }
-
-    if ($lastValidController) {
-        $this->controller = new $lastValidController['class']();
-        $this->controllerName = $lastValidController['name'];
-        $this->modulePath = implode('\\', array_slice($urlArray, 0, $lastValidController['index'] + 1));
-        $this->determineMethodAndParams(array_slice($urlArray, $lastValidController['index'] + 1));
-
-        $this->debug("Controller modular carregado: " . $lastValidController['class'], [
-            'Método' => $this->method,
-            'Parâmetros' => $this->params
-        ]);
-        return true;
-    }
-
-    $this->debug("Nenhum controller modular encontrado");
-    return false;
-}
 
     protected function isValidLegacyController($controller)
     {
