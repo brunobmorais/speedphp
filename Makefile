@@ -1,6 +1,6 @@
 # Download make para windows
 # https://iweb.dl.sourceforge.net/project/gnuwin32/make/3.81/make-3.81.exe
-URL="http://speedphp.localhost/config"
+URL="http://localhost/config"
 
 TAG=$(shell git log -1 --format=%h)
 CURL := curl -sS

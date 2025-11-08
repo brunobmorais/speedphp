@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Controllers;
 
 use App\Core\Controller\ControllerCore;
@@ -19,19 +20,19 @@ class ConfigController extends ControllerCore implements ControllerInterface
     public function build()
     {
         try {
-            if ($this->isModeDeveloper()){
+            if ($this->isModeDeveloper()) {
 
-                unlink (dirname(__DIR__,2)."/public/assets/css/my-color-root.css");
-                unlink(dirname(__DIR__,2)."/public/assets/css/style.min.css");
-                unlink(dirname(__DIR__,2)."/public/assets/js/script.min.js");
+                unlink(dirname(__DIR__, 2) . "/public/assets/css/my-color-root.css");
+                unlink(dirname(__DIR__, 2) . "/public/assets/css/style.min.css");
+                unlink(dirname(__DIR__, 2) . "/public/assets/js/script.min.js");
 
                 $cssString = ":root {
-    --mycolor-primary: ".CONFIG_COLOR['color-primary'].";
-    --mycolor-primary-hover: ".CONFIG_COLOR['color-primary-hover'].";
-    --mycolor-secondary: ".CONFIG_COLOR['color-secondary'].";
-    --mycolor-link: ".CONFIG_COLOR['color-link'].";
-    --mycolor-navbar: ".CONFIG_COLOR['color-navbar'].";
-    --mycolor-bg: ".CONFIG_COLOR['color-bg'].";
+    --mycolor-primary: " . CONFIG_COLOR['color-primary'] . ";
+    --mycolor-primary-hover: " . CONFIG_COLOR['color-primary-hover'] . ";
+    --mycolor-secondary: " . CONFIG_COLOR['color-secondary'] . ";
+    --mycolor-link: " . CONFIG_COLOR['color-link'] . ";
+    --mycolor-navbar: " . CONFIG_COLOR['color-navbar'] . ";
+    --mycolor-bg: " . CONFIG_COLOR['color-bg'] . ";
     --mycolor-card: #FFFFFF;
     --mycolor-black-white: #000000;
     --mycolor-light: #ececec;
@@ -47,30 +48,30 @@ class ConfigController extends ControllerCore implements ControllerInterface
     --mycolor-black-white: #FFFFFF;
 
 }";
-                file_put_contents(dirname(__DIR__,2)."/public/assets/css/my-color-root.css", $cssString);
+                file_put_contents(dirname(__DIR__, 2) . "/public/assets/css/my-color-root.css", $cssString);
 
                 // GERAR ARQUIVOS CSS MINIFICADOS
                 $minCss = new CSS();
-                $cssDir = scandir(dirname(__DIR__,2).""."/public/assets/css/");
-                foreach ($cssDir as $cssItem){
-                    $cssFile = dirname(__DIR__,2)."/public/assets/css/{$cssItem}";
-                    if (is_file($cssFile) && pathinfo($cssFile)["extension"] ==  "css"){
+                $cssDir = scandir(dirname(__DIR__, 2) . "" . "/public/assets/css/");
+                foreach ($cssDir as $cssItem) {
+                    $cssFile = dirname(__DIR__, 2) . "/public/assets/css/{$cssItem}";
+                    if (is_file($cssFile) && pathinfo($cssFile)["extension"] ==  "css") {
                         $minCss->add($cssFile);
                     }
                 }
-                $minCss->minify(dirname(__DIR__,2)."/public/assets/css/style.min.css");
+                $minCss->minify(dirname(__DIR__, 2) . "/public/assets/css/style.min.css");
 
 
                 // GERAR ARQUIVOS JS MINIFICADOS
                 $minJs = new JS();
-                $jsDir = scandir(dirname(__DIR__,2).""."/public/assets/js/");
-                foreach ($jsDir as $jsItem){
-                    $jsFile = dirname(__DIR__,2)."/public/assets/js/{$jsItem}";
-                    if (is_file($jsFile) && pathinfo($jsFile)["extension"] ==  "js"){
+                $jsDir = scandir(dirname(__DIR__, 2) . "" . "/public/assets/js/");
+                foreach ($jsDir as $jsItem) {
+                    $jsFile = dirname(__DIR__, 2) . "/public/assets/js/{$jsItem}";
+                    if (is_file($jsFile) && pathinfo($jsFile)["extension"] ==  "js") {
                         $minJs->add($jsFile);
                     }
                 }
-                $minJs->minify(dirname(__DIR__,2)."/public/assets/js/script.min.js");
+                $minJs->minify(dirname(__DIR__, 2) . "/public/assets/js/script.min.js");
 
                 echo "Gerado com sucesso";
             } else {
@@ -81,18 +82,124 @@ class ConfigController extends ControllerCore implements ControllerInterface
         }
     }
 
-    public function createpage($args = [])
+    public function createcontroller($args = [])
+    {
+        try {
+            if ($this->isModeDeveloper()) {
+                // Processamento dos parâmetros de URL
+                $urlParts = $args;
+
+                // Remove segmentos vazios
+                $urlParts = array_filter($urlParts, function($segment) {
+                    return !empty($segment);
+                });
+
+                // Reindexa o array
+                $urlParts = array_values($urlParts);
+
+                // Se não há segmentos, solicita informação
+                if (empty($urlParts)) {
+                    echo "Informe o nome do controlador\n";
+                    exit;
+                }
+
+                // Cria a estrutura de diretórios
+                $baseModulesDir = dirname(__DIR__, 2) . "/src/Modules";
+                $basePath = $baseModulesDir;
+                $namespace = 'App\\Modules';
+
+                // Caminho para os templates
+                $baseTemplateDir = dirname(__DIR__, 2) . "/templates";
+                $templatePath = '';
+
+                // Processa cada segmento da URL
+                $totalSegments = count($urlParts);
+                for ($i = 0; $i < $totalSegments; $i++) {
+                    $segment = $urlParts[$i];
+                    $segmentCapitalized = ucfirst($segment);
+                    $segmentLower = strtolower($segment);
+
+                    // Atualiza os caminhos
+                    $basePath .= '/' . $segmentCapitalized;
+                    $namespace .= '\\' . $segmentCapitalized;
+
+                    // Cria o diretório se não existir
+                    if (!is_dir($basePath)) {
+                        mkdir($basePath, 0777, true);
+                        echo "Diretório criado: {$basePath}\n";
+                    }
+
+                    // Atualiza o caminho do template
+                    if (empty($templatePath)) {
+                        $templatePath = $segmentLower;
+                    } else {
+                        $templatePath .= '/' . $segmentLower;
+                    }
+
+                    // Cria o diretório de templates
+                    $currentTemplateDir = $baseTemplateDir . '/' . $templatePath;
+                    if (!is_dir($currentTemplateDir)) {
+                        mkdir($currentTemplateDir, 0777, true);
+                        echo "Diretório de template criado: {$currentTemplateDir}\n";
+                    }
+
+                    // *** MODIFICAÇÃO: Cria controller e templates APENAS para o último segmento ***
+                    $isLastSegment = ($i === $totalSegments - 1);
+
+                    if ($isLastSegment) {
+                        // Cria o controller para o último segmento
+                        $controllerName = $segmentCapitalized . 'Controller';
+                        $controllerFile = $basePath . '/' . $controllerName . '.php';
+
+                        if (!file_exists($controllerFile)) {
+                            // Conteúdo padrão do controller
+                            $controllerContent = "<?php\n\nnamespace {$namespace};\n\nuse App\\Core\\Controller\\ControllerCore;\nuse App\\Core\\Controller\\ControllerModuleInterface;\n\nclass {$controllerName} extends ControllerCore implements ControllerModuleInterface\n{\n    public function index(\$args = [])\n    {\n        // Código do método index\n    }\n    \n    public function action(\$args = [])\n    {\n        // Código do método action\n    }\n}";
+
+                            file_put_contents($controllerFile, $controllerContent);
+                            echo "Controller criado: {$controllerFile}\n";
+                        } else {
+                            echo "Controller já existe: {$controllerFile}\n";
+                        }
+
+                        // Cria os templates para o último segmento
+                        $templateFiles = [
+                            $currentTemplateDir . '/' . $segmentLower . '.html.twig' => '',
+                            $currentTemplateDir . '/' . $segmentLower . '.css.twig' => '',
+                            $currentTemplateDir . '/' . $segmentLower . '.js.twig' => ''
+                        ];
+
+                        foreach ($templateFiles as $file => $content) {
+                            if (!file_exists($file)) {
+                                file_put_contents($file, $content);
+                                echo "Template criado: {$file}\n";
+                            } else {
+                                echo "Template já existe: {$file}\n";
+                            }
+                        }
+                    }
+                }
+
+                echo "Estrutura criada com sucesso!\n";
+            } else {
+                $this->redirect("/");
+            }
+        } catch (\Error $e) {
+            return $e;
+        }
+    }
+
+    public function createcrontroller2($args = [])
     {
 
         try {
-            if ($this->isModeDeveloper()){
+            if ($this->isModeDeveloper()) {
 
-                $nomeClass = strtolower($args[0]??"");
+                $nomeClass = strtolower($args[0] ?? "");
                 $nomeClass = ucfirst($nomeClass);
-                $nomeClassMinusculo = strtolower($args[0]??"");
-                $nomeMetodo = strtolower($args[1]??"");
+                $nomeClassMinusculo = strtolower($args[0] ?? "");
+                $nomeMetodo = strtolower($args[1] ?? "");
 
-                if (empty($nomeClass)){
+                if (empty($nomeClass)) {
                     echo "Informe o nome da class";
                     exit;
                 }
@@ -100,7 +207,7 @@ class ConfigController extends ControllerCore implements ControllerInterface
 }";
                 if (!empty($nomeMetodo)) {
 
-                        $conteudoMetodo = '
+                    $conteudoMetodo = '
     public function ' . $nomeMetodo . '($args = []){}
 }';
                 }
@@ -111,12 +218,12 @@ class ConfigController extends ControllerCore implements ControllerInterface
     use App\Core\Controller\ControllerCore;
     use App\Core\Controller\ControllerInterface;
     
-    class ' .$nomeClass.'Controller extends ControllerCore implements ControllerInterface
+    class ' . $nomeClass . 'Controller extends ControllerCore implements ControllerInterface
     {
         public function index($args  = [])
         {
         
-        }'.$conteudoMetodo.'
+        }' . $conteudoMetodo . '
     ';
                 } else {
                     $conteudoClass = file_get_contents(dirname(__DIR__, 2) . "/src/Controllers/{$nomeClass}Controller.php");
@@ -167,19 +274,19 @@ class ConfigController extends ControllerCore implements ControllerInterface
                 exit();
             }
 
-            if (empty($args[0]??"")){
+            if (empty($args[0] ?? "")) {
                 echo "Informe o nome da tabela";
                 exit;
             }
 
-            $nomeClass = strtolower($args[0]??"");
+            $nomeClass = strtolower($args[0] ?? "");
             $nomeClassModel = (new FuncoesLib())->removeCaracteres(ucfirst($nomeClass));
             $nomeTable = strtoupper($nomeClass ?? "");
 
             $nomeQuebrado = explode("_", $nomeClass);
-            if (count($nomeQuebrado)>1){
+            if (count($nomeQuebrado) > 1) {
                 $nomeClassModel = "";
-                foreach ($nomeQuebrado as $item){
+                foreach ($nomeQuebrado as $item) {
                     $nomeClassModel .= ucfirst($item);
                 }
             }
@@ -219,12 +326,12 @@ class {$nomeClassModel}Model extends ModelAbstract
 namespace App\Daos;
 use BMorais\Database\CrudBuilder;
 
-class '.$nomeClassModel.'Dao extends CrudBuilder
+class ' . $nomeClassModel . 'Dao extends CrudBuilder
 {
     public function __construct()
     {
-        $this->setTableName("'.$nomeTable.'");
-        $this->setClassModel("'.$nomeClassModel.'Model");
+        $this->setTableName("' . $nomeTable . '");
+        $this->setClassModel("' . $nomeClassModel . 'Model");
     }
 }';
 
@@ -232,20 +339,21 @@ class '.$nomeClassModel.'Dao extends CrudBuilder
                 file_put_contents(dirname(__DIR__, 2) . "/src/Daos/{$nomeClassModel}Dao.php", $conteudoClass);
 
             echo "executado com sucesso";
-        } catch (\Error $e){
+        } catch (\Error $e) {
             return $e;
         }
     }
 
-    private function createsets($columns){
+    private function createsets($columns)
+    {
         if (empty($columns))
             return [];
         $gets = "";
         foreach ($columns as $col) {
             //$colFormat = (new FuncoesLib())->removeCaracteres($col);
-            $gets .= 'public function set'.$col.'($'.$col.'):self
+            $gets .= 'public function set' . $col . '($' . $col . '):self
     {
-        $this->'.$col.' = $'.$col.';
+        $this->' . $col . ' = $' . $col . ';
         return $this;
     }
     
@@ -254,20 +362,20 @@ class '.$nomeClassModel.'Dao extends CrudBuilder
         return $gets;
     }
 
-    private function creategets($columns){
+    private function creategets($columns)
+    {
         if (empty($columns))
             return [];
         $sets = "";
         foreach ($columns as $col) {
             //$colFormat = (new FuncoesLib())->removeCaracteres($col);
-            $sets .= 'public function get'.$col.'()
+            $sets .= 'public function get' . $col . '()
     {
-        return $this->'.$col.';
+        return $this->' . $col . ';
     }
     
     ';
         }
         return $sets;
     }
-
 }
