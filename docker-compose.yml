@@ -1,8 +1,11 @@
-version: '3.8'
 networks:
   mynet:
+    external: true
 services:
   php:
+    #build:
+    #context: ./
+    #dockerfile: ./docker/Dockerfile-php82
     restart: always
     image: brunobmorais/php8.4-apache
     volumes:
@@ -13,8 +16,6 @@ services:
       - "80:80"
     networks:
       - mynet
-    depends_on:
-      - mysql
     extra_hosts:
       - "host.docker.internal:host-gateway"
   mysql:
@@ -33,20 +34,7 @@ services:
       - "3306:3306"
     environment:
       MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: speedphp
+      MYSQL_DATABASE: viaesporte
       MYSQL_USER: user
       MYSQL_PASSWORD: user
       TZ: America/Sao_Paulo
-  phpmyadmin:
-    image: phpmyadmin:latest
-    environment:
-      PMA_HOST: mysql
-    restart: always
-    ports:
-      - 8080:80
-    networks:
-      - mynet
-    volumes:
-      - ./docker/config/phpmyadmin/uploads.ini:/usr/local/etc/php/conf.d/php-phpmyadmin.ini
-    depends_on:
-      - mysql
