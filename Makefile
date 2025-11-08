@@ -1,8 +1,8 @@
-# Download make para windows
-# https://iweb.dl.sourceforge.net/project/gnuwin32/make/3.81/make-3.81.exe
-URL="http://localhost/config"
+# Makefile melhorado
+# Para Windows, baixe make: https://iweb.dl.sourceforge.net/project/gnuwin32/make/3.81/make-3.81.exe
+URL := http://localhost/config
 
-TAG=$(shell git log -1 --format=%h)
+TAG := $(shell git rev-parse --short HEAD)
 CURL := curl -sS
 GIT := git
 DOCKER_COMPOSE := docker-compose
@@ -249,9 +249,10 @@ start:
 	@echo "Este comando irá executar as seguintes ações:"
 	@echo ""
 	@echo "  0. 🐳  Iniciar containers Docker (opcional)"
-	@echo "  1. 📦  Composer update (dentro do container Docker)"
-	@echo "  2. 💾  Backup/import do banco de dados"
-	@echo "  3. ⬇️  Download de arquivos de uploads"
+	@echo "  1. ⚙️  Copiar arquivo de configuração para desenvolvimento"
+	@echo "  2. 📦  Composer update (dentro do container Docker)"
+	@echo "  3. 💾  Backup/import do banco de dados"
+	@echo "  4. ⬇️  Download de arquivos de uploads"
 	@echo ""
 	@echo "════════════════════════════════════════════════════════════════"
 	@echo ""
@@ -300,7 +301,57 @@ start:
 	fi; \
 	echo ""; \
 	echo "════════════════════════════════════════════════════════════════"; \
-	echo "📦 ETAPA 1: COMPOSER UPDATE"; \
+	echo "⚙️  ETAPA 1: CONFIGURAÇÃO PARA DESENVOLVIMENTO"; \
+	echo "════════════════════════════════════════════════════════════════"; \
+	echo ""; \
+	if [ -f "config/developerConfig.php" ]; then \
+		echo "ℹ️  Arquivo config/developerConfig.php já existe."; \
+		echo ""; \
+		read -p "⚠️  Deseja sobrescrever com o arquivo de exemplo? (s/N): " overwrite; \
+		if [ "$$overwrite" = "s" ] || [ "$$overwrite" = "S" ]; then \
+			if [ -f "config/developerConfig.example.php" ]; then \
+				echo ""; \
+				echo "📋 Criando backup do arquivo atual..."; \
+				cp config/developerConfig.php config/developerConfig.php.bak && \
+				echo "✅ Backup criado: config/developerConfig.php.bak"; \
+				echo ""; \
+				echo "📝 Copiando arquivo de exemplo..."; \
+				cp config/developerConfig.example.php config/developerConfig.php && \
+				echo "✅ Arquivo config/developerConfig.php criado com sucesso!"; \
+			else \
+				echo ""; \
+				echo "❌ Arquivo config/developerConfig.example.php não encontrado!"; \
+				echo "💡 Certifique-se de que o arquivo de exemplo existe."; \
+				echo ""; \
+				exit 1; \
+			fi; \
+		else \
+			echo ""; \
+			echo "⏭️  Mantendo arquivo existente..."; \
+		fi; \
+	else \
+		if [ -f "config/developerConfig.example.php" ]; then \
+			echo "📝 Copiando arquivo de configuração para desenvolvimento..."; \
+			echo "────────────────────────────────────────────────────────────────"; \
+			cp config/developerConfig.example.php config/developerConfig.php || { \
+				echo ""; \
+				echo "❌ Erro ao copiar arquivo de configuração!"; \
+				echo "💡 Verifique as permissões do diretório config/"; \
+				echo ""; \
+				exit 1; \
+			}; \
+			echo ""; \
+			echo "✅ Arquivo config/developerConfig.php criado com sucesso!"; \
+		else \
+			echo "❌ Arquivo config/developerConfig.example.php não encontrado!"; \
+			echo "💡 Certifique-se de que o arquivo de exemplo existe."; \
+			echo ""; \
+			exit 1; \
+		fi; \
+	fi; \
+	echo ""; \
+	echo "════════════════════════════════════════════════════════════════"; \
+	echo "📦 ETAPA 2: COMPOSER UPDATE"; \
 	echo "════════════════════════════════════════════════════════════════"; \
 	echo ""; \
 	echo "🐳 Containers Docker disponíveis:"; \
@@ -349,7 +400,7 @@ start:
 	echo "✅ Composer update concluído!"; \
 	echo ""; \
 	echo "════════════════════════════════════════════════════════════════"; \
-	echo "💾 ETAPA 2: BACKUP DO BANCO DE DADOS"; \
+	echo "💾 ETAPA 3: BACKUP DO BANCO DE DADOS"; \
 	echo "════════════════════════════════════════════════════════════════"; \
 	echo ""; \
 	echo "🔄 Executando backup/import do banco..."; \
@@ -364,7 +415,7 @@ start:
 	echo "✅ Backup concluído!"; \
 	echo ""; \
 	echo "════════════════════════════════════════════════════════════════"; \
-	echo "⬇️  ETAPA 3: DOWNLOAD DE UPLOADS"; \
+	echo "⬇️  ETAPA 4: DOWNLOAD DE UPLOADS"; \
 	echo "════════════════════════════════════════════════════════════════"; \
 	echo ""; \
 	echo "🔄 Baixando arquivos de uploads do servidor..."; \
@@ -389,11 +440,12 @@ start:
 	else \
 		echo "  ⏭️  Containers Docker não foram iniciados"; \
 	fi; \
+	echo "  ✅ Arquivo de configuração para desenvolvimento criado"; \
 	echo "  ✅ Dependências do Composer atualizadas"; \
 	echo "  ✅ Banco de dados importado"; \
 	echo "  ✅ Arquivos de upload baixados"; \
 	echo ""; \
-	echo "🌐 Acesse: $(URL)"; \
+	echo "🌐 Acesse: http://localhost"; \
 	echo ""; \
 	echo "════════════════════════════════════════════════════════════════"; \
 	echo ""
