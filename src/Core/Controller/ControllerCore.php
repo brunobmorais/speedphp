@@ -96,12 +96,13 @@ class ControllerCore
     }
 
     public function isModeDeveloper(){
-        if (strpos($_SERVER['SERVER_NAME'],"localhost")){
-            return true;
-        } else {
-            return false;
-        }
+        $serverName = $_SERVER['SERVER_NAME'] ?? '';
 
+        // Verifica se termina com .localhost ou é exatamente localhost
+        return $serverName === 'localhost'
+            || str_ends_with($serverName, '.localhost')
+            || $serverName === '127.0.0.1'
+            || $serverName === '::1';
     }
 
     public function getServicosFromModulo(){
