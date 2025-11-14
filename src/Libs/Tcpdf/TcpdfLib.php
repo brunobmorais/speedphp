@@ -34,12 +34,8 @@ class TcpdfLib
     {
     }
 
-    public function imageToPdf($array): void
+    public function imageToPdf($fileStringImg, $fileStringPdf): void
     {
-        if (!empty($array)) {
-            $this->array = $array;
-        }
-
         $pdf = new ImgToPdfPage(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false, $this->array);
 
         $pdf->SetCompression(true);
@@ -47,12 +43,10 @@ class TcpdfLib
 
         $pdf->setJPEGQuality(75);
 
-        $img_file = $this->array['arquivopdf'];
-
-        $pdf->Image($img_file, 0, 0, 210, 0, '', '', 'C', true, 300, 'C', false, false, 0, '', false, false);
+        $pdf->Image($fileStringImg, 0, 0, 210, 0, '', '', 'C', true, 300, 'C', false, false, 0, '', false, false);
 
         $pdf_string = $pdf->Output("protocolo.pdf", 'S');
-        file_put_contents($this->array['imgtopdf'], $pdf_string);
+        file_put_contents($fileStringPdf, $pdf_string);
     }
 
     public function assinarDocumento(AssinaturaModel $assinaturaModel, $tentativa = 1): bool

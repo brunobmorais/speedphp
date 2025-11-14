@@ -132,15 +132,16 @@ class FileLib{
      */
     function convertImgToPdf($file, $destino)
     {
-        $fileImage = $this->uploadImage($file, $destino, "default.png");
+        $fileImage = $this->uploadImage($file, $destino, $file["name"]);
         $caminhoImagem = $_SERVER['DOCUMENT_ROOT'] . $destino . $fileImage;
         $tcpdf = new TcpdfLib();
 
-        $imgtopdf = $this->generateFileName();
-        $tcpdf->imageToPdf($caminhoImagem, $imgtopdf);
+        $namePdf = $this->generateFileName();
+        $caminhoPdf= $_SERVER['DOCUMENT_ROOT'].$destino.$namePdf;
+        $tcpdf->imageToPdf($caminhoImagem, $caminhoPdf);
         $this->removeFile($caminhoImagem);
 
-        return $imgtopdf;
+        return $namePdf;
     }
 
     /**
@@ -181,6 +182,43 @@ class FileLib{
         }
 
         return $nome_imagem;
+    }
+
+    function uploadFromUrl($url, $destinoFoto, $fileDefault = "default.png")
+    {
+        // Se não houver nenhum erro
+        if (empty($url)) {
+            return $fileDefault; // Retorna imagem padrão se a URL estiver vazia
+        }
+
+        // Verifica se a URL é válida
+        if (!filter_var($url, FILTER_VALIDATE_URL)) {
+            return $fileDefault; // Retorna imagem padrão se a URL for inválida
+        }
+
+        // Baixa o conteúdo da imagem
+        $imageData = file_get_contents($url);
+        if ($imageData === false) {
+            return $fileDefault; // Falha ao baixar a imagem
+        }
+
+        // Verifica se é uma imagem válida usando os dados baixados
+        $imageInfo = getimagesizefromstring($imageData);
+        if ($imageInfo !== false) {
+            $extension = image_type_to_extension($imageInfo[2], false);
+            $fileName = md5(uniqid(time())) . '.' . $extension;
+
+            // Caminho de onde ficará a imagem (corrigido)
+            $toImage = $destinoFoto . $fileName;
+            $uploadPath = $_SERVER['DOCUMENT_ROOT'] . $toImage;
+
+            // Salva a imagem
+            if (file_put_contents($uploadPath, $imageData)) {
+                return $fileName;
+            }
+        }
+
+        return $fileDefault; // Retorna uma imagem padrão se algo falhar
     }
 
     /**
