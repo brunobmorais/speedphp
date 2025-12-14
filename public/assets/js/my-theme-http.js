@@ -1,13 +1,21 @@
 async function requisicaoHttp(url, metodo = 'GET', body = null, headers = {'Content-Type': 'application/json'}, debug = false) {
 
     try {
+        // Detecta se é uma URL externa
+        let isExternalUrl = ! url.startsWith(window.location.origin) && !url.startsWith('/');
 
-        let resp = await fetch(url, {
-            method: metodo,
-            credentials: 'include',
+        let fetchOptions = {
+            method:  metodo,
             body: body,
             headers: headers
-        }).catch(error =>{
+        };
+
+        // Só inclui credentials para URLs do mesmo domínio
+        if (!isExternalUrl) {
+            fetchOptions.credentials = 'include';
+        }
+
+        let resp = await fetch(url, fetchOptions).catch(error => {
             if (debug)
                 console.error('Aconteceu um erro:', error);
             return false;
