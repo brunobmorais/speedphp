@@ -34,7 +34,7 @@ services:
       - "3306:3306"
     environment:
       MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: viaesporte
+      MYSQL_DATABASE: speedphp
       MYSQL_USER: user
       MYSQL_PASSWORD: user
       TZ: America/Sao_Paulo
