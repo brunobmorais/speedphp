@@ -7,7 +7,7 @@
     -webkit-box-shadow: 0 0 40px rgb(0 0 0 / 5%);
     box-shadow: 0 0 40px rgb(0 0 0 / 5%);
     background-color: var(--mycolor-card);
-    border-radius: 15px;
+    border-radius: 18px;
     border: none;
     position: relative;
     margin-bottom: 20px;
@@ -16,8 +16,8 @@
 .card .card-header {
     min-height: 40px;
     padding: 1px 15px;
-    border-bottom-color: #f9f9f9;
-    line-height: 30px;
+    border-bottom-color: #f6f6f6;
+    line-height: 20px;
     -ms-flex-item-align: center;
     -ms-grid-row-align: center;
     align-self: center;
@@ -29,11 +29,11 @@
 }
 
 .card .card-header h4 {
-    font-size: 15px;
+    font-size: 12px;
     font-weight: 600;
     letter-spacing: 1px;
-    margin: 2px 0 -2px 0;
-    line-height: 30px;
+    margin: 5px 0 0 0;
+    line-height: 15px;
 }
 
 .card .card-body {
@@ -79,27 +79,40 @@
 
 /* CARD SERVICO */
 .servico-icone {
-    color: #6c757d;
+    color: rgba(0, 0, 0, 0.6);
     font-size: 3em;
     text-align: center;
+    transition: all 0.3s ease;
+}
+
+.dark-mode .servico-icone {
+    color: rgba(255, 255, 255, 0.7);
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
 }
 
 .servico-titulo {
     margin-left: 5px;
     font-size: .95em;
-    color: #151515;
+    color: rgb(50, 50, 50) !important;
     font-weight: 500;
+    letter-spacing: -0.01em;
+    /* Sombra sutil no texto */
+    text-shadow: 0 1px 2px rgba(255, 255, 255, 0.5);
+    transition: color 0.2s ease;
 }
 
 .dark-mode .servico-titulo {
-    color: #fff;
+    color: rgba(255, 255, 255, 0.95);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
 }
 
 .servico-descricao {
     font-weight: 300;
     margin-left: 5px;
     font-size: .75em;
-    color: #6b6b6b;
+    color: rgba(0, 0, 0, 0.65);
+    text-shadow: 0 0.5px 1px rgba(255, 255, 255, 0.4);
+    transition: color 0.2s ease;
 }
 
 .dark-mode .servico-descricao {
@@ -124,12 +137,80 @@
 
 .servico-card {
     background-color: var(--mycolor-card);
-    border-radius: 15px;
+    border-radius: 18px;
     /*border: 1px solid #dedede;*/
     position: relative;
     margin-bottom: 0;
     box-shadow: rgba(0, 0, 0, 0.12) 0px 6px 16px !important;
 
+}
+
+/* CARD SERVICO - Liquid Glass */
+.servico-card {
+    /* Remove background sólido */
+    background-color: transparent !important;
+
+    /* Glass effect com blur */
+    background: rgba(255, 255, 255, 0.7);
+    /*backdrop-filter: blur(20px) saturate(180%);*/
+    /*-webkit-backdrop-filter: blur(20px) saturate(180%);*/
+
+    /* Borda sutil com brilho */
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 18px;
+
+    position: relative;
+    margin-bottom: 0;
+
+    /* Sombra suave com glow */
+    box-shadow:
+            0 8px 32px rgba(0, 0, 0, 0.1),
+            0 0 0 1px rgba(255, 255, 255, 0.5) inset,
+            0 0 20px rgba(255, 255, 255, 0.1) !important;
+
+    /* Transição suave */
+    transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+/* Dark Mode */
+.dark-mode .servico-card {
+    background: rgba(30, 30, 30, 0.7);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+
+    border: 1px solid rgba(255, 255, 255, 0.15);
+
+    box-shadow:
+            0 8px 32px rgba(0, 0, 0, 0.4),
+            0 0 0 1px rgba(255, 255, 255, 0.1) inset,
+            0 0 20px rgba(0, 0, 0, 0.3) !important;
+}
+
+/* Brilho especular no topo (efeito de vidro) */
+.servico-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 50%;
+
+    background: linear-gradient(
+            180deg,
+            rgba(255, 255, 255, 0.4) 0%,
+            transparent 100%
+    );
+
+    border-radius: 18px 18px 0 0;
+    pointer-events: none;
+}
+
+.dark-mode .servico-card::before {
+    background: linear-gradient(
+            180deg,
+            rgba(255, 255, 255, 0.1) 0%,
+            transparent 100%
+    );
 }
 
 .card-radius {
@@ -188,5 +269,22 @@
 /* MOBILE */
 @media (max-width: 992px) {
 
+    .servico-icone {
+        font-size: 2.0em;
+    }
+
+    .servico-titulo {
+        font-size: 0.85em;
+    }
+
+    .servico-descricao {
+        font-size: 0.7em;
+    }
+
+    .servico-item {
+        height: auto;
+        min-height: 65px;
+        padding: 10px 0;
+    }
 }
 

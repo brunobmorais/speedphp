@@ -1,0 +1,94 @@
+/* ============================
+   TEMA PADRÃO (REFERÊNCIA)
+   ============================ */
+.theme-default {
+    --mycolor-primary: rgba(98, 25, 193, 1);
+    --mycolor-primary-hover: rgba(157, 71, 236, 1);
+    --mycolor-link: #914ead;
+    --mycolor-navbar: #9400d3;
+}
+
+/* ============================================================
+   NOVAS PALETAS GERADAS COM A MESMA RELAÇÃO DE CORES DO DEFAULT
+   ============================================================ */
+
+/* ============================
+   AZUL
+   ============================ */
+.theme-azul {
+    --mycolor-navbar: #004d9f;
+    --mycolor-link: #004794;
+    --mycolor-primary: #003059;
+    --mycolor-primary-hover: #32478c;
+}
+
+/* ============================
+   VERDE
+   ============================ */
+.theme-verde {
+    --mycolor-navbar: #007a52;
+    --mycolor-link: #00744d;
+    --mycolor-primary: #003a15;
+    --mycolor-primary-hover: #496d66;
+}
+
+/* ============================
+   VERMELHO
+   ============================ */
+.theme-vermelho {
+    --mycolor-navbar: #C41038;
+    --mycolor-link: #a00011;
+    --mycolor-primary: #C41038;
+    --mycolor-primary-hover: #d63535;
+}
+
+
+/* ============================
+   PRETO / CINZA ESCURO
+   ============================ */
+.theme-preto {
+    --mycolor-navbar: #333;
+    --mycolor-link: #1f1c18;
+    --mycolor-primary: #222;
+    --mycolor-primary-hover: #444;
+}
+
+/* ============================
+   AMARELO
+   ============================ */
+.theme-amarelo {
+    --mycolor-navbar: #FBB100;
+    --mycolor-link: #FBB100;
+    --mycolor-primary: #ff7601;
+    --mycolor-primary-hover: #ffb300;
+}
+
+/* ============================
+   ROSA
+   ============================ */
+.theme-rosa {
+    --mycolor-navbar: #d60091;
+    --mycolor-link: #d30083;
+    --mycolor-primary: #9f00a7;
+    --mycolor-primary-hover: #ff3968;
+}
+
+/* ============================
+   LARANJA
+   ============================ */
+.theme-laranja {
+    --mycolor-navbar: #E85000;     /* base */
+    --mycolor-link: #d84c02;       /* levemente mais fechado */
+    --mycolor-primary: #b84203;    /* bem mais escuro */
+    --mycolor-primary-hover: #f67f41; /* mais claro e vibrante */
+}
+
+/* ============================
+   ROXO
+   ============================ */
+.theme-roxo {
+    --mycolor-navbar: #391172;     /* base */
+    --mycolor-link: #321064;       /* ligeiramente mais fechado */
+    --mycolor-primary: #240a49;    /* bem escuro */
+    --mycolor-primary-hover: #5a2aa0; /* roxo mais vivo */
+}

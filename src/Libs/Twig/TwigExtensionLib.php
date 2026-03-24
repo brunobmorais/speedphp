@@ -2,8 +2,9 @@
 
 namespace App\Libs\Twig;
 
+use App\Libs\FuncoesLib;
+use App\Libs\Whatsapp\WhatsappFactory;
 use Twig\TwigFilter;
-use Twig\TwigFunction;
 
 /**
  * BIBLIOTECA DE EXTENSÕES ADICIONAIS PARA O TWIG
@@ -67,23 +68,31 @@ class TwigExtensionLib extends \Twig\Extension\AbstractExtension implements \Twi
 
 
                     return $number;
-
+                }
+            ),
+            new TwigFilter(
+                'whatsapp',
+                function ($n) {
+                    return (new FuncoesLib)->formatarTelefoneWhatsapp($n);
                 }
             ),
             new TwigFilter(
                 'moeda',
                 fn($valor) => preg_replace(
-                    '/^\s+|\s+$/u', 
-                    '', 
+                    '/^\s+|\s+$/u',
+                    '',
                     str_replace(
-                        'R$', 
-                        '', 
+                        'R$',
+                        '',
                         (new \NumberFormatter('pt_BR', \NumberFormatter::CURRENCY))->formatCurrency($valor, 'BRL')
                     )
                 )
             ),
             new TwigFilter('object', function (array $value) {
                 return (object) $value;
+            }),
+            new TwigFilter('primeiroultimonome', function ($n) {
+                return (new FuncoesLib)->primeiroUltimoNome($n);
             }),
         ];
     }
@@ -108,8 +117,6 @@ class TwigExtensionLib extends \Twig\Extension\AbstractExtension implements \Twi
 
     public function getFunctions()
     {
-        return [
-
-        ];
+        return [];
     }
 }

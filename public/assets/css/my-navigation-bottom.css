@@ -13,6 +13,7 @@
 
 .navigation-menu-item{
     display: flex;
+    font-weight: 300;
     flex-direction: column;
     align-items: center;
     justify-content: center;
@@ -21,7 +22,7 @@
     overflow: hidden;
     white-space: nowrap;
     font-size: 13px;
-    color: #AAACB8;
+    color: #3f3e3e;
     text-decoration: none;
     line-height: 1.1;
     -webkit-tap-highlight-color: transparent;
@@ -33,12 +34,12 @@
 }
 
 .navigation-menu-item-active {
-    color: #000000;
+    color: var(--mycolor-link);
+    font-weight: 500;
 }
 
 .navigation-menu-text{
     font-size: 12px;
-    font-weight: 300;
 }
 
 .navigation-menu-item-icon {

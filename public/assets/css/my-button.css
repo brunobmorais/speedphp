@@ -1,3 +1,14 @@
+.btn-primary-theme {
+    border-radius: 18px;
+    background: var(--mycolor-navbar);
+    color: #fff;
+}
+
+.btn-primary-theme:hover {
+    background: var(--mycolor-primary-hover);
+    color: #fff;
+}
+
 .text-primary {
     color: var(--mycolor-link) !important;
 }
@@ -17,7 +28,7 @@
 }
 
 .btn-primary{
-    border-radius: 15px;
+    border-radius: 18px;
     background-color: var(--mycolor-primary);
     border-color: var(--mycolor-primary);
     box-shadow: 0 2px 6px #b9b9b9;
@@ -51,16 +62,16 @@
 }
 
 .btn-outline-secondary, .btn-outline-danger, .btn-outline-success, .btn-outline-warning, .btn-outline-info, .btn-outline-dark, .btn-outline-light    {
-    border-radius: 15px;
+    border-radius: 18px;
 }
 
 .btn-secondary, .btn-danger, .btn-success, .btn-warning, .btn-info, .btn-dark, .btn-light    {
-    border-radius: 15px;
+    border-radius: 18px;
 }
 
 /*BTN OUTLINE*/
 .btn-outline-primary, .btn-outline-primary.disabled {
-    border-radius: 15px;
+    border-radius: 18px;
     border-color: var(--mycolor-primary);
     color: var(--mycolor-primary);
 }
@@ -112,7 +123,7 @@ label.btn.btn-link {
     background-color: transparent;
     color: var(--mycolor-primary);
     line-height: 33px;
-    border-radius: 14px;
+    border-radius: 18px;
     border: 1px solid var(--mycolor-primary);
     font-size: 12px;
 }
@@ -129,7 +140,7 @@ label.btn.btn-link {
     height: 100%;
     width: 100%;
     position: absolute;
-    border-radius: 10px;
+    border-radius: 18px;
     font-weight: 600;
 
 }

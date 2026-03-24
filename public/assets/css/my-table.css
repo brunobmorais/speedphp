@@ -1,7 +1,15 @@
+.table-responsive {
+    border-radius: 18px
+}
+
+.page-item{
+    border-radius: 18px;
+}
+
 /* Estilos básicos da tabela */
 .active > .page-link, .page-link.active {
-    background-color: #fff;
-    border-color: var(--bs-secondary);
+    background-color: transparent;
+    border-color: var(--bs-pagination-border-color);
     color: var(--bs-secondary);
     font-weight: 500;
 }
@@ -29,206 +37,183 @@ table:not(.table-sm) thead th {
     --bs-table-striped-bg: rgba(var(--bs-emphasis-color-rgb), 0.02);
 }
 
-/* Estilos responsivos para mobile - transformação em cards */
 @media screen and (max-width: 768px) {
-    /* Aplica a tabelas com 4 ou mais colunas (geradas pela TableLib) */
-    table:has(tr td:nth-child(4)) {
+
+    .tableLib:has(tr td:nth-child(4)) {
         width: 100%;
         border: none;
     }
 
-    /* Oculta o cabeçalho da tabela */
-    table:has(tr td:nth-child(4)) thead {
+    .tableLib:has(tr td:nth-child(4)) thead {
         display: none;
     }
 
-    /* Remove bordas padrão da tabela */
-    table:has(tr td:nth-child(4)) tbody,
-    table:has(tr td:nth-child(4)) tr {
+    .tableLib:has(tr td:nth-child(4)) tbody,
+    .tableLib:has(tr td:nth-child(4)) tr {
         display: block;
         border: none;
     }
 
-    /* Transforma cada linha em um card */
-    table:has(tr td:nth-child(4)) tr {
+    /* Card base */
+    .tableLib:has(tr td:nth-child(4)) tr {
         background: #fff;
         border: 1px solid #e0e0e0;
-        border-radius: 8px;
-        margin-bottom: 15px;
-        padding: 15px;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        cursor: inherit; /* Mantém o cursor definido pela TableLib */
+        border-radius: 15px;
+        margin-bottom: 12px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.06);
+        overflow: hidden;
+        cursor: inherit;
     }
 
-    /* Remove a linha de espaçamento gerada pela TableLib */
-    table:has(tr td:nth-child(4)) tr td.espaco {
+    /* Remove linha de espaçamento */
+    .tableLib:has(tr td:nth-child(4)) tr td.espaco {
         display: none;
     }
 
-    /* Estiliza cada célula como um item do card */
-    table:has(tr td:nth-child(4)) td {
-        display: block;
+    /* Todas as células ocultas por padrão */
+    .tableLib:has(tr td:nth-child(4)) td {
+        display: none;
         border: none;
-        padding: 8px 0;
-        position: relative;
+        padding: 10px 15px;
         border-bottom: 1px solid #f0f0f0;
-        width: 100% !important; /* Override do style inline da TableLib */
-    }
-
-    /* Remove borda do último item */
-    table:has(tr td:nth-child(4)) td:last-child {
-        border-bottom: none;
-        padding-bottom: 0;
-    }
-
-    /* Estilo do label usando data-title (gerado pela TableLib) */
-    table:has(tr td:nth-child(4)) td::before {
-        content: attr(data-title);
-        font-weight: 600;
-        color: #666;
-        font-size: 0.85em;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-        display: block;
-        margin-bottom: 4px;
-    }
-
-    /* Oculta o label quando data-title está vazio */
-    table:has(tr td:nth-child(4)) td[data-title=""]::before {
-        display: none;
-    }
-
-    /* Estilo do conteúdo */
-    table:has(tr td:nth-child(4)) td {
+        width: 100% !important;
         font-size: 0.95em;
         line-height: 1.4;
     }
 
-    /* Tratamento especial para células com classe semtitle (primeira coluna/título) */
-    table:has(tr td:nth-child(4)) td.semtitle {
+    /* Só a primeira célula fica visível (linha de resumo) */
+    .tableLib:has(tr td:nth-child(4)) td:first-child {
+        display: flex !important;
+        flex-wrap: nowrap;
+        align-items: center !important;
+        justify-content: flex-start !important;
+        text-align: left !important;
+        padding: 14px 14px;
         font-weight: 600;
-        font-size: 1.1em;
+        font-size: 1em;
         color: #333;
-        margin-bottom: 8px;
-        text-align: center;
+        border-bottom: none;
+        cursor: pointer;
+        user-select: none;
+        gap: 0 6px;
+        background-color: #fff !important;
     }
 
-    table:has(tr td:nth-child(4)) td.semtitle::before {
-        color: #333;
-        font-weight: 700;
-        text-align: center;
-        width: 100%;
+    .tableLib>:not(caption)>*>* {
+        box-shadow: none
     }
 
-    /* Estilo para checkboxes (quando has_checkbox = true) */
-    table:has(tr td:nth-child(4)) td .form-check {
-        margin-top: 5px;
-    }
-
-    table:has(tr td:nth-child(4)) td .form-check-input {
-        margin-right: 8px;
-    }
-
-    /* Estilo para links e botões dentro das células */
-    table:has(tr td:nth-child(4)) td a {
-        width: 100%;
-        margin-top: 5px;
-    }
-
-    /* Estilo para badges (status, etc) */
-    table:has(tr td:nth-child(4)) td .badge {
-        display: inline-block;
-        margin-top: 2px;
-    }
-
-    /* Quebras de linha especiais (td-break da TableLib) */
-    table:has(tr td:nth-child(4)) td .td-break {
-        width: 100%;
-        text-align: left;
-        margin-top: 8px;
-        padding-top: 8px;
-        border-top: 1px solid #f0f0f0;
-    }
-
-    /* Ajustes para células com classe nocheck */
-    table:has(tr td:nth-child(4)) td.nocheck {
-        /* Mantém o estilo padrão */
-    }
-
-    /* Remove min-width da tabela responsiva */
-    .table-responsive table:has(tr td:nth-child(4)) {
+    /* Wrapper principal — agrupa ícones + texto numa linha só */
+    .tableLib:has(tr td:nth-child(4)) td:first-child .td-main {
+        flex: 1;
         min-width: 0;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 4px;
     }
 
-    /* Variação com destaque para cards zebrados (table-striped) */
-    .table-striped:has(tr td:nth-child(4)) tbody tr:nth-of-type(odd) {
-        background-color: #f8f9fa;
+    /* Chevron fixo à direita, alinhado ao topo */
+    .tableLib:has(tr td:nth-child(4)) td:first-child::after {
+        content: "\F0140";
+        font-family: "Material Design Icons";
+        font-size: 1.3em;
+        color: #999;
+        transition: transform 0.25s ease;
+        flex-shrink: 0;
+        align-self: flex-start;
+        padding-top: 2px;
     }
 
-    /* Ajustes específicos para tabelas pequenas (table-sm) */
-    .table-sm:has(tr td:nth-child(4)) tr {
-        padding: 12px;
-        margin-bottom: 12px;
+    /* Chevron rotacionado quando expandido */
+    .tableLib:has(tr td:nth-child(4)) tr.expanded td:first-child::after {
+        transform: rotate(180deg);
     }
 
-    .table-sm:has(tr td:nth-child(4)) td {
-        padding: 6px 0;
+    /* td-break da PRIMEIRA célula — sempre visível, abaixo do conteúdo */
+    .tableLib:has(tr td:nth-child(4)) td:first-child .td-break {
+        display: block !important;
+        width: 100%;
+        margin-top: 4px;
+        color: #888;
+        font-size: 0.82em;
+        font-weight: 400;
+        line-height: 1.3;
     }
 
-    .table-sm:has(tr td:nth-child(4)) td::before {
-        font-size: 0.8em;
+    /* Exibe as demais células quando expandido */
+    .tableLib:has(tr td:nth-child(4)) tr.expanded td {
+        display: block;
+    }
+
+    /* Mantém a primeira célula como flex mesmo expandida */
+    .tableLib:has(tr td:nth-child(4)) tr.expanded td:first-child {
+        display: flex !important;
+        border-bottom: 1px solid #f0f0f0;
+    }
+
+    /* Label data-title */
+    .tableLib:has(tr td:nth-child(4)) td::before {
+        content: attr(data-title);
+        font-weight: 600;
+        color: #888;
+        font-size: 0.78em;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        display: block;
         margin-bottom: 3px;
     }
 
-    /* Estilo específico para imagens (quando has_img = true) */
-    table:has(tr td:nth-child(4)) td img {
-        max-width: 100%;
-        height: auto;
-        border-radius: 4px;
-        margin-top: 5px;
-    }
-
-    /* Ajustes para ícones MDI */
-    table:has(tr td:nth-child(4)) td .mdi {
-        margin-right: 5px;
-    }
-
-    /* Estilo para células vazias ou com mensagem de "nenhuma informação" */
-    table:has(tr td:nth-child(4)) td.semtitle[colspan] {
-        text-align: center;
-        padding: 60px 20px;
-        border: none;
-        background-color: #f8f9fa;
-        border-radius: 15px;
-        color: #666;
-    }
-
-    table:has(tr td:nth-child(4)) td.semtitle[colspan]::before {
+    /* Primeira célula não tem label */
+    .tableLib:has(tr td:nth-child(4)) td:first-child::before {
         display: none;
     }
 
-    /* Oculta ícones grandes em mobile para mensagem de vazio */
-    table:has(tr td:nth-child(4)) td.semtitle .d-none.d-md-block {
+    /* Célula de ações — sem label */
+    .tableLib:has(tr td:nth-child(4)) td[data-title=""]::before {
+        display: none;
+    }
+
+    .tableLib:has(tr td:nth-child(4)) td:last-child {
+        border-bottom: none;
+        text-align: center;
+        padding: 12px 15px;
+    }
+
+    /* Dropdown ocupa largura total no mobile */
+    .tableLib:has(tr td:nth-child(4)) td .dropdown {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+    }
+
+    .tableLib:has(tr td:nth-child(4)) td .btn {
+        width: 100%;
+    }
+
+    /* Mensagem de vazio */
+    .tableLib:has(tr td:nth-child(4)) td.semtitle[colspan] {
+        display: block;
+        text-align: center;
+        padding: 60px 20px;
+        border: none;
+    }
+
+    .tableLib:has(tr td:nth-child(4)) td.semtitle[colspan]::before {
+        display: none;
+    }
+
+    /* Remove linha de espaçamento */
+    .tableLib:has(tr td:nth-child(4)) tr td.espaco {
+        display: none;
+    }
+
+    /* Esconde o tr inteiro que contém o td.espaco */
+    .tableLib:has(tr td:nth-child(4)) tr:has(td.espaco) {
         display: none !important;
     }
-}
 
-/* Ajustes para telas muito pequenas (smartphones pequenos) */
-@media screen and (max-width: 480px) {
-    table:has(tr td:nth-child(4)) tr {
-        padding: 12px;
-        margin-bottom: 12px;
-    }
-
-    table:has(tr td:nth-child(4)) td {
-        padding: 6px 0;
-    }
-
-    table:has(tr td:nth-child(4)) td::before {
-        font-size: 0.8em;
-    }
-
-    table:has(tr td:nth-child(4)) td.semtitle {
-        font-size: 1em;
+    .tableLib .table-responsive table:has(tr td:nth-child(4)) {
+        min-width: 0;
     }
 }

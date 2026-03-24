@@ -8,6 +8,7 @@ button {
     font-family: "Montserrat", sans-serif !important;
 
 }
+
 a {
     font-family: "Montserrat", sans-serif !important;
 }
@@ -16,15 +17,26 @@ a {
 /*FOOTER NO FINAL DA TELA*/
 body {
     background: var(--mycolor-bg);
-    height:100vh;
-    margin:0;
+    height: 100vh;
+    margin: 0;
     font-size: 14px;
 }
-footer{ min-height:50px;}
-body{display:flex; flex-direction:column;}
-footer{margin-top:auto; !important;}
 
-.main{
+footer {
+    min-height: 50px;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+}
+
+footer {
+    margin-top: auto;
+!important;
+}
+
+.main {
     margin-top: 97px
 }
 
@@ -41,7 +53,24 @@ footer{margin-top:auto; !important;}
     color: #FFF !important;
 }
 
-.view-navbar{
+.view-navbar {
     margin-top: 70px;
     margin-bottom: 9px;
+}
+
+.bgGradienteInstagram {
+    background: #833ab4;
+    background: linear-gradient(
+            to right,
+            #833ab4, #fd1d1d, #fcb045
+    );
+}
+
+.color-facebook {
+    color: #3b5998 !important;
+}
+
+.ql-editor strong, 
+.ql-editor b {
+    display: inline !important;
 }

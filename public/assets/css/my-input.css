@@ -22,7 +22,7 @@
 
 .form-control{
     /**height: 55px !important;**/
-    border-radius: 8px;
+    border-radius: 18px;
     display: block;
 }
 
@@ -42,6 +42,10 @@
 
 .form-group {
     margin-bottom: 12px;
+}
+
+input[type="file"]::file-selector-button {
+    border-radius: 18px;      /* 👈 aqui */
 }
 
 .input-group-text, select.form-control:not([size]):not([multiple]), .form-control:not(.form-control-sm):not(.form-control-lg):not(textarea) {
@@ -101,7 +105,7 @@ textarea.form-control, .form-control:not(.form-control-sm):not(.form-control-lg)
 .field-wrapper input{
     border: 1px solid #dadce0;
     padding: 15px;
-    border-radius: 8px;
+    border-radius: 18px;
     width: 100%;
 }
 
@@ -156,7 +160,7 @@ textarea.form-control, .form-control:not(.form-control-sm):not(.form-control-lg)
 .field-wrapper select{
     border: 1px solid #dadce0;
     padding: 15px;
-    border-radius: 8px;
+    border-radius: 18px;
     width: 100%;
     color: transparent;
 }
@@ -334,7 +338,7 @@ input[type="color"]:focus,
 
 .select2-container--bootstrap-5 .select2-selection {
     font-size: 14px;
-    border-radius: 8px;
+    border-radius: 18px;
     border: 1px solid #dfe1e5;
     padding: 8px 10px;
     height: 42px;
@@ -345,7 +349,7 @@ input[type="color"]:focus,
 }
 
 .select2-container--bootstrap-5 .select2-dropdown .select2-search .select2-search__field {
-    border-radius: 8px;
+    border-radius: 18px;
     font-size: 14px;
 }
 .dark-mode .select2-container--bootstrap-5 .select2-dropdown .select2-search .select2-search__field {
@@ -389,13 +393,13 @@ input[type="color"]:focus,
 
 .select2-container--bootstrap-5 .select2-dropdown {
     border-color: #ced4da;
-    border-radius: 8px;
+    border-radius: 18px;
 }
 
 .select2-container--bootstrap-5 .select2-selection--multiple .select2-selection__rendered .select2-selection__choice {
     font-size: 11px;
     border: 1px solid #ced4da;
-    border-radius: 8px;
+    border-radius: 18px;
     padding: .25em .45em;
 }
 .dark-mode .select2-container--bootstrap-5 .select2-selection--multiple .select2-selection__rendered .select2-selection__choice {
