@@ -11,7 +11,7 @@ DOCKER := docker
 # Define help como target padrão (quando executar apenas 'make')
 .DEFAULT_GOAL := help
 
-.PHONY: help push createmodel createcontroller build backup download start docker update
+.PHONY: help push createmodel createcontroller build backup download start docker update up
 
 help:
 	@echo ""
@@ -21,8 +21,9 @@ help:
 	@echo ""
 	@echo "📋 TARGETS DISPONÍVEIS:"
 	@echo ""
+	@echo "  make up                       - Para todos os containers e sobe com --force-recreate"
 	@echo "  make docker                   - Gerencia containers Docker (start/stop/restart)"
-	@echo "  make start                    - Executa docker compose + composer + backup + download"
+	@echo "  make start                    - Menu interativo: Docker, config, composer, backup, uploads"
 	@echo "  make update                   - Executa composer update no container Docker"
 	@echo "  make push MSG=\"mensagem\"    - Commit + pull --rebase + push"
 	@echo "  make createmodel              - Cria model e dao baseado no nome da tabela"
@@ -189,12 +190,10 @@ update:
 	@echo "📦 COMPOSER UPDATE"
 	@echo "════════════════════════════════════════════════════════════════"
 	@echo ""
-	@echo "🐳 Containers Docker disponíveis:"
+	@echo "🐳 Serviços disponíveis no docker-compose:"
 	@echo "────────────────────────────────────────────────────────────────"
-	@$(DOCKER_COMPOSE) ps
+	@$(DOCKER_COMPOSE) ps --services
 	@echo "────────────────────────────────────────────────────────────────"
-	@echo ""
-	@echo "💡 Dica: Use o nome do SERVICE (Ex: php, app, web)"
 	@echo ""
 	@read -p "Digite o nome do serviço PHP: " service; \
 	if [ -z "$$service" ]; then \
@@ -205,10 +204,10 @@ update:
 	fi; \
 	echo ""; \
 	echo "🔍 Verificando se o serviço '$$service' existe..."; \
-	if ! $(DOCKER_COMPOSE) ps $$service | grep -q "$$service"; then \
+	if ! $(DOCKER_COMPOSE) ps --services | grep -q "^$$service$$"; then \
 		echo ""; \
 		echo "❌ Serviço '$$service' não encontrado!"; \
-		echo "💡 Use o nome da coluna SERVICE listado acima."; \
+		echo "💡 Use exatamente um dos nomes listados acima."; \
 		echo ""; \
 		exit 1; \
 	fi; \
@@ -241,214 +240,160 @@ update:
 	echo ""
 
 start:
-	@echo ""
-	@echo "════════════════════════════════════════════════════════════════"
-	@echo "⚙️  CONFIGURAÇÃO INICIAL DO PROJETO"
-	@echo "════════════════════════════════════════════════════════════════"
-	@echo ""
-	@echo "Este comando irá executar as seguintes ações:"
-	@echo ""
-	@echo "  0. 🐳  Iniciar containers Docker (opcional)"
-	@echo "  1. ⚙️  Copiar arquivo de configuração para desenvolvimento"
-	@echo "  2. 📦  Composer update (dentro do container Docker)"
-	@echo "  3. 💾  Backup/import do banco de dados"
-	@echo "  4. ⬇️  Download de arquivos de uploads"
-	@echo ""
-	@echo "════════════════════════════════════════════════════════════════"
-	@echo ""
-	@read -p "⚠️  Deseja continuar? (s/N): " confirm; \
-	if [ "$$confirm" != "s" ] && [ "$$confirm" != "S" ]; then \
+	@while true; do \
 		echo ""; \
-		echo "❌ Setup cancelado pelo usuário."; \
+		echo "════════════════════════════════════════════════════════════════"; \
+		echo "⚙️  SETUP DO PROJETO"; \
+		echo "════════════════════════════════════════════════════════════════"; \
 		echo ""; \
-		exit 0; \
-	fi; \
-	echo ""; \
-	echo "════════════════════════════════════════════════════════════════"; \
-	echo "🐳 ETAPA 0: DOCKER COMPOSE"; \
-	echo "════════════════════════════════════════════════════════════════"; \
-	echo ""; \
-	echo "Status atual dos containers:"; \
-	echo "────────────────────────────────────────────────────────────────"; \
-	$(DOCKER_COMPOSE) ps; \
-	echo "────────────────────────────────────────────────────────────────"; \
-	echo ""; \
-	read -p "🐳 Deseja iniciar os containers Docker? (s/N): " start_docker; \
-	if [ "$$start_docker" = "s" ] || [ "$$start_docker" = "S" ]; then \
+		echo "  1. 🐳  Docker — parar tudo e subir com --force-recreate"; \
+		echo "  2. ⚙️  Configuração — copiar developerConfig.php"; \
+		echo "  3. 📦  Composer update (dentro do container)"; \
+		echo "  4. 💾  Backup/import do banco de dados"; \
+		echo "  5. ⬇️  Download de uploads do servidor"; \
+		echo "  0. ❌  Sair"; \
 		echo ""; \
-		echo "▶️  Iniciando containers Docker..."; \
-		echo "────────────────────────────────────────────────────────────────"; \
-		$(DOCKER_COMPOSE) up -d || { \
+		read -p "Escolha uma opção: " opt; \
+		echo ""; \
+		case $$opt in \
+		1) \
+			echo "════════════════════════════════════════════════════════════════"; \
+			echo "🐳 DOCKER"; \
+			echo "════════════════════════════════════════════════════════════════"; \
 			echo ""; \
-			echo "❌ Erro ao iniciar containers!"; \
-			echo "💡 Verifique se o docker-compose.yml está correto."; \
+			echo "⏹️  Parando todos os containers em execução..."; \
+			if [ -n "$$(docker ps -q)" ]; then \
+				docker stop $$(docker ps -q) && echo "✅ Containers parados."; \
+			else \
+				echo "ℹ️  Nenhum container em execução."; \
+			fi; \
 			echo ""; \
-			exit 1; \
-		}; \
-		echo ""; \
-		echo "✅ Containers iniciados com sucesso!"; \
-		echo ""; \
-		echo "⏳ Aguardando containers ficarem prontos (5 segundos)..."; \
-		sleep 5; \
-		echo ""; \
-		echo "📊 Status dos containers:"; \
-		echo "────────────────────────────────────────────────────────────────"; \
-		$(DOCKER_COMPOSE) ps; \
-		echo "────────────────────────────────────────────────────────────────"; \
-	else \
-		echo ""; \
-		echo "⏭️  Pulando inicialização dos containers..."; \
-	fi; \
-	echo ""; \
-	echo "════════════════════════════════════════════════════════════════"; \
-	echo "⚙️  ETAPA 1: CONFIGURAÇÃO PARA DESENVOLVIMENTO"; \
-	echo "════════════════════════════════════════════════════════════════"; \
-	echo ""; \
-	if [ -f "config/developerConfig.php" ]; then \
-		echo "ℹ️  Arquivo config/developerConfig.php já existe."; \
-		echo ""; \
-		read -p "⚠️  Deseja sobrescrever com o arquivo de exemplo? (s/N): " overwrite; \
-		if [ "$$overwrite" = "s" ] || [ "$$overwrite" = "S" ]; then \
-			if [ -f "config/developerConfig.example.php" ]; then \
+			echo "▶️  Subindo containers (--force-recreate)..."; \
+			echo "────────────────────────────────────────────────────────────────"; \
+			$(DOCKER_COMPOSE) up -d --force-recreate && { \
 				echo ""; \
-				echo "📋 Criando backup do arquivo atual..."; \
-				cp config/developerConfig.php config/developerConfig.php.bak && \
-				echo "✅ Backup criado: config/developerConfig.php.bak"; \
+				echo "📊 Status dos containers:"; \
+				echo "────────────────────────────────────────────────────────────────"; \
+				$(DOCKER_COMPOSE) ps; \
 				echo ""; \
-				echo "📝 Copiando arquivo de exemplo..."; \
-				cp config/developerConfig.example.php config/developerConfig.php && \
-				echo "✅ Arquivo config/developerConfig.php criado com sucesso!"; \
+				echo "✅ Containers prontos!"; \
+			} || echo "❌ Erro ao subir containers!"; \
+			;; \
+		2) \
+			echo "════════════════════════════════════════════════════════════════"; \
+			echo "⚙️  CONFIGURAÇÃO DE DESENVOLVIMENTO"; \
+			echo "════════════════════════════════════════════════════════════════"; \
+			echo ""; \
+			if [ -f "config/developerConfig.php" ]; then \
+				echo "ℹ️  Arquivo config/developerConfig.php já existe."; \
+				echo ""; \
+				read -p "⚠️  Deseja sobrescrever com o arquivo de exemplo? (s/N): " overwrite; \
+				if [ "$$overwrite" = "s" ] || [ "$$overwrite" = "S" ]; then \
+					if [ -f "config/developerConfig.example.php" ]; then \
+						cp config/developerConfig.php config/developerConfig.php.bak && \
+						echo "📋 Backup criado: config/developerConfig.php.bak"; \
+						cp config/developerConfig.example.php config/developerConfig.php && \
+						echo "✅ Arquivo config/developerConfig.php criado!"; \
+					else \
+						echo "❌ config/developerConfig.example.php não encontrado!"; \
+					fi; \
+				else \
+					echo "⏭️  Mantendo arquivo existente."; \
+				fi; \
+			else \
+				if [ -f "config/developerConfig.example.php" ]; then \
+					cp config/developerConfig.example.php config/developerConfig.php && \
+					echo "✅ Arquivo config/developerConfig.php criado!"; \
+				else \
+					echo "❌ config/developerConfig.example.php não encontrado!"; \
+				fi; \
+			fi; \
+			;; \
+		3) \
+			echo "════════════════════════════════════════════════════════════════"; \
+			echo "📦 COMPOSER UPDATE"; \
+			echo "════════════════════════════════════════════════════════════════"; \
+			echo ""; \
+			echo "Serviços disponíveis:"; \
+			echo "────────────────────────────────────────────────────────────────"; \
+			$(DOCKER_COMPOSE) ps --services; \
+			echo "────────────────────────────────────────────────────────────────"; \
+			echo ""; \
+			read -p "Digite o nome do serviço PHP: " service; \
+			if [ -z "$$service" ]; then \
+				echo "❌ Nome do serviço não pode ser vazio!"; \
+			elif ! $(DOCKER_COMPOSE) ps --services | grep -q "^$$service$$"; then \
+				echo "❌ Serviço '$$service' não encontrado!"; \
 			else \
 				echo ""; \
-				echo "❌ Arquivo config/developerConfig.example.php não encontrado!"; \
-				echo "💡 Certifique-se de que o arquivo de exemplo existe."; \
-				echo ""; \
-				exit 1; \
+				echo "📦 Executando composer update em '$$service'..."; \
+				echo "────────────────────────────────────────────────────────────────"; \
+				$(DOCKER_COMPOSE) exec $$service composer update && \
+					echo "" && echo "✅ Composer update concluído!" || \
+					echo "❌ Erro ao executar composer update!"; \
 			fi; \
-		else \
+			;; \
+		4) \
+			echo "════════════════════════════════════════════════════════════════"; \
+			echo "💾 BACKUP DO BANCO DE DADOS"; \
+			echo "════════════════════════════════════════════════════════════════"; \
 			echo ""; \
-			echo "⏭️  Mantendo arquivo existente..."; \
-		fi; \
-	else \
-		if [ -f "config/developerConfig.example.php" ]; then \
-			echo "📝 Copiando arquivo de configuração para desenvolvimento..."; \
+			echo "🔄 Executando backup/import..."; \
 			echo "────────────────────────────────────────────────────────────────"; \
-			cp config/developerConfig.example.php config/developerConfig.php || { \
-				echo ""; \
-				echo "❌ Erro ao copiar arquivo de configuração!"; \
-				echo "💡 Verifique as permissões do diretório config/"; \
-				echo ""; \
-				exit 1; \
-			}; \
+			bash docker/import-database.sh && \
+				echo "" && echo "✅ Backup concluído!" || \
+				echo "❌ Erro ao executar backup!"; \
+			;; \
+		5) \
+			echo "════════════════════════════════════════════════════════════════"; \
+			echo "⬇️  DOWNLOAD DE UPLOADS"; \
+			echo "════════════════════════════════════════════════════════════════"; \
 			echo ""; \
-			echo "✅ Arquivo config/developerConfig.php criado com sucesso!"; \
-		else \
-			echo "❌ Arquivo config/developerConfig.example.php não encontrado!"; \
-			echo "💡 Certifique-se de que o arquivo de exemplo existe."; \
+			echo "🔄 Baixando arquivos do servidor..."; \
+			echo "────────────────────────────────────────────────────────────────"; \
+			bash docker/get-uploads.sh && \
+				echo "" && echo "✅ Download concluído!" || \
+				echo "❌ Erro ao executar download!"; \
+			;; \
+		0) \
+			echo "Saindo."; \
 			echo ""; \
-			exit 1; \
-		fi; \
-	fi; \
-	echo ""; \
-	echo "════════════════════════════════════════════════════════════════"; \
-	echo "📦 ETAPA 2: COMPOSER UPDATE"; \
-	echo "════════════════════════════════════════════════════════════════"; \
-	echo ""; \
-	echo "🐳 Containers Docker disponíveis:"; \
-	echo "────────────────────────────────────────────────────────────────"; \
-	$(DOCKER_COMPOSE) ps; \
-	echo "────────────────────────────────────────────────────────────────"; \
-	echo ""; \
-	echo "💡 Dica: Use o nome do SERVICE (Ex: php, app, web)"; \
-	echo ""; \
-	read -p "Digite o nome do serviço PHP: " service; \
-	if [ -z "$$service" ]; then \
-		echo ""; \
-		echo "❌ Nome do serviço não pode ser vazio!"; \
-		echo ""; \
-		exit 1; \
-	fi; \
-	echo ""; \
-	echo "🔍 Verificando se o serviço '$$service' existe..."; \
-	if ! $(DOCKER_COMPOSE) ps $$service | grep -q "$$service"; then \
-		echo ""; \
-		echo "❌ Serviço '$$service' não encontrado!"; \
-		echo "💡 Use o nome da coluna SERVICE listado acima."; \
-		echo ""; \
-		exit 1; \
-	fi; \
-	echo "✅ Serviço encontrado!"; \
-	echo ""; \
-	echo "📦 Atualizando dependências do Composer..."; \
-	echo "────────────────────────────────────────────────────────────────"; \
-	$(DOCKER_COMPOSE) exec $$service composer update || { \
-		echo ""; \
-		echo "❌ Erro ao executar composer update!"; \
-		echo "💡 Possíveis causas:"; \
-		echo "   1. O container não está rodando"; \
-		echo "   2. O Composer não está instalado no container"; \
-		echo "   3. Problemas de permissão"; \
-		echo ""; \
-		echo "🔧 Comandos para debug:"; \
-		echo "   docker-compose ps $$service"; \
-		echo "   docker-compose exec $$service composer --version"; \
-		echo "   docker-compose exec $$service php -v"; \
-		echo ""; \
-		exit 1; \
-	}; \
-	echo ""; \
-	echo "✅ Composer update concluído!"; \
-	echo ""; \
-	echo "════════════════════════════════════════════════════════════════"; \
-	echo "💾 ETAPA 3: BACKUP DO BANCO DE DADOS"; \
-	echo "════════════════════════════════════════════════════════════════"; \
-	echo ""; \
-	echo "🔄 Executando backup/import do banco..."; \
-	echo "────────────────────────────────────────────────────────────────"; \
-	bash docker/import-database.sh || { \
-		echo ""; \
-		echo "❌ Erro ao executar backup!"; \
-		echo ""; \
-		exit 1; \
-	}; \
-	echo ""; \
-	echo "✅ Backup concluído!"; \
-	echo ""; \
-	echo "════════════════════════════════════════════════════════════════"; \
-	echo "⬇️  ETAPA 4: DOWNLOAD DE UPLOADS"; \
-	echo "════════════════════════════════════════════════════════════════"; \
-	echo ""; \
-	echo "🔄 Baixando arquivos de uploads do servidor..."; \
-	echo "────────────────────────────────────────────────────────────────"; \
-	bash docker/get-uploads.sh || { \
-		echo ""; \
-		echo "❌ Erro ao executar download!"; \
-		echo ""; \
-		exit 1; \
-	}; \
-	echo ""; \
-	echo "✅ Download concluído!"; \
-	echo ""; \
-	echo "════════════════════════════════════════════════════════════════"; \
-	echo "🎉 SETUP COMPLETO! PROJETO PRONTO PARA USO"; \
-	echo "════════════════════════════════════════════════════════════════"; \
-	echo ""; \
-	echo "📋 Resumo do que foi executado:"; \
-	echo ""; \
-	if [ "$$start_docker" = "s" ] || [ "$$start_docker" = "S" ]; then \
-		echo "  ✅ Containers Docker iniciados"; \
+			break; \
+			;; \
+		*) \
+			echo "❌ Opção inválida!"; \
+			;; \
+		esac; \
+	done
+
+up:
+	@echo ""
+	@echo "════════════════════════════════════════════════════════════════"
+	@echo "🐳 SUBINDO DOCKER"
+	@echo "════════════════════════════════════════════════════════════════"
+	@echo ""
+	@echo "⏹️  Parando todos os containers em execução..."
+	@if [ -n "$$(docker ps -q)" ]; then \
+		docker stop $$(docker ps -q) && echo "✅ Containers parados."; \
 	else \
-		echo "  ⏭️  Containers Docker não foram iniciados"; \
-	fi; \
-	echo "  ✅ Arquivo de configuração para desenvolvimento criado"; \
-	echo "  ✅ Dependências do Composer atualizadas"; \
-	echo "  ✅ Banco de dados importado"; \
-	echo "  ✅ Arquivos de upload baixados"; \
-	echo ""; \
-	echo "🌐 Acesse: http://localhost"; \
-	echo ""; \
-	echo "════════════════════════════════════════════════════════════════"; \
-	echo ""
+		echo "ℹ️  Nenhum container em execução."; \
+	fi
+	@echo ""
+	@echo "▶️  Subindo containers (--force-recreate)..."
+	@echo "────────────────────────────────────────────────────────────────"
+	@$(DOCKER_COMPOSE) up -d --force-recreate || { \
+		echo ""; \
+		echo "❌ Erro ao subir containers!"; \
+		echo ""; \
+		exit 1; \
+	}
+	@echo ""
+	@echo "📊 Status dos containers:"
+	@echo "────────────────────────────────────────────────────────────────"
+	@$(DOCKER_COMPOSE) ps
+	@echo ""
+	@echo "✅ Containers prontos!"
+	@echo ""
 
 push:
 	@echo "🚀 Executando push..."

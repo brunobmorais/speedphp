@@ -15,7 +15,6 @@ use App\Models\PessoajuridicaModel;
 use App\Models\PessoaModel;
 use App\Models\UsuarioModel;
 use BMorais\Database\Crud;
-use Error;
 use PDO;
 
 class PessoaDao extends Crud
@@ -75,90 +74,6 @@ class PessoaDao extends Crud
         return $this->fetchArrayObj($result) ?? null;
     }
 
-    public function buscarAtletasPedido($codPedido)
-    {
-        $sql = "SELECT 
-    PE.*,
-    I.*, 
-    I.SITUACAO AS SITUACAO_INSCRICAO,
-    M.*,
-    PE.NOME AS NOMEATLETA,
-    M.NOME AS NOMEMODALIDADE,
-    GROUP_CONCAT(
-        DISTINCT CONCAT(K.NOME, ' - ', KI.NOME, ' - ', KIM.NOME)
-        ORDER BY K.NOME, KI.NOME, KIM.NOME ASC 
-        SEPARATOR ' | '
-    ) AS DESCRICAO_KITS,
-    IPE.CODINSCRICAO_PESSOA,
-    IPE.APELIDO,
-    IPE.UUID AS UUID_INSCRICAO_PESSOA,
-    C.NOME AS NOMECATEGORIA,
-    P.CODPAGAMENTO,
-    C.NOME AS NOMECATEGORIA
-FROM 
-    PAGAMENTO AS P
-    INNER JOIN INSCRICAO_PAGAMENTO AS IP ON IP.CODPAGAMENTO = P.CODPAGAMENTO
-    INNER JOIN INSCRICAO AS I ON I.CODINSCRICAO = IP.CODINSCRICAO
-    INNER JOIN INSCRICAO_PESSOA AS IPE ON I.CODINSCRICAO = IPE.CODINSCRICAO
-    INNER JOIN PESSOA AS PE ON PE.CODPESSOA = IPE.CODPESSOA_INSCRICAO
-    INNER JOIN MODALIDADE AS M ON M.CODMODALIDADE = I.CODMODALIDADE
-    INNER JOIN CATEGORIA C ON C.CODCATEGORIA = I.CODCATEGORIA
-    LEFT JOIN INSCRICAO_KIT_ITEM_MODELO AS IKIM ON IPE.CODINSCRICAO = IKIM.CODINSCRICAO_PESSOA
-    LEFT JOIN KIT_ITEM_MODELO AS KIM ON IKIM.CODKIT_ITEM_MODELO = KIM.CODKIT_ITEM_MODELO
-    LEFT JOIN KIT_ITEM AS KI ON KIM.CODKIT_ITEM = KI.CODKIT_ITEM
-    LEFT JOIN KIT AS K ON KI.CODKIT = K.CODKIT
-    INNER JOIN EVENTO AS E ON E.CODEVENTO = M.CODEVENTO
-WHERE 
-    P.CODPAGAMENTO = ? AND P.EXCLUIDO=0
-GROUP BY 
-    PE.CODPESSOA, I.CODINSCRICAO, M.CODMODALIDADE
-ORDER BY 
-    PE.NOME";
-        $this->executeSQL($sql, [$codPedido]);
-        return $this->fetchArrayObj();
-    }
-
-    public function buscarInscricaoPessoa($codInscricaoPessoa)
-    {
-        $sql = "SELECT 
-    PE.*,
-    I.*, 
-    I.SITUACAO AS SITUACAO_INSCRICAO,
-    M.*,
-    PE.NOME AS NOMEATLETA,
-    M.NOME AS NOMEMODALIDADE,
-    IPE.CODINSCRICAO_PESSOA,
-    IPE.APELIDO,
-    IPE.UUID AS UUID_INSCRICAO_PESSOA,
-    I.UUID AS UUID_INSCRICAO,
-    P.UUID AS UUID_PAGAMENTO,
-    E.IMAGEM_BANNER_MOBILE,
-    E.IMAGEM_BANNER,
-    E.URL,
-    E.NOME AS NOMEEVENTO,
-    E.DATA_EVENTO,
-    C.NOME AS NOMECIDADE,
-    C.UF
-FROM 
-    PAGAMENTO AS P
-    INNER JOIN INSCRICAO_PAGAMENTO AS IP ON IP.CODPAGAMENTO = P.CODPAGAMENTO
-    INNER JOIN INSCRICAO AS I ON I.CODINSCRICAO = IP.CODINSCRICAO
-    INNER JOIN INSCRICAO_PESSOA AS IPE ON I.CODINSCRICAO = IPE.CODINSCRICAO
-    INNER JOIN PESSOA AS PE ON PE.CODPESSOA = IPE.CODPESSOA_INSCRICAO
-    INNER JOIN MODALIDADE AS M ON M.CODMODALIDADE = I.CODMODALIDADE
-    INNER JOIN EVENTO AS E ON E.CODEVENTO = M.CODEVENTO
-    INNER JOIN ENDERECO EN ON E.CODENDERECO_EVENTO = EN.CODENDERECO
-    INNER JOIN CIDADE C ON EN.CODCIDADE = C.CODCIDADE
-WHERE 
-    IPE.UUID = ? AND P.EXCLUIDO=0
-GROUP BY 
-    PE.CODPESSOA, I.CODINSCRICAO, M.CODMODALIDADE
-ORDER BY 
-    PE.NOME";
-        $this->executeSQL($sql, [$codInscricaoPessoa]);
-        return $this->fetchArrayObj()[0] ?? [];
-    }
-
     public function buscarPessoaCodpessoa($cpfcnpj)
     {
 
@@ -177,8 +92,8 @@ ORDER BY
             } else {
                 return null;
             }
-        } catch (\Error $e) {
-            throw new \Error($e->getMessage());
+        } catch (\Throwable $e) {
+            throw $e;
         }
     }
 
@@ -187,7 +102,7 @@ ORDER BY
 
         try {
             $sql = "SELECT P.CODPESSOA, P.CODENDERECO, P.IMAGEM, P.TIPOPESSOA, P.NOME, P.TELEFONE, P.EMAIL,
-                        TIMESTAMPDIFF(YEAR, PF.DATANASCIMENTO, CURDATE()) AS IDADE, 
+                        TIMESTAMPDIFF(YEAR, PF.DATANASCIMENTO, CURDATE()) AS IDADE,
                         PF.CODPESSOA_FISICA, PF.DATANASCIMENTO, PF.CPF, PF.SEXO
                     FROM PESSOA AS P
                     INNER JOIN PESSOA_FISICA PF ON PF.CODPESSOA=P.CODPESSOA
@@ -199,8 +114,8 @@ ORDER BY
             } else {
                 return null;
             }
-        } catch (\Error $e) {
-            throw new \Error($e->getMessage());
+        } catch (\Throwable $e) {
+            throw $e;
         }
     }
 
@@ -209,7 +124,7 @@ ORDER BY
         try {
             $sql = "SELECT P.CODPESSOA, P.NOME, PF.CPF, P.EMAIL, P.EXCLUIDO, U.CODUSUARIO,
                     TIMESTAMPDIFF(YEAR, PF.DATANASCIMENTO, CURDATE()) AS IDADE
-                    FROM PESSOA AS P 
+                    FROM PESSOA AS P
                     INNER JOIN PESSOA_FISICA AS PF ON PF.CODPESSOA=P.CODPESSOA
                     INNER JOIN SI_USUARIO AS U on P.CODPESSOA=U.CODPESSOA
                     WHERE U.CODUSUARIO=? AND U.EXCLUIDO='0' AND P.EXCLUIDO=0";
@@ -220,8 +135,8 @@ ORDER BY
             } else {
                 return null;
             }
-        } catch (\Error $e) {
-            throw new \Error($e->getMessage());
+        } catch (\Throwable $e) {
+            throw $e;
         }
     }
 
@@ -238,8 +153,8 @@ ORDER BY
             } else {
                 return null;
             }
-        } catch (\Error $e) {
-            throw new \Error($e->getMessage());
+        } catch (\Throwable $e) {
+            throw $e;
         }
     }
 
@@ -247,12 +162,10 @@ ORDER BY
     {
 
 
-        $sql = "UPDATE SI_USUARIO SET senha='" . $usuarioModel->getSENHA() . "' WHERE CODUSUARIO='" . $usuarioModel->getCODUSUARIO() . "'";;
-        if ($this->executeSQL($sql)) {
-            return true;
-        } else {
-            return false;
-        }
+        return (bool) $this->executeSQL(
+            "UPDATE SI_USUARIO SET senha=? WHERE CODUSUARIO=?",
+            [$usuarioModel->getSENHA(), $usuarioModel->getCODUSUARIO()]
+        );
     }
 
     public function buscarPessoa($codpessoa)
@@ -267,32 +180,10 @@ ORDER BY
 
             $this->executeSQL($sql, [$codpessoa]);
             return $this->fetchArrayObj();
-        } catch (Error $e) {
-            return $e;
+        } catch (\Throwable $e) {
+            return null;
         }
     }
-
-    public function buscarPessoaInscricao($uuid, $codpessoa)
-    {
-        try {
-            $sql = "SELECT P.CODPESSOA, P.CODENDERECO, P.IMAGEM, P.TIPOPESSOA, P.NOME, P.TELEFONE, P.EMAIL, P.CRIADO_EM, P.ALTERADO_EM,
-                    COALESCE(PF.CPF, PJ.CNPJ) AS CPFCNPJ,
-                    U.CODUSUARIO
-                    FROM PESSOA AS P
-                    INNER JOIN INSCRICAO_PESSOA AS IP ON IP.CODPESSOA_INSCRICAO=P.CODPESSOA
-                    INNER JOIN INSCRICAO AS I ON I.CODINSCRICAO=IP.CODINSCRICAO AND I.UUID=?
-                    LEFT JOIN PESSOA_JURIDICA AS PJ on PJ.CODPESSOA=P.CODPESSOA
-                    LEFT JOIN PESSOA_FISICA PF ON PF.CODPESSOA=P.CODPESSOA
-                    LEFT JOIN SI_USUARIO AS U ON U.CODPESSOA=P.CODPESSOA
-                    WHERE P.EXCLUIDO='0' AND P.CODPESSOA=?";
-
-            $this->executeSQL($sql, [$uuid, $codpessoa]);
-            return $this->fetchArrayObj();
-        } catch (Error $e) {
-            return $e;
-        }
-    }
-
 
     public function inserirPessoaFisica(EnderecoModel $endereco, PessoaModel $pessoa, PessoaFisicaModel $pessoaFisica)
     {
@@ -375,6 +266,20 @@ ORDER BY
                         "codpessoa" => null
                     ];
                 }
+
+                // ATUALIZAR PESSOA FISICA
+                $result = $this->executeSQL(
+                    'UPDATE PESSOA_FISICA SET DATANASCIMENTO=?, SEXO=? WHERE CODPESSOA=?',
+                    [$pessoaFisica->getDATANASCIMENTO(), $pessoaFisica->getSEXO(), $codpessoa]
+                );
+                if (!$result) {
+                    $this->rollBackTransaction();
+                    return [
+                        "error" => true,
+                        "message" => "Erro ao atualizar pessoa física!",
+                        "codpessoa" => null
+                    ];
+                }
             }
 
             $this->commitTransaction();
@@ -383,9 +288,13 @@ ORDER BY
                 "message" => "Cadastrado com sucesso",
                 "codpessoa" => $codpessoa
             ];
-        } catch (\Error $th) {
+        } catch (\Throwable $th) {
             $this->rollBackTransaction();
-            return $th;
+            return [
+                "error" => true,
+                "message" => $th->getMessage(),
+                "codpessoa" => null
+            ];
         }
     }
 
@@ -396,7 +305,6 @@ ORDER BY
             $this->beginTransaction();
 
             $pessoa->setNOME((new FuncoesLib())->textoPrimeiraLetraMaiusculoCadaPalavra($pessoa->getNOME()));
-            $pessoa->setEMAIL((new FuncoesLib())->textoPrimeiraLetraMaiusculoCadaPalavra($pessoa->getEMAIL()));
 
 
             $resultPessoa = $this->executeSQL("UPDATE PESSOA  SET NOME = ?, TELEFONE = ?, EMAIL = ?, IMAGEM=? WHERE CODPESSOA = ? ", [$pessoa->getNOME(), $pessoa->getTELEFONE(), $pessoa->getEMAIL(), $pessoa->getIMAGEM() ?? "default.png", $pessoa->getCODPESSOA()]);
@@ -435,9 +343,13 @@ ORDER BY
                 "message" => "Atualizado com sucesso",
                 "codpessoa" => $pessoa->getCODPESSOA()
             ];
-        } catch (\Error $th) {
+        } catch (\Throwable $th) {
             $this->rollBackTransaction();
-            return $th;
+            return [
+                "error" => true,
+                "message" => $th->getMessage(),
+                "codpessoa" => null
+            ];
         }
     }
 
@@ -501,9 +413,13 @@ ORDER BY
                 "message" => "Cadastrado com sucesso",
                 "codpessoa" => $codpessoa
             ];
-        } catch (\Error $th) {
+        } catch (\Throwable $th) {
             $this->rollBackTransaction();
-            return $th;
+            return [
+                "error" => true,
+                "message" => $th->getMessage(),
+                "codpessoa" => null
+            ];
         }
     }
 
@@ -552,9 +468,13 @@ ORDER BY
                 "message" => "Atualizado com sucesso",
                 "codpessoa" => $pessoa->getCODPESSOA()
             ];
-        } catch (\Error $th) {
+        } catch (\Throwable $th) {
             $this->rollBackTransaction();
-            return $th;
+            return [
+                "error" => true,
+                "message" => $th->getMessage(),
+                "codpessoa" => $pessoa->getCODPESSOA()
+            ];
         }
     }
 
