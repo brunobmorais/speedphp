@@ -1,18 +1,22 @@
 <header class="view-navbar">
     <div class="container-fluid my-container pt-1">
-        <div class="px-0" style="letter-spacing: 0.8px !important;">
+        <div class="px-0">
             <div class="row m-0">
-                <div class="w-auto pe-0 align-middle" style="line-height: 0px;padding-top: 16px;margin-bottom: 10px;"><span class="mdi mdi-48px {{ TITLEIMAGE }}" style="color: grey"></span></div>
+                <div class="w-auto pe-0 d-flex align-items-center" style="line-height: 0px;padding-top: 16px;margin-bottom: 10px;">
+                    <span class="mdi mdi-48px {{ TITLEIMAGE }}" style="color: grey"></span></div>
                 <div class="col-9 p-0">
-                    <div class="ps-2 pb-2">
+                    <div class="ps-2">
+                        <p class="title-page">{{ TITLE }}</p>
+                    </div>
+                    {% if  SESSION.NOMEEVENTO and 'organizador' in SERVICO.URL %}
+                        <p class="pb-0 ps-2 mb-0 fw-semibold" style="font-size: 9px; color: #494949; padding-top: 2px">{{ SESSION.NOMEEVENTO }}</p>
+                    {% endif %}
+                    <div class="ps-2 pb-1" style="padding-top: 2px">
                         <nav aria-label="breadcrumb">
-                            <ul class="breadcrumb breadcrumb-custom">
+                            <ul class="breadcrumb breadcrumb-custom " style="letter-spacing: 0.8px !important;">
                                 {{ TITLEBREADCRUMB | raw}}
                             </ul>
                         </nav>
-                    </div>
-                    <div class="ps-2">
-                        <p class="title-page">{{ TITLE }}</p>
                     </div>
                 </div>
             </div>
