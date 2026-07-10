@@ -169,10 +169,10 @@ class EmailLib
             pclose(popen('start /B php "' . $scriptPath . '" "' . $serializedData . '" > NUL 2>&1', 'r'));
         } elseif (strtoupper(substr(PHP_OS, 0, 6)) === 'DARWIN') {
             // macOS - usar metodo alternativo para processos em background
-            exec('nohup php "' . $scriptPath . '" "' . $serializedData . '" > /dev/null 2>&1 &');
+            \exec('nohup php "' . $scriptPath . '" "' . $serializedData . '" > /dev/null 2>&1 &');
         } else {
             // Linux/Unix - usar nohup para executar em background
-            exec('nohup php "' . $scriptPath . '" "' . $serializedData . '" > /dev/null 2>&1 &');
+            \exec('nohup php "' . $scriptPath . '" "' . $serializedData . '" > /dev/null 2>&1 &');
         }
 
         return true;

@@ -28,7 +28,9 @@ class CookieLib
 
         // Melhoria 1: Verificação mais robusta para desenvolvimento local
         $isLocal = in_array($_SERVER['HTTP_HOST'], ['localhost', '127.0.0.1']) ||
-            strpos($_SERVER['HTTP_HOST'], 'localhost:') === 0;
+            strpos($_SERVER['HTTP_HOST'], 'localhost:') === 0 ||
+            strpos($_SERVER['HTTP_HOST'], '127.0.0.1:') === 0 ||
+            strpos($_SERVER['HTTP_HOST'], '212.85.2.233') === 0;;
 
         // Melhoria 2: Domain mais específico para produção
         $domain = $isLocal ? false : $_SERVER['HTTP_HOST'];

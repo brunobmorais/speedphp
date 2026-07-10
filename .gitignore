@@ -3,6 +3,22 @@
 # compiled output
 #/dist
 
+# IA`S
+/GEMINI.md
+/.claude
+/.github
+/CLAUDE.md
+/ARCHITECTURE.md
+/DEVELOPMENT.md
+/CODEX.md
+/TESTING.md
+/.planning/*
+/.kilo
+/plans
+/docs
+/.kilocode
+/.superpowers
+
 
 # profiling files
 chrome-profiler-events.json

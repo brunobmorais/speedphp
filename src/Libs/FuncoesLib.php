@@ -303,6 +303,23 @@ class FuncoesLib
      * @param $cpf
      * @return string
      */
+    public function validarCPF(string $cpf): bool
+    {
+        if (strlen($cpf) !== 11 || preg_match('/^(\d)\1{10}$/', $cpf)) {
+            return false;
+        }
+        for ($t = 9; $t < 11; $t++) {
+            $sum = 0;
+            for ($i = 0; $i < $t; $i++) {
+                $sum += (int)$cpf[$i] * ($t + 1 - $i);
+            }
+            $rem = ($sum * 10) % 11;
+            if ($rem >= 10) $rem = 0;
+            if ($rem !== (int)$cpf[$t]) return false;
+        }
+        return true;
+    }
+
     function formatCpfUsuario($cpf)
     {
         if (strlen($cpf) == 11) {
@@ -495,7 +512,7 @@ class FuncoesLib
      */
     function textoPrimeiraLetraMaiusculoCadaPalavra($str)
     {
-        $str = trim($str);
+        $str = trim($str ?? '');
         $texto = mb_convert_case($str, MB_CASE_TITLE, 'UTF-8');
         $texto = str_replace(array("De ", "Do ", "Dos ", "Da ", "Das ", "Com ", "E ", "É "), array("de ", "do ", "dos ", "da ", "das ", "com ", "e ", "é "), ucwords(strtolower($texto)));
         return $texto;
@@ -503,7 +520,7 @@ class FuncoesLib
 
     function textoPrimeiraLetraMaiusculo($str)
     {
-        $str = trim($str);
+        $str = trim($str ?? '');
         $nome = strtolower($str); // Converter o nome todo para minúsculo
         $saida = ucfirst($nome);
         return $saida;
@@ -740,36 +757,27 @@ class FuncoesLib
      */
     function formatCpfCnpjUsuario($campo, $formatado = true)
     {
-        //retira formato
-        $codigoLimpo = preg_replace("[' '-./ t]", '', $campo);
-        // pega o tamanho da string menos os digitos verificadores
-        $tamanho = (strlen($codigoLimpo) - 2);
-        //verifica se o tamanho do c?digo informado ? v?lido
-        if ($tamanho != 9 && $tamanho != 12) {
+        if (empty($campo)) {
+            return $campo;
+        }
+        $codigoLimpo = preg_replace('/[^A-Z0-9]/', '', strtoupper($campo));
+        $tamanho = strlen($codigoLimpo);
+
+        if ($tamanho !== 11 && $tamanho !== 14) {
             return false;
         }
 
         if ($formatado) {
-            // seleciona a m?scara para cpf ou cnpj
-            if ($tamanho == 9) {
-                $mascara = '###.###.###-##';
-            } else {
-                $mascara = '##.###.###/####-##';
-            }
-
-            //$mascara = ($tamanho == 9) ? '###.###.###-##' : '##.###.###/####-##';
+            $mascara = $tamanho === 11 ? '###.###.###-##' : '##.###.###/####-##';
 
             $indice = -1;
             for ($i = 0; $i < strlen($mascara); $i++) {
-                if ($mascara[$i] == '#') $mascara[$i] = $codigoLimpo[++$indice];
+                if ($mascara[$i] === '#') $mascara[$i] = $codigoLimpo[++$indice];
             }
-            //retorna o campo formatado
-            $retorno = $mascara;
-        } else {
-            //se n?o quer formatado, retorna o campo limpo
-            $retorno = $codigoLimpo;
+            return $mascara;
         }
-        return $retorno;
+
+        return $codigoLimpo;
     }
 
     /**
@@ -1017,9 +1025,30 @@ class FuncoesLib
 
     function ofuscaCampo($texto, $inicio, $final)
     {
+        if (empty($texto)) return $texto;
         $qtd = strlen($texto) - $inicio - $final;
         $asc = str_repeat('*', $qtd);
         return substr_replace($texto, $asc, $inicio, $qtd);
+    }
+
+    function ofuscaEmail($email)
+    {
+        if (empty($email) || !str_contains($email, '@')) return $email;
+
+        [$local, $dominio] = explode('@', $email, 2);
+
+        $len = strlen($local);
+
+        if ($len <= 2) {
+            $localOfuscado = $local; // muito curto, mostra tudo
+        } elseif ($len <= 5) {
+            $localOfuscado = substr($local, 0, 1) . str_repeat('*', $len - 1);
+        } else {
+            $visiveis = (int) ceil($len * 0.3);
+            $localOfuscado = substr($local, 0, $visiveis) . str_repeat('*', $len - $visiveis);
+        }
+
+        return $localOfuscado . '@' . $dominio;
     }
 
     /** Busca por um valor em uma matriz com base na coluna e retorna o index do array */

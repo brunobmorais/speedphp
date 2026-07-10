@@ -94,6 +94,17 @@ class TwigExtensionLib extends \Twig\Extension\AbstractExtension implements \Twi
             new TwigFilter('primeiroultimonome', function ($n) {
                 return (new FuncoesLib)->primeiroUltimoNome($n);
             }),
+            new TwigFilter('inscricoes_aprox', function (int $qtd): string {
+                if ($qtd < 100)    return '+' . $qtd;
+                if ($qtd < 500)    return '+100';
+                if ($qtd < 1000)   return '+500';
+                if ($qtd < 10000)  return '+' . floor($qtd / 1000) . ' mil';
+                if ($qtd < 20000)  return '+10 mil';
+                if ($qtd < 50000)  return '+20 mil';
+                if ($qtd < 100000) return '+50 mil';
+                if ($qtd < 500000) return '+100 mil';
+                return '+500 mil';
+            }),
         ];
     }
 
@@ -112,6 +123,10 @@ class TwigExtensionLib extends \Twig\Extension\AbstractExtension implements \Twi
             'CONFIG_PAYMENT' => CONFIG_PAYMENT ?? [],
             'CONFIG_HEADER' => CONFIG_HEADER ?? [],
             'CONFIG_VERSION_CODE' => CONFIG_VERSION_CODE,
+            'CONFIG_SOCIAL_LOGIN' => CONFIG_SOCIAL_LOGIN,
+            'CONFIG_SUPORTE' => CONFIG_SUPORTE,
+            'CONFIG_ADMIN' => CONFIG_ADMIN,
+            'CONFIG_PHONENUMBER_WHATSAPP' => WhatsappFactory::create(CONFIG_KEY_API['whatsapp_provider'])->getPhoneNumber()
         ];
     }
 

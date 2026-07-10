@@ -3,7 +3,7 @@
 # Configurações do servidor remoto
 REMOTE_HOST=""
 REMOTE_USER=""
-REMOTE_PATH="NOME_COMPLETO/public/assets/upload/"
+REMOTE_PATH="/home/deploy/viaesporte/app/public/assets/upload/" 
 LOCAL_PATH="public/assets/upload/"
 echo "Pasta local (realpath): $(realpath "$LOCAL_PATH")"
 

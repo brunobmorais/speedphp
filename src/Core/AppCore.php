@@ -265,6 +265,12 @@ class AppCore
 
     protected function handleError($error)
     {
+        if ($error instanceof \Throwable) {
+            \App\Libs\LogLib::error("AppCore: " . $error->getMessage(), $error);
+        } else {
+            \App\Libs\LogLib::error("AppCore: " . (string) $error);
+        }
+
         if (CONFIG_DISPLAY_ERROR_DETAILS) {
             throw new \ErrorException($error instanceof \Throwable ? $error->getMessage() : $error);
         } else {

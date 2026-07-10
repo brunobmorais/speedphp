@@ -13,7 +13,7 @@ use setasign\Fpdi\Tcpdf\Fpdi;
 // Description : Example 001 for TCPDF class
 //               Default Header and Footer
 //
-// Author: Nicola Asuni
+// Author:  Nicola Asuni
 //
 // (c) Copyright:
 //               Nicola Asuni
@@ -25,7 +25,7 @@ use setasign\Fpdi\Tcpdf\Fpdi;
 
 /**
  * Creates an example PDF TEST document using TCPDF
- * @package com.tecnick.tcpdf
+ * @package com.tecnick. tcpdf
  * @abstract TCPDF - Example: Default Header and Footer
  * @author Nicola Asuni
  * @since 2008-03-04
@@ -49,29 +49,73 @@ class AssinaturaPage extends Fpdi
         $this->Cell(0, 0, '', 0, false, 'C', 0, '', 0, false, 'M', 'M');
     }
 
-    // Page footer
-    public function Footer()
+    public function addBlockAssinatura(float $y = -1)
     {
-
-        // set style for barcode
-        // new style
-        $style = array(
-            'border' => false,
+        $style = [
+            'border'  => false,
             'padding' => 0,
-            'fgcolor' => array(0,0,0),
-            'bgcolor' => array(255,255,255)
+            'fgcolor' => [0, 0, 0],
+            'bgcolor' => [255, 255, 255],
+        ];
+
+        $this->SetRightMargin(15);
+        $this->SetLeftMargin(15);
+        $this->setCellPaddings(2, 2, 2, 2);
+        $this->SetFont('helvetica', '', 9);
+        $this->SetFillColor(255, 255, 255);
+
+        $quemAssina = !empty($this->model->getQuemAssina())
+            ? "por <b>" . $this->model->getQuemAssina() . "</b> "
+            : "";
+
+        $url   = $this->model->getUrlValidacao();
+        $token = $this->model->getToken();
+
+        $html = "Assinado eletronicamente {$quemAssina}em {$this->model->getDataAssinatura()},
+        com validade jurídica nos termos da Lei nº 14.063/2020.
+        Para confirmar a autenticidade deste documento, acesse:
+        <a href='{$url}?token={$token}'>{$url}</a>
+        e digite o código verificador <b>{$token}</b>.";
+
+        if ($y < 0) {
+            $y = $this->tMargin;
+        }
+
+        $x            = $this->lMargin;
+        $qrSize       = 18;
+        $alturaNecessaria = 30;
+
+        if ($y + $alturaNecessaria > ($this->getPageHeight() - $this->getBreakMargin())) {
+            $this->AddPage();
+            $y = $this->tMargin;
+        }
+
+        $this->write2DBarcode(
+            "{$url}?token={$token}",
+            'QRCODE,H',
+            $x,
+            $y,
+            $qrSize,
+            $qrSize,
+            $style,
+            'N'
         );
 
-        $this->SetRightMargin(3);
-        $this->SetLeftMargin(3);
-        $this->setCellPaddings(2, 2, 2, 2);
-        $this->SetFont('helvetica', 'I', 9);
-        $quemAssina = !empty($this->model->getQuemAssina())?"por <b>" . $this->model->getQuemAssina() . "</b> ":"";
-        $html = "Assinado eletronicamente {$quemAssina}em {$this->model->getDataAssinatura()}. Para confirmar a validade deste documento, acesse: <a href='{$this->model->getUrlValidacao()}?token={$this->model->getToken()}'>{$this->model->getUrlValidacao()}</a> e digite o codigo verificador <b>{$this->model->getToken()}</b>";
-        $this->write2DBarcode($this->model->getUrlValidacao()."?token=".$this->model->getToken(), 'QRCODE,H', 2, $this->getPageHeight()-19, 17, 17, $style, 'L');
-        $this->SetFillColor(255, 255, 255);
-        $this->MultiCell(0, 20, $html, 1, 'J', 1, 1, '22', '-19', true, 0, true, true, false, '0');
+        $this->SetXY($x + $qrSize + 3, $y);
 
+        $this->writeHTMLCell(
+            0,
+            0,
+            '',
+            '',
+            $html,
+            1,
+            1,
+            true,
+            true,
+            'J',
+            true
+        );
     }
 
 }

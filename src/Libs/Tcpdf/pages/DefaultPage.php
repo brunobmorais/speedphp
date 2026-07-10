@@ -39,18 +39,18 @@ class DefaultPage extends Fpdi
         $diretorioImg = $_SERVER['DOCUMENT_ROOT'] . DIRECTORY_SEPARATOR . "public". DIRECTORY_SEPARATOR ."assets" . DIRECTORY_SEPARATOR . "img" . DIRECTORY_SEPARATOR;
 
 
-        $this->Image($diretorioImg.'logo.png', 50, 3, 45, 20);
+        $this->Image($diretorioImg.'logo.png', 70, 3, 70, 15);
 
-        $this->SetFont('helvetica', 'B', 8);
+        /*$this->SetFont('helvetica', 'B', 8);
         $this->MultiCell(80, 20, CONFIG_SITE["nameFull"], 0, 'L', 0, '', 110, 5, 'M', 'M', true);
         $this->MultiCell(80, 20, CONFIG_SITE["email"], 0, 'L', 0, '', 110, 9, 'M', 'M', true);
         $this->MultiCell(80, 20, CONFIG_SITE["phone"], 0, 'L', 0, '', 110, 13, 'M', 'M', true);
 
         $this->SetFont('helvetica', '', 7);
-        $this->MultiCell(80, 30, CONFIG_SITE["andress"], 0, 'L', 0, '', 110, 17, 'M', 'M', true);
+        $this->MultiCell(80, 30, CONFIG_SITE["andress"], 0, 'L', 0, '', 110, 17, 'M', 'M', true);*/
 
-        $styleLinha = array('width' => 0.3, 'cap' => 'butt', 'join' => 'miter', 'dash' => 0, 'color' => array(0, 0, 0));
-        $this->Line(20, 28, 190, 28, $styleLinha);
+        //$styleLinha = array('width' => 0.3, 'cap' => 'butt', 'join' => 'miter', 'dash' => 0, 'color' => array(0, 0, 0));
+        //$this->Line(20, 28, 190, 28, $styleLinha);
 
 
 
@@ -59,6 +59,14 @@ class DefaultPage extends Fpdi
     // Page footer
     public function Footer()
     {
+
+/*        $this->SetTextColor(160, 160, 160);
+        $this->SetDrawColor(160, 160, 160);
+        $this->SetY(-15);
+        $this->SetFont('helvetica', 'I', 8);
+        $this->Cell(0, 10, 'Documento gerado eletronicamente pela plataforma '.CONFIG_SITE['name']." por ".$_SESSION["NOME"], 0, false, 'C', 0, '', 0, false, 'T', 'M');
+        $this->Ln(3);
+        $this->Cell(0, 10, 'Data de geração: ' . date('d/m/Y H:i'), 0, false, 'C', 0, '', 0, false, 'T', 'M');*/
 
         // Position at 15 mm from bottom
         //$this->SetY(-15);

@@ -19,38 +19,61 @@ class TwigLib
     private $viewFile = null;
     private $viewUrl = null;
     private $dirName = null;
+    // adiciona estas duas:
+    private static ?Environment $twigWithCache = null;
+    private static ?Environment $twigWithoutCache = null;
 
     public function __construct()
     {
         $this->dirName = dirname(__DIR__, 3);
     }
 
+    private function getTwig(bool $cache = false): Environment
+    {
+        if ($cache) {
+            if (self::$twigWithCache !== null) {
+                return self::$twigWithCache;
+            }
+            self::$twigWithCache = $this->buildEnvironment(true);
+            return self::$twigWithCache;
+        }
+
+        if (self::$twigWithoutCache !== null) {
+            return self::$twigWithoutCache;
+        }
+        self::$twigWithoutCache = $this->buildEnvironment(false);
+        return self::$twigWithoutCache;
+    }
+
+    private function buildEnvironment(bool $cache): Environment
+    {
+        $loader  = new FilesystemLoader($this->dirName . '/templates');
+        $options = ['debug' => CONFIG_DISPLAY_ERROR_DETAILS];
+
+        if ($cache) {
+            $options['cache']       = $this->dirName . '/cache';
+            $options['auto_reload'] = true;
+        }
+
+        $twig = new Environment($loader, $options);
+        $twig->addExtension(new LibsTwigExtension());
+        $twig->addExtension(new IncludeComponentExtension());
+        $twig->addExtension(new StringLoaderExtension());
+        $twig->addExtension(new DebugExtension());
+        $twig = TwigFunctionLib::getFunctions($twig);
+
+        Configuration::make($twig)
+            ->setTemplatesExtension('html.twig')
+            ->useCustomTags()
+            ->setup();
+
+        return $twig;
+    }
+
     public function renderPage(string $view, $data = [], $print = true, $cache = false)
     {
         try {
-            $loader = new FilesystemLoader($this->dirName . '/templates');
-            if ($cache) {
-                $twig = new Environment($loader, [
-                    'debug' => CONFIG_DISPLAY_ERROR_DETAILS,
-                    'cache' => $this->dirName . '/templates/cache'
-                ]);
-            } else {
-                $twig = new Environment($loader, [
-                    'debug' => CONFIG_DISPLAY_ERROR_DETAILS
-                ]);
-            }
-
-            $twig->addExtension(new LibsTwigExtension());
-            $twig->addExtension(new IncludeComponentExtension());
-            $twig->addExtension(new StringLoaderExtension());
-            $twig->addExtension(new DebugExtension());
-            $twig = TwigFunctionLib::getFunctions($twig);
-
-            //componentes
-            Configuration::make($twig)
-                ->setTemplatesExtension('html.twig')
-                ->useCustomTags()
-                ->setup();
+            $twig   = $this->getTwig($cache);
 
             $retorno = '';
 
@@ -151,256 +174,11 @@ class TwigLib
             } else {
                 return $retorno;
             }
-        } catch (\Error $e) {
+        } catch (\Throwable $e) {
             return $e;
         }
     }
 
-    public function renderPageChatgpt(string $view, $data = [], $print = true, $cache = false)
-    {
-        try {
-            $loader = new FilesystemLoader($this->dirName . '/templates');
-            if ($cache) {
-                $twig = new Environment($loader, [
-                    'debug' => CONFIG_DISPLAY_ERROR_DETAILS,
-                    'cache' => $this->dirName . '/templates/cache'
-                ]);
-            } else {
-                $twig = new Environment($loader, [
-                    'debug' => CONFIG_DISPLAY_ERROR_DETAILS
-                ]);
-            }
-
-            $twig->addExtension(new LibsTwigExtension());
-            $twig->addExtension(new IncludeComponentExtension());
-            $twig->addExtension(new StringLoaderExtension());
-            $twig->addExtension(new DebugExtension());
-            $twig = TwigFunctionLib::getFunctions($twig);
-
-            //componentes
-            Configuration::make($twig)
-                ->setTemplatesExtension('html.twig')
-                ->useCustomTags()
-                ->setup();
-
-            $retorno = '';
-
-            $varsDefault = [
-                "URL" => CONFIG_URL,
-            ];
-
-            $data = array_merge($varsDefault, $data);
-
-            $this->setView($view);
-
-            // Dividir a URL da view em segmentos
-            $pathSegments = explode('/', $this->viewUrl);
-            $lastSegment = end($pathSegments); // Último segmento (arquivo)
-
-            // ARQUIVOS CSS - Percorrer todos os níveis e carregar CSS
-            $currentPath = '';
-            $cssBasePath = '';
-
-            // Primeiro nível (equivalente ao MODULE)
-            if (!empty($pathSegments[0])) {
-                $currentPath = $pathSegments[0];
-                $cssBasePath = $currentPath;
-                if (file_exists($this->dirName . "/templates/{$currentPath}/{$pathSegments[0]}.css.twig")) {
-                    $retorno .= "<!--STYLE LEVEL 1: {$pathSegments[0]}-->\n";
-                    $retorno .= "<style>";
-                    $retorno .= $twig->render("{$currentPath}/{$pathSegments[0]}.css.twig", $data);
-                    $retorno .= "</style>";
-                }
-            }
-
-            // Níveis subsequentes
-            for ($i = 1; $i < count($pathSegments); $i++) {
-                $currentPath .= '/' . $pathSegments[$i];
-                $parentPath = $cssBasePath;
-
-                for ($j = 1; $j <= $i; $j++) {
-                    $parentPath .= '/' . $pathSegments[$j];
-                }
-
-                // Verificar se o arquivo CSS existe neste nível
-                $cssPath = "{$parentPath}.css.twig";
-                if (file_exists($this->dirName . "/templates/{$cssPath}")) {
-                    $retorno .= "<!--STYLE LEVEL " . ($i + 1) . ": {$pathSegments[$i]}-->\n";
-                    $retorno .= "<style>";
-                    $retorno .= $twig->render($cssPath, $data);
-                    $retorno .= "</style>";
-                }
-            }
-
-            // ARQUIVO TWIG - Apenas o último nível
-            $lastItemPath = $this->viewUrl;
-
-            if ($pathSegments[1] === "index") {
-                // Caso especial para index
-                if (file_exists($this->dirName . "/templates/{$pathSegments[0]}/{$pathSegments[0]}.html.twig")) {
-                    $retorno .= $twig->render("{$pathSegments[0]}/{$pathSegments[0]}.html.twig", $data);
-                } else {
-                    $retorno .= $twig->render("erro/erro.html.twig", $data);
-                }
-            } elseif (file_exists($this->dirName . "/templates/{$lastItemPath}.html.twig")) {
-                // Template com caminho completo
-                $retorno .= $twig->render("{$lastItemPath}.html.twig", $data);
-            } elseif (file_exists($this->dirName . "/templates/{$lastItemPath}/{$lastSegment}.html.twig")) {
-                // Template na pasta com nome do arquivo
-                $retorno .= $twig->render("{$lastItemPath}/{$lastSegment}.html.twig", $data);
-            } else {
-                // Fallback para página de erro
-                $retorno .= $twig->render("erro/erro.html.twig", $data);
-            }
-
-            // ARQUIVOS JS - Percorrer todos os níveis e carregar JS
-            $currentPath = '';
-            $jsBasePath = '';
-
-            // Primeiro nível (equivalente ao MODULE)
-            if (!empty($pathSegments[0])) {
-                $currentPath = $pathSegments[0];
-                $jsBasePath = $currentPath;
-                if (file_exists($this->dirName . "/templates/{$currentPath}/{$pathSegments[0]}.js.twig")) {
-                    $retorno .= "<!--SCRIPT LEVEL 1: {$pathSegments[0]}-->\n";
-                    $retorno .= "<script>";
-                    $retorno .= $twig->render("{$currentPath}/{$pathSegments[0]}.js.twig", $data);
-                    $retorno .= "</script>";
-                }
-            }
-
-            // Níveis subsequentes
-            for ($i = 1; $i < count($pathSegments); $i++) {
-                $currentPath .= '/' . $pathSegments[$i];
-                $parentPath = $jsBasePath;
-
-                for ($j = 1; $j <= $i; $j++) {
-                    $parentPath .= '/' . $pathSegments[$j];
-                }
-
-                // Verificar se o arquivo JS existe neste nível
-                $jsPath = "{$parentPath}.js.twig";
-                if (file_exists($this->dirName . "/templates/{$jsPath}")) {
-                    $retorno .= "<!--SCRIPT LEVEL " . ($i + 1) . ": {$pathSegments[$i]}-->\n";
-                    $retorno .= "<script>";
-                    $retorno .= $twig->render($jsPath, $data);
-                    $retorno .= "</script>";
-                }
-            }
-
-            if ($print) {
-                echo $retorno;
-            } else {
-                return $retorno;
-            }
-        } catch (\Error $e) {
-            return $e;
-        }
-    }
-
-    public function renderPageOriginal(string $view, $data = [], $print = true, $cache = false)
-    {
-        try {
-            $loader = new FilesystemLoader($this->dirName . '/templates');
-            if ($cache) {
-                $twig = new Environment($loader, [
-                    'debug' => CONFIG_DISPLAY_ERROR_DETAILS,
-                    'cache' => $this->dirName . '/templates/cache'
-                ]);
-            } else {
-                $twig = new Environment($loader, [
-                    'debug' => CONFIG_DISPLAY_ERROR_DETAILS
-                ]);
-            }
-
-            $twig->addExtension(new LibsTwigExtension());
-            $twig->addExtension(new IncludeComponentExtension());
-            $twig->addExtension(new StringLoaderExtension());
-            $twig->addExtension(new DebugExtension());
-            $twig = TwigFunctionLib::getFunctions($twig);
-
-            //componentes
-            Configuration::make($twig)
-                ->setTemplatesExtension('html.twig')
-                ->useCustomTags()
-                ->setup();
-
-            $retorno = '';
-
-            $varsDefault = [
-                "URL" => CONFIG_URL,
-            ];
-
-            $data = array_merge($varsDefault, $data);
-
-            $this->setView($view);
-
-            // ARQUIVO CSS
-            if (file_exists($this->dirName . "/templates/{$this->viewModule}/{$this->viewModule}.css.twig")) {
-                $retorno .= "<!--STYLE MODULE-->\n";
-                $retorno .= "<style>";
-                $retorno .= $twig->render("{$this->viewModule}/{$this->viewModule}.css.twig", $data);
-                $retorno .= "</style>";
-            }
-            if (file_exists($this->dirName . "/templates/{$this->viewModule}/{$this->viewService}/{$this->viewFile}.css.twig")) {
-                $retorno .= "<!--STYLE SERVICE-->\n";
-                $retorno .= "<style>";
-                $retorno .= $twig->render("{$this->viewModule}/{$this->viewService}/{$this->viewFile}.css.twig", $data);
-                $retorno .= "</style>";
-            }
-            if (file_exists($this->dirName . "/templates/{$this->viewModule}/{$this->viewService}/{$this->viewFolder}/{$this->viewFile}.css.twig")) {
-                $retorno .= "<!--STYLE FOLDER-->\n";
-                $retorno .= "<style>";
-                $retorno .= $twig->render("{$this->viewModule}/{$this->viewService}/{$this->viewFolder}/{$this->viewFile}.css.twig", $data);
-                $retorno .= "</style>";
-            }
-
-            // ARQUIVO TWIG
-            if ($this->viewService === "index") {
-                if (file_exists($this->dirName . "/templates/{$this->viewModule}/{$this->viewModule}.html.twig")) {
-                    $retorno .= $twig->render("{$this->viewModule}/{$this->viewModule}.html.twig", $data);
-                } else {
-                    $retorno .= $twig->render("erro/erro.html.twig", $data);
-                }
-            } elseif (file_exists($this->dirName . "/templates/{$this->viewUrl}/{$this->viewFile}.html.twig")) {
-                $retorno .= $twig->render("{$this->viewUrl}/{$this->viewFile}.html.twig", $data);
-            } elseif (file_exists($this->dirName . "/templates/{$this->viewUrl}.html.twig")) {
-                $retorno .= $twig->render($this->viewUrl . ".html.twig", $data);
-            } else {
-                $retorno .= $twig->render("erro/erro.html.twig", $data);
-            }
-
-            // ARQUIVO JS
-            if (file_exists($this->dirName . "/templates/{$this->viewModule}/{$this->viewModule}.js.twig")) {
-                $retorno .= "<!--SCRIPT MODULE-->\n";
-                $retorno .= "<script>";
-                $retorno .= $twig->render("{$this->viewModule}/{$this->viewModule}.js.twig", $data);
-                $retorno .= "</script>";
-
-            }
-            if (file_exists($this->dirName . "/templates/{$this->viewModule}/{$this->viewService}/{$this->viewFile}.js.twig")) {
-                $retorno .= "<!--SCRIPT SERVICE-->\n";
-                $retorno .= "<script>";
-                $retorno .= $twig->render("{$this->viewModule}/{$this->viewService}/{$this->viewFile}.js.twig", $data);
-                $retorno .= "</script>";
-            }
-            if (file_exists($this->dirName . "/templates/{$this->viewModule}/{$this->viewService}/{$this->viewFolder}/{$this->viewFile}.js.twig")) {
-                $retorno .= "<!--SCRIPT FOLDER -->\n";
-                $retorno .= "<script>";
-                $retorno .= $twig->render("{$this->viewModule}/{$this->viewService}/{$this->viewFolder}/{$this->viewFile}.js.twig", $data);
-                $retorno .= "</script>";
-            }
-
-
-            if ($print) {
-                echo $retorno;
-            } else {
-                return $retorno;
-            }
-        } catch (\Error $e) {
-            return $e;
-        }
-    }
 
     public function servicesJS($data = [], $print = false)
     {
@@ -429,51 +207,23 @@ class TwigLib
     public function renderComponent(string $view, $data = [], $print = true, $cache = false)
     {
         try {
-            $loader = new FilesystemLoader($this->dirName . '/templates');
-            if ($cache) {
-                $twig = new Environment($loader, [
-                    'debug' => CONFIG_DISPLAY_ERROR_DETAILS,
-                    'cache' => $this->dirName . '/templates/cache'
-                ]);
-            } else {
-                $twig = new Environment($loader, [
-                    'debug' => CONFIG_DISPLAY_ERROR_DETAILS
-                ]);
-            }
+            $twig = $this->getTwig($cache);
 
-            $twig->addExtension(new LibsTwigExtension());
-            $twig->addExtension(new IncludeComponentExtension());
-            $twig->addExtension(new StringLoaderExtension());
-            $twig = TwigFunctionLib::getFunctions($twig);
-
-            //componentes
-            Configuration::make($twig)
-                ->setTemplatesExtension('html.twig')
-                ->useCustomTags()
-                ->setup();
-
-            $retorno = '';
-
-            $varsDefault = [
-                "URL" => CONFIG_URL,
-            ];
-
-            $data = array_merge($varsDefault, $data);
+            $data = array_merge(['URL' => CONFIG_URL], $data);
 
             $this->setView($view);
 
-            $retorno .= $twig->render($view, $data);
+            $retorno = $twig->render($view, $data);
 
             if ($print) {
                 echo $retorno;
             } else {
                 return $retorno;
             }
-        } catch (\Error $e) {
+        } catch (\Throwable $e) {
             return $e;
         }
     }
-
 
     protected function setView($url)
     {

@@ -52,6 +52,7 @@ class TcpdfLib
     public function assinarDocumento(AssinaturaModel $assinaturaModel, $tentativa = 1): bool
     {
 
+        $assinaturaModel->setArquivopdf($_SERVER["DOCUMENT_ROOT"].$assinaturaModel->getArquivopdf());
         $pdf = new AssinaturaPage(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
         $pdf->SetCompression(false);
         $pdf->setJPEGQuality(100);
@@ -60,25 +61,24 @@ class TcpdfLib
 
         try {
             $pagecount = $pdf->setSourceFile($assinaturaModel->getArquivopdf());
+            $analyzer  = new PdfContentBoundsAnalyzer();
 
             for ($i = 1; $i <= $pagecount; $i++) {
                 $pageId = $pdf->importPage($i, PdfReader\PageBoundaries::BLEED_BOX);
                 $size = $pdf->getTemplatesize($pageId);
                 $orientation = $size['orientation'];
 
-                /*
-                $certificate = 'file://'.$_SERVER['DOCUMENT_ROOT']."src". DIRECTORY_SEPARATOR."Libs". DIRECTORY_SEPARATOR."Tcpdf". DIRECTORY_SEPARATOR."cert". DIRECTORY_SEPARATOR."domain3.crt";
-                $info = array(
-                    'Name' => $assinaturaModel->getQuemAssina(),
-                    'Location' => CONFIG_SITE['andress'],
-                    'Reason' => CONFIG_SITE["name"],
-                    'ContactInfo' => CONFIG_SITE["url"],
-                );
-                $pdf->setSignature($certificate, $certificate, '', '', 1, $info);*/
-
-
                 $pdf->AddPage($orientation, array($size['width'], $size['height']));
                 $pdf->useTemplate($pageId);
+
+                if ($i == $pagecount) {
+                    $contentBottomY = $analyzer->getContentBottomY(
+                        $assinaturaModel->getArquivopdf(),
+                        $pagecount,
+                        $size['height']
+                    );
+                    $pdf->addBlockAssinatura($contentBottomY + 5);
+                }
             }
 
             $pdf_string = $pdf->Output("protocolo.pdf", 'S');
@@ -94,6 +94,62 @@ class TcpdfLib
             return false;
         }
     }
+
+    public function assinarDocumentoComCertificadoICP(AssinaturaModel $assinaturaModel, $tentativa = 1): bool
+    {
+
+        $assinaturaModel->setArquivopdf($_SERVER['DOCUMENT_ROOT'].$assinaturaModel->getArquivopdf());
+        $pdf = new AssinaturaPage(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
+        $pdf->SetCompression(false);
+        $pdf->setJPEGQuality(100);
+
+        $pdf->setInfo($assinaturaModel);
+
+        try {
+            $pagecount = $pdf->setSourceFile($assinaturaModel->getArquivopdf());
+            $analyzer  = new PdfContentBoundsAnalyzer();
+
+            for ($i = 1; $i <= $pagecount; $i++) {
+                $pageId = $pdf->importPage($i, PdfReader\PageBoundaries::BLEED_BOX);
+                $size = $pdf->getTemplatesize($pageId);
+                $orientation = $size['orientation'];
+
+                $certificate = 'file://'.$_SERVER['DOCUMENT_ROOT']."src". DIRECTORY_SEPARATOR."Libs". DIRECTORY_SEPARATOR."Tcpdf". DIRECTORY_SEPARATOR."cert". DIRECTORY_SEPARATOR."certificado.crt";
+                $info = array(
+                    'Name' => $assinaturaModel->getQuemAssina(),
+                    'Location' => CONFIG_SITE['andress'],
+                    'Reason' => CONFIG_SITE["name"],
+                    'ContactInfo' => CONFIG_SITE["url"],
+                );
+                $pdf->setSignature($certificate, $certificate, 'rSKEs38y', '', 1, $info);
+
+                $pdf->AddPage($orientation, array($size['width'], $size['height']));
+                $pdf->useTemplate($pageId);
+
+                if ($i == $pagecount) {
+                    $contentBottomY = $analyzer->getContentBottomY(
+                        $assinaturaModel->getArquivopdf(),
+                        $pagecount,
+                        $size['height']
+                    );
+                    $pdf->addBlockAssinatura($contentBottomY + 5);
+                }
+            }
+
+            $pdf_string = $pdf->Output("protocolo.pdf", 'S');
+            file_put_contents($assinaturaModel->getArquivopdf(), $pdf_string);
+            return true;
+        } catch (\ErrorException $exception) {
+            $outputName = md5(uniqid()) . ".pdf";
+            $cmd = "gs -dNOPAUSE -dBATCH -sDEVICE=pdfwrite -dCompatibilityLevel=1.4 -dPDFSETTINGS=/screen -sOutputFile={$outputName} {$assinaturaModel->getArquivopdf()}";
+            shell_exec($cmd);
+            shell_exec("mv -f {$outputName} {$assinaturaModel->getArquivopdf()}");
+            if ($tentativa >0)
+                $this->assinarDocumentoComCertificadoICP($assinaturaModel, $tentativa-1);
+            return false;
+        }
+    }
+
 
     public function assinarProjeto(array $array = [], $tentativa = 1): bool
     {

@@ -51,7 +51,7 @@ function goBack() {
 function mascara(o,f){
     v_obj=o
     v_fun=f
-    setTimeout("execmascara()",1)
+    requestAnimationFrame(execmascara)
 }
 
 function execmascara(){
@@ -83,13 +83,13 @@ function mcel(v){
     return v;
 }
 
-function mcnpj(v){
-    v=v.replace(/\D/g,"")                           //Remove tudo o que não é dígito
-    v=v.replace(/^(\d{2})(\d)/,"$1.$2")             //Coloca ponto entre o segundo e o terceiro dígitos
-    v=v.replace(/^(\d{2})\.(\d{3})(\d)/,"$1.$2.$3") //Coloca ponto entre o quinto e o sexto dígitos
-    v=v.replace(/\.(\d{3})(\d)/,".$1/$2")           //Coloca uma barra entre o oitavo e o nono dígitos
-    v=v.replace(/(\d{4})(\d)/,"$1-$2")              //Coloca um hífen depois do bloco de quatro dígitos
-    return v
+function mcnpj(v) {
+    v = v.toUpperCase().replace(/[^A-Z0-9]/g, '');
+    v = v.replace(/^([A-Z0-9]{2})([A-Z0-9])/, '$1.$2');
+    v = v.replace(/^([A-Z0-9]{2})\.([A-Z0-9]{3})([A-Z0-9])/, '$1.$2.$3');
+    v = v.replace(/\.([A-Z0-9]{3})([A-Z0-9])/, '.$1/$2');
+    v = v.replace(/([A-Z0-9]{4})(\d)/, '$1-$2');
+    return v;
 }
 
 function mcpf(v){
@@ -162,27 +162,22 @@ function ncartao(v){
     return v;
 }
 
-function cpfCnpj(v){
+function cpfCnpj(v) {
+    v = v.toUpperCase().replace(/[^A-Z0-9]/g, '');
 
-    //Remove tudo o que não é dígito
-    v=v.replace(/\D/g,"")
-
-    if (v.length < 14) { //CPF
-
-        v=v.replace(/(\d{3})(\d)/,"$1.$2")       //Coloca um ponto entre o terceiro e o quarto dígitos
-        v=v.replace(/(\d{3})(\d)/,"$1.$2")       //Coloca um ponto entre o terceiro e o quarto dígitos//de novo (para o segundo bloco de números)
-        v=v.replace(/(\d{3})(\d{1,2})$/,"$1-$2") //Coloca um hífen entre o terceiro e o quarto dígitos
-
-    } else { //CNPJ
-
-        v = v.replace( /^(\d{2})(\d)/ , "$1.$2"); //Coloca ponto entre o segundo e o terceiro dígitos
-        v = v.replace( /^(\d{2})\.(\d{3})(\d)/ , "$1.$2.$3"); //Coloca ponto entre o quinto e o sexto dígitos
-        v = v.replace( /\.(\d{3})(\d)/ , ".$1/$2"); //Coloca uma barra entre o oitavo e o nono dígitos
-        v = v.replace( /(\d{4})(\d)/ , "$1-$2"); //Coloca um hífen depois do bloco de quatro dígitos
-
+    if (v.length <= 11) { // CPF (sempre numérico)
+        v = v.replace(/\D/g, '');
+        v = v.replace(/(\d{3})(\d)/, '$1.$2');
+        v = v.replace(/(\d{3})(\d)/, '$1.$2');
+        v = v.replace(/(\d{3})(\d{1,2})$/, '$1-$2');
+    } else { // CNPJ (alfanumérico)
+        v = v.replace(/^([A-Z0-9]{2})([A-Z0-9])/, '$1.$2');
+        v = v.replace(/^([A-Z0-9]{2})\.([A-Z0-9]{3})([A-Z0-9])/, '$1.$2.$3');
+        v = v.replace(/\.([A-Z0-9]{3})([A-Z0-9])/, '.$1/$2');
+        v = v.replace(/([A-Z0-9]{4})(\d)/, '$1-$2');
     }
 
-    return v
+    return v;
 }
 
 function site(v){
@@ -252,6 +247,50 @@ function validaData(data) {
     }
 }
 
+
+function formatarDataExibicao(dataString) {
+    if (!dataString) return '';
+    
+    // 1. Pega apenas a parte da data "2025-03-17" (ignora a hora)
+    const dataLimpa = dataString.substring(0, 10);
+    
+    // 2. Quebra onde tem o traço
+    const partes = dataLimpa.split('-'); // ["2025", "03", "17"]
+    
+    // 3. Verifica se tem as 3 partes para evitar erro
+    if (partes.length !== 3) return dataString;
+
+    const [ano, mes, dia] = partes;
+    
+    // 4. Retorna remontado: dia/mes/ano
+    return `${dia}/${mes}/${ano}`;
+}
+
+function formatarDataHoraExibicao(dataString) {
+    if (!dataString) return '';
+
+    // O formato esperado do banco geralmente é "2025-03-17 15:30:00"
+    // 1. Separamos a data da hora pelo espaço
+    const partes = dataString.split(' '); 
+    
+    const dataAmericana = partes[0]; // "2025-03-17"
+    const horaCompleta = partes[1] || ''; // "15:30:00" (ou vazio se não tiver hora)
+
+    // 2. Formatamos a data: Quebra no traço e remonta invertido
+    const [ano, mes, dia] = dataAmericana.split('-');
+    const dataFormatada = `${dia}/${mes}/${ano}`;
+
+    // 3. Formatamos a hora: Pegamos apenas os 5 primeiros caracteres (HH:mm) para ignorar os segundos, se quiser
+    const horaFormatada = horaCompleta.substring(0, 5);
+
+    // Retorna: "17/03/2025 às 15:30"
+    // Se não tiver hora, retorna só a data
+    return horaFormatada ? `${dataFormatada} às ${horaFormatada}` : dataFormatada;
+}
+
+
+
+// Saída: "17/03/2025 às 19:00"
 //REMOVE OQUE NÃO FOR DIGITO
 function removeCaracteres(str) {
     return str.replace(/[^\d]+/g,'')
@@ -440,17 +479,17 @@ function primeiraLetraMaiusculaCadaPalavra(text) {
 function primeiraLetraMaiusculaTexto(text) {
     var loweredText = text.toLowerCase();
     var words = loweredText.split(" ");
-    var w = words[0];
+        var w = words[0];
 
-    var firstLetter = w[0];
+        var firstLetter = w[0];
 
-    if (w.length > 2) {
-        w = firstLetter.toUpperCase() + w.slice(1);
-    } else {
-        w = firstLetter + w.slice(1);
-    }
+        if (w.length > 2) {
+            w = firstLetter.toUpperCase() + w.slice(1);
+        } else {
+            w = firstLetter + w.slice(1);
+        }
 
-    words[0] = w;
+        words[0] = w;
     return words.join(" ");
 }
 
@@ -738,28 +777,29 @@ function validaCPF(cpf) {
     return true;
 }
 
-//valida o CNPJ digitado
-function validaCNPJ(cnpj){
-    //var cnpj = ObjCnpj.value;
-    var valida = new Array(6,5,4,3,2,9,8,7,6,5,4,3,2);
-    var dig1= new Number;
-    var dig2= new Number;
+function validaCNPJ(cnpj) {
+    cnpj = cnpj.toString().toUpperCase().replace(/[.\-\/]/g, '');
 
-    exp = /\.|\-|\//g;
-    cnpj = cnpj.toString().replace( exp, "" );
-    var digito = new Number(eval(cnpj.charAt(12)+cnpj.charAt(13)));
+    // 12 posições alfanuméricas + 2 dígitos verificadores numéricos
+    if (cnpj.length !== 14 || !/^[A-Z0-9]{12}\d{2}$/.test(cnpj)) return false;
 
-    for(i = 0; i<valida.length; i++){
-        dig1 += (i>0? (cnpj.charAt(i-1)*valida[i]):0);
-        dig2 += cnpj.charAt(i)*valida[i];
-    }
-    dig1 = (((dig1%11)<2)? 0:(11-(dig1%11)));
-    dig2 = (((dig2%11)<2)? 0:(11-(dig2%11)));
+    // Rejeita sequências com todos os caracteres iguais
+    if (/^(.)\1+$/.test(cnpj)) return false;
 
-    if(((dig1*10)+dig2) != digito)
-        return false;
+    // Letras A=10, B=11, ..., Z=35; dígitos mantêm valor numérico
+    const charValue = (c) => c >= 'A' ? c.charCodeAt(0) - 55 : parseInt(c);
 
-    return true;
+    const calcDigito = (cnpj, len) => {
+        let soma = 0, pos = len - 7;
+        for (let i = len; i >= 1; i--) {
+            soma += charValue(cnpj.charAt(len - i)) * pos--;
+            if (pos < 2) pos = 9;
+        }
+        const resto = soma % 11;
+        return (resto < 2 ? 0 : 11 - resto) === parseInt(cnpj.charAt(len));
+    };
+
+    return calcDigito(cnpj, 12) && calcDigito(cnpj, 13);
 }
 
 async function alertSuccess(mensagem){
@@ -796,16 +836,6 @@ function alertModal(mensagem, tipo = 'warning', titulo = 'Atenção!', btnText =
 }
 
 /**
- * Função para ocutar a modal
- * @param nome da modal
- * @returns {Promise<void>}
- */
-async function hideModal(id) {
-    var modalInstance = bootstrap.Modal.getInstance(document.getElementById(id));
-    modalInstance.hide();
-}
-
-/**
  * Função para mostrar a modal com timeout personalizavel
  * @param nome da modal
  * @param timeout de espera para mostrar
@@ -813,9 +843,16 @@ async function hideModal(id) {
  */
 async function showModal(nome, timeout= 0) {
     await setTimeout(function () {
-        (new bootstrap.Modal(document.getElementById(nome), {
-            // keyboard: false
-        })).show();
+        const el = document.getElementById(nome);
+        const instance = bootstrap.Modal.getInstance(el) || new bootstrap.Modal(el);
+        instance.show();
+    }, timeout);
+}
+
+async function hideModal(id, timeout= 0) {
+    await setTimeout(function () {
+        var modalInstance = bootstrap.Modal.getInstance(document.getElementById(id));
+        modalInstance.hide();
     }, timeout);
 }
 
@@ -856,43 +893,44 @@ if (btnContainer != null) {
 }
 
 function getCookie(name) {
-    var cookies = document.cookie;
-    var prefix = name + "=";
-    var begin = cookies.indexOf("; " + prefix);
-
-    if (begin == -1) {
-
-        begin = cookies.indexOf(prefix);
-
-        if (begin != 0) {
-            return '';
-        }
-
-    } else {
-        begin += 2;
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) {
+        return decodeURIComponent(parts.pop().split(';').shift());
     }
-
-    var end = cookies.indexOf(";", begin);
-
-    if (end == -1) {
-        end = cookies.length;
-    }
-
-    return unescape(cookies.substring(begin + prefix.length, end));
+    return '';
 }
 
-function setCookie(name, value, durationDay=365) {
-    var date = new Date();
-    date.setTime(date.getTime()+(durationDay*24*60*60*1000));
-    var cookie = name + "=" + escape(value) + "; path=/; expires=" + date.toGMTString()+"; SameSite=None; Secure; domain="+window.location.host;
+function setCookie(name, value, durationDay = 1) {
+    const date = new Date();
+    date.setTime(date.getTime() + (durationDay * 24 * 60 * 60 * 1000));
+
+    // Ajuste para funcionar tanto em desenvolvimento quanto produção
+    const isLocal = window.location.hostname === 'localhost' ||
+        window.location.hostname === '127.0.0.1';
+
+    let cookie = `${name}=${encodeURIComponent(value)}; path=/; expires=${date.toUTCString()}; SameSite=Lax`;
+
+    if (!isLocal) {
+        cookie += '; Secure';
+    }
 
     document.cookie = cookie;
+    return true;
 }
 
 function deleteCookie(name) {
-    if (getCookie(name)) {
-        document.cookie = name + "=" + "; expires=Thu, 01-Jan-70 00:00:01 GMT";
+    const isLocal = window.location.hostname === 'localhost' ||
+        window.location.hostname === '127.0.0.1';
+
+    let cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; SameSite=Lax`;
+
+    if (!isLocal) {
+        cookie += '; Secure';
     }
+
+    document.cookie = cookie;
+    return true;
 }
 
 function validaForm() {
@@ -947,6 +985,38 @@ function formatMoedaBrasil(value, cifrao=false){
         return value.toLocaleString('pt-br', {minimumFractionDigits: 2});
 }
 
+function formatMoedaAbreviada(value) {
+  const numero = Number(value);
+
+  // Validação: se não for número, retorna um fallback (ex: 0,00 ou -)
+  if (isNaN(numero)) return '0,00';
+
+  return new Intl.NumberFormat('pt-BR', {
+    notation: "compact",
+    compactDisplay: "short",
+    maximumFractionDigits: 2, // Exibe 1 casa decimal (1,2k)
+    minimumFractionDigits: 0
+  }).format(numero);
+}
+
+function formatDataMesAno(dataString) {
+  if (!dataString) return '-';
+  try {
+    const data = new Date(dataString);
+    const mesesAbrev = ['jan', 'fev', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'set', 'out', 'nov', 'dez'];
+    const mesAbrev = mesesAbrev[data.getMonth()];
+    const anoAbrev = String(data.getFullYear()).slice(-2); // Últimos 2 dígitos
+    return `${mesAbrev}/${anoAbrev}`;
+  } catch (e) {
+    return '-';
+  }
+}
+
+// Testes:
+// 1243.87   -> "1,2 mil" (ou "1,2 K" dependendo do navegador/versão*)
+// 345892.34 -> "346 mil"
+// 1500000   -> "1,5 mi"
+
 function formatNumberBrasil(value){
     return value.toLocaleString('pt-br');
 }
@@ -992,6 +1062,25 @@ $(document).ready(function() {
     });
 });
 
+function shakeElement(elementId, magnitude = 10, duration = 500) {
+  const element = document.getElementById(elementId);
+  let start = null;
+
+  function animateShake(timestamp) {
+    if (!start) start = timestamp;
+    const elapsed = timestamp - start;
+
+    if (elapsed < duration) {
+      const offset = Math.sin(elapsed / (duration / (Math.PI * 4))) * magnitude;
+      element.style.transform = `translateX(${offset}px)`;
+      requestAnimationFrame(animateShake);
+    } else {
+      element.style.transform = 'translateX(0)'; // Reset position
+    }
+  }
+  requestAnimationFrame(animateShake);
+}
+
 function updateSelect2(placeholder = " Selecione "){
     $('.select2').select2({
         language: "pt-BR",
@@ -1005,7 +1094,7 @@ async function modalTemCerteza(formId) {
     const result = await Swal.fire({
         title: 'Atenção',
         icon: 'warning',
-        html: 'Tem certeza que deseja executar essa ação!',
+        html: 'Tem certeza que deseja executar essa ação?',
         showCloseButton: true,
         showCancelButton: true,
         focusConfirm: true,
@@ -1067,5 +1156,14 @@ function validaDataNascimento(bDayIso, ageMin = 18, ageMax = 130) {
         return true;
     }
     return false;
+}
+
+function flashSessionMessage(tipo, titulo, mensagem) {
+    const dadosAlerta = {
+        type: tipo, // 'success', 'error', 'warning', 'info'
+        title: titulo,
+        message: mensagem
+    };
+    sessionStorage.setItem('ALERTLIB_MSG', JSON.stringify(dadosAlerta));
 }
 

@@ -4,7 +4,14 @@ namespace App\Libs;
 
 use App\Libs\Tcpdf\TcpdfLib;
 
-class FileLib{
+class FileLib
+{
+    private string $appRoot;
+
+    public function __construct()
+    {
+        $this->appRoot = dirname(__DIR__, 2);
+    }
 
     /**
      * FUNÇÃO ENVIAR ARQUIVOS DIVERSOS
@@ -21,7 +28,7 @@ class FileLib{
 
         // Caminho de onde ficará a imagem
         $caminhoArquivo = $destino . "" . $nomeArquivo;
-        $caminhoArquivo = $_SERVER['DOCUMENT_ROOT'] . $caminhoArquivo;
+        $caminhoArquivo = $this->appRoot . $caminhoArquivo;
 
 
         // Faz o upload da imagem para seu respectivo caminho
@@ -32,8 +39,8 @@ class FileLib{
 
     public function renameFile($from, $to)
     {
-        $from = $_SERVER['DOCUMENT_ROOT'] . $from;
-        $to = $_SERVER['DOCUMENT_ROOT'] . $to;
+        $from = $this->appRoot . $from;
+        $to = $this->appRoot . $to;
 
         rename($from, $to);
     }
@@ -63,10 +70,10 @@ class FileLib{
      */
     public function removeFile($caminho)
     {
-        if (!file_exists($_SERVER['DOCUMENT_ROOT'] . $caminho))
+        if (!file_exists($this->appRoot . $caminho))
             return false;
 
-        unlink($_SERVER['DOCUMENT_ROOT'] . $caminho);
+        unlink($this->appRoot . $caminho);
         return true;
     }
 
@@ -89,6 +96,9 @@ class FileLib{
     {
         $funcoesClass = new FuncoesLib();
 
+        if (is_array($base64)) {
+            return $this->generateFileNameBase64Array($base64);
+        }
         // Tenta extrair o tipo MIME do Base64
         preg_match('/^data:(.*?);base64,/', $base64, $matches);
 
@@ -101,13 +111,28 @@ class FileLib{
                 // Retorna a extensão como o tipo MIME (ex: jpg, pdf, png)
                 $extension = $mimeParts[1];
                 return md5(uniqid(time()) . $funcoesClass->pegaIpUsuario()) . "." . $extension;
-
             }
         }
 
         return null;
     }
 
+    public function generateFileNameBase64Array(array $base64)
+    {
+
+        if(!isset($base64['type'])){
+            return null ; 
+        }
+        $mimeParts = explode('/', $base64['type']);
+
+        if (!isset($mimeParts[1])) {
+            return null;
+        }
+
+        $extension = $mimeParts[1];
+
+        return md5(uniqid(time()) . (new FuncoesLib())->pegaIpUsuario()) . "." . $extension;
+    }
     /**
      * FUNÇÃO PARA PEGAR EXTENSÃO DE UM ARQUIVO
      *
@@ -119,7 +144,6 @@ class FileLib{
 
         // Pega extensão da imagem
         return pathinfo($arquivo, PATHINFO_EXTENSION);
-
     }
 
     /**
@@ -133,11 +157,24 @@ class FileLib{
     function convertImgToPdf($file, $destino)
     {
         $fileImage = $this->uploadImage($file, $destino, $file["name"]);
-        $caminhoImagem = $_SERVER['DOCUMENT_ROOT'] . $destino . $fileImage;
+        $caminhoImagem = $this->appRoot . $destino . $fileImage;
         $tcpdf = new TcpdfLib();
 
         $namePdf = $this->generateFileName();
-        $caminhoPdf= $_SERVER['DOCUMENT_ROOT'].$destino.$namePdf;
+        $caminhoPdf = $this->appRoot . $destino . $namePdf;
+        $tcpdf->imageToPdf($caminhoImagem, $caminhoPdf);
+        $this->removeFile($caminhoImagem);
+
+        return $namePdf;
+    }
+
+
+    function convertImgToPdfBase64($caminhoImagem, $destino)
+    {
+        $tcpdf = new TcpdfLib();
+
+        $namePdf = $this->generateFileName();
+        $caminhoPdf = $this->appRoot . $destino . $namePdf;
         $tcpdf->imageToPdf($caminhoImagem, $caminhoPdf);
         $this->removeFile($caminhoImagem);
 
@@ -153,33 +190,21 @@ class FileLib{
      *
      * @return string
      */
-    function uploadImage($file, $destinoFoto, $fotoAtual = "default.png", $imgDefault = "default.png")
+    function uploadImage($file, $destinoFoto, $fotoAtual = "default.png", $imgDefault = "default.png", $widthImg = 1080)
     {
+        preg_match("/\.(gif|bmp|png|jpg|jpeg|webp|avif)$/i", $file["name"], $ext);
 
+        if (empty($ext[1]))
+            return $imgDefault;
 
-        // Se não houver nenhum erro
-
-        // Pega extensão da imagem
-        preg_match("/\.(gif|bmp|png|jpg|jpeg){1}$/i", $file["name"], $ext);
-
-        // Gera um nome único para a imagem
         $nome_imagem = md5(uniqid(time())) . "." . $ext[1];
+        $toImage = $this->appRoot . $destinoFoto . $nome_imagem;
 
-        // Caminho de onde ficará a imagem
-        $toImage = $destinoFoto . "" . $nome_imagem;
-        $toImage = $_SERVER['DOCUMENT_ROOT'] . $toImage;
-
-        //$fromImage = $file["tmp_name"];
-        $fromImage = $this->resizeImage($file["tmp_name"], $ext[1])??$file["tmp_name"];
-        // Faz o upload da imagem para seu respectivo caminho
+        $fromImage = $this->resizeCompressImage($file["tmp_name"], $ext[1], $widthImg) ?? $file["tmp_name"];
         move_uploaded_file($fromImage, $toImage);
-        //move_uploaded_file($foto["tmp_name"], $caminho_imagem);
 
-
-        //REMOVE IMAGEM ANTIGA
-        if ($fotoAtual <> $imgDefault && !empty($fotoAtual)) {
+        if ($fotoAtual != $imgDefault && !empty($fotoAtual))
             $this->removeFile($destinoFoto . $fotoAtual);
-        }
 
         return $nome_imagem;
     }
@@ -210,7 +235,7 @@ class FileLib{
 
             // Caminho de onde ficará a imagem (corrigido)
             $toImage = $destinoFoto . $fileName;
-            $uploadPath = $_SERVER['DOCUMENT_ROOT'] . $toImage;
+            $uploadPath = $this->appRoot . $toImage;
 
             // Salva a imagem
             if (file_put_contents($uploadPath, $imageData)) {
@@ -228,83 +253,82 @@ class FileLib{
      * @param $extensao
      * @return string
      */
-    public function resizeImage($caminho_imagem, $extensao)
+    public function resizeCompressImage($caminho_imagem, $extensao, $widthImg = null)
     {
         try {
-            // Retorna o identificador da imagem
-            if ($extensao == 'jpeg' || $extensao == 'jpg' || $extensao == 'JPG' || $extensao == 'JPEG')
-                $imagem = @imagecreatefromjpeg($caminho_imagem);
-            else if ($extensao == 'png' || $extensao == 'PNG')
-                $imagem = @imagecreatefrompng($caminho_imagem);
-            else if ($extensao == 'gif' || $extensao == 'GIF')
-                $imagem = @imagecreatefromgif($caminho_imagem);
+            $ext = strtolower($extensao);
 
-            if (!function_exists('exif_read_data'))
+            if ($ext === 'jpeg' || $ext === 'jpg')
+                $imagem = @imagecreatefromjpeg($caminho_imagem);
+            elseif ($ext === 'png')
+                $imagem = @imagecreatefrompng($caminho_imagem);
+            elseif ($ext === 'gif')
+                $imagem = @imagecreatefromgif($caminho_imagem);
+            elseif ($ext === 'webp')
+                $imagem = @imagecreatefromwebp($caminho_imagem);
+            elseif ($ext === 'bmp')
+                $imagem = @imagecreatefrombmp($caminho_imagem);
+            elseif ($ext === 'avif' && function_exists('imagecreatefromavif'))
+                $imagem = @imagecreatefromavif($caminho_imagem);
+            else
                 return $caminho_imagem;
 
-            // PEGA VALORES PARA ROTAÇÃO
-            $exif = @exif_read_data($caminho_imagem,0, true);
+            if (!$imagem)
+                return $caminho_imagem;
+
             $angulo = 0;
-            if (!empty($exif['Orientation'])) {
-                switch ($exif['Orientation']) {
-                    case 8:
-                        $angulo = 90;
-                        break;
-                    case 3:
-                        $angulo = 180;
-                        break;
-                    case 6:
-                        $angulo = -90;
-                        break;
-                    default:
-                        $angulo = 0;
+            if (function_exists('exif_read_data')) {
+                $exif = @exif_read_data($caminho_imagem);
+                $orientacao = $exif['Orientation'] ?? ($exif['IFD0']['Orientation'] ?? 0);
+                switch ($orientacao) {
+                    case 8: $angulo = 90;  break;
+                    case 3: $angulo = 180; break;
+                    case 6: $angulo = -90; break;
                 }
             }
 
-            // Cria duas variáveis com a largura e altura da imagem
-            list($largura, $altura) = @getimagesize($caminho_imagem);
+            $largura = imagesx($imagem);
+            $altura  = imagesy($imagem);
 
-            // Nova largura e altura
-            $proporcao = 1080;
-            $nova_largura = $proporcao;
-            $nova_altura = (int)(($altura * $proporcao) / $largura);
+            if ($widthImg !== null) {
+                $nova_largura = $widthImg;
+                $nova_altura  = (int)(($altura * $widthImg) / $largura);
+            } else {
+                $nova_largura = $largura;
+                $nova_altura  = $altura;
+            }
 
-            // Cria uma nova imagem em branco
-            $nova_imagem = @imagecreatetruecolor($nova_largura, $nova_altura);
-            @imagesavealpha($nova_imagem, true);
-            $cor_fundo = @imagecolorallocatealpha($nova_imagem, 0, 0, 0, 127);
-            @imagefill($nova_imagem, 0, 0, $cor_fundo);
+            $nova_imagem = imagecreatetruecolor($nova_largura, $nova_altura);
+            imagesavealpha($nova_imagem, true);
+            imagefill($nova_imagem, 0, 0, imagecolorallocatealpha($nova_imagem, 0, 0, 0, 127));
 
+            imagecopyresampled($nova_imagem, $imagem, 0, 0, 0, 0, $nova_largura, $nova_altura, $largura, $altura);
+            imagedestroy($imagem);
 
-            // Copia a imagem para a nova imagem com o novo tamanho
-            @imagecopyresampled(
-                $nova_imagem, // Nova imagem
-                $imagem, // Imagem original
-                0, // Coordenada X da nova imagem
-                0, // Coordenada Y da nova imagem
-                0, // Coordenada X da imagem
-                0, // Coordenada Y da imagem
-                $nova_largura, // Nova largura
-                $nova_altura, // Nova altura
-                $largura, // Largura original
-                $altura // Altura original
-            );
+            if ($angulo !== 0) {
+                $final = imagerotate($nova_imagem, $angulo, 0);
+                imagedestroy($nova_imagem);
+            } else {
+                $final = $nova_imagem;
+            }
 
-            $imgRotation = imagerotate($nova_imagem, $angulo, 0);
+            if (!$final)
+                return $caminho_imagem;
 
-            // Cria a imagem
-            if ($extensao == 'jpeg' || $extensao == 'jpg' || $extensao == 'JPG' || $extensao == 'JPEG')
-                @imagejpeg($imgRotation, $caminho_imagem, 40);
-            else if ($extensao == 'png' || $extensao == 'PNG')
-                @imagepng($imgRotation, $caminho_imagem, 4);
-            else if ($extensao == 'gif' || $extensao == 'GIF')
-                @imagegif($imgRotation, $caminho_imagem);
+            if ($ext === 'jpeg' || $ext === 'jpg')
+                @imagejpeg($final, $caminho_imagem, 90);
+            elseif ($ext === 'png')
+                @imagepng($final, $caminho_imagem, 6);
+            elseif ($ext === 'gif')
+                @imagegif($final, $caminho_imagem);
+            elseif ($ext === 'webp')
+                @imagewebp($final, $caminho_imagem, 85);
+            elseif ($ext === 'bmp')
+                @imagebmp($final, $caminho_imagem);
+            elseif ($ext === 'avif' && function_exists('imageavif'))
+                @imageavif($final, $caminho_imagem);
 
-
-            // Remove as imagens temporárias
-            @imagedestroy($imagem);
-            @imagedestroy($nova_imagem);
-            @imagedestroy($imgRotation);
+            imagedestroy($final);
 
             return $caminho_imagem;
         } catch (\ErrorException $e) {
@@ -320,7 +344,7 @@ class FileLib{
     {
         if (empty($file["tmp_name"]))
             return false;
-        if (!preg_match('/^image\/(pjpeg|jpeg|png|gif|bmp|jpg)$/', $file["type"]))
+        if (!preg_match('/^image\/(pjpeg|jpeg|png|gif|bmp|jpg|webp|avif)$/', $file["type"]))
             return false;
 
         return true;
@@ -348,14 +372,18 @@ class FileLib{
 
     public function uploadFileBase64(array|string|null $string, string $to)
     {
-        $caminhoImagem = $_SERVER['DOCUMENT_ROOT'] . $to;
+        $caminhoImagem = $this->appRoot . $to;
+
+        if (!is_dir($caminhoImagem)) {
+            mkdir($caminhoImagem, 0755, true);
+        }
 
         $name = $this->generateFileNameBase64($string);
 
         $base64Image = $string;
         $imageData = explode(',', $base64Image)[1];
         $imageData = base64_decode($imageData);
-        file_put_contents($caminhoImagem.$name, $imageData);
+        file_put_contents($caminhoImagem . $name, $imageData);
 
         return $name;
     }

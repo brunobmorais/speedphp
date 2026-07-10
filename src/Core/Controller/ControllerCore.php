@@ -46,8 +46,8 @@ class ControllerCore
         return json_decode(file_get_contents('php://input'), true);
     }
 
-    public function getParams($valor) {
-        $return = $_GET[$valor]??"";
+    public function getParams($valor, $default = "") {
+        $return = $_GET[$valor]??$default;
         if (is_string($return))
             return trim(htmlspecialchars($return??''));
         if (is_array($return))
@@ -64,14 +64,15 @@ class ControllerCore
      * @param $valor
      * @return array|string
      */
-    public function postParams($valor){
-        $return = $_POST[$valor]??"";
+    public function postParams($valor, $default = "") {
+        $return = $_POST[$valor]??$default;
         if (is_string($return))
             return trim(htmlspecialchars($return??''));
         if (is_array($return))
             return $return??[];
         if (!isset($valor))
             return $return;
+        return $return;
     }
 
     /**
@@ -132,6 +133,46 @@ class ControllerCore
         }
     }
 
+    public function getServicosFromModuloColaborador(){
+        $moduloDao = new ModuloDao();
+        $alertaDao = new AlertLib();
+        $controller = explode("/", $_SERVER["REQUEST_URI"]);
+        $modulo = $controller[1]??"";
+        $codpessoa = SessionLib::getValue("CODPESSOA");
+
+        $codeventoSessao = SessionLib::getValue("CODEVENTO");
+        $codeventoCookie = CookieLib::getValue("CODEVENTO");
+
+        if (empty($codeventoSessao)) {
+            if (empty($codeventoCookie)) {
+                $this->redirect("/organizador/selecionaevento");
+                exit();
+            }
+            $codeventoSessao = $codeventoCookie;
+            SessionLib::setValue("CODEVENTO", $codeventoCookie);
+        }
+
+        if (!empty($modulo)) {
+            $servicos = $moduloDao->buscaServicosColaborador($codpessoa,$codeventoSessao,$modulo);
+
+            if (empty($servicos)){
+                $alertaDao->danger("Sem privilégio de acesso!","/");
+            } else {
+                $data["HEAD"]["title"] = $servicos[0]["TITULOMODULO"];
+
+                $data["TITLE"] = $servicos[0]["TITULOMODULO"];
+                $data["TITLEIMAGE"] = $servicos[0]["ICONEMODULO"];
+                $data["TITLEBREADCRUMB"] = "<li class='breadcrumb-item-custom'><a href='/'>Inicio</span></a><i class='mdi mdi-chevron-right mx-1' aria-hidden='true'></i></li><li class='breadcrumb-item-custom '><a href='/" . $modulo . "/'>" . $servicos[0]["TITULOMODULO"] . "</a></li>";
+                $data["SERVICO"]["CONTROLLERMODULO"] = $servicos[0]["CONTROLLERMODULO"];
+                $data["SERVICOS"] = $servicos;
+
+                return $data;
+            }
+        } else {
+            $alertaDao->danger("Sem privilégio de acesso!","/");
+        }
+    }
+
     public function getServico(){
         $sisModuloDao = new ModuloDao();
         $alertaDao = new AlertLib();
@@ -172,6 +213,59 @@ class ControllerCore
         return $data;
     }
 
+    public function getServicoColaborador(){
+        $sisModuloDao = new ModuloDao();
+        $alertaDao = new AlertLib();
+
+        $url = explode("/", $_SERVER["REQUEST_URI"]);
+        $servicoParams = explode("-", $url[2]??"");
+        $moduleUrl = $url[1]??"";
+        $serviceUrl = $servicoParams[0]??"";
+        $folderUrl = $servicoParams[1]??"";
+        $codpessoa = SessionLib::getValue("CODPESSOA");
+        $template = "{$moduleUrl}".($serviceUrl?"/{$serviceUrl}":"").($folderUrl?"/{$folderUrl}":"");
+
+        $codeventoSessao = SessionLib::getValue("CODEVENTO");
+        $codeventoCookie = CookieLib::getValue("CODEVENTO");
+
+        if (empty($codeventoSessao)) {
+            if (empty($codeventoCookie)) {
+                $this->redirect("/organizador/selecionaevento");
+                exit();
+            }
+            $codeventoSessao = $codeventoCookie;
+            SessionLib::setValue("CODEVENTO", $codeventoCookie);
+        }
+
+        if (empty($serviceUrl)) {
+            $alertaDao->warning("Serviço não encontrado!","./");
+            exit();
+        }
+
+        $servico = $sisModuloDao->buscaServicoColaborador($codpessoa,$codeventoSessao,$moduleUrl, $serviceUrl);
+        if (empty($servico)) {
+            $alertaDao->warning("Sem privilégio de acesso!", "/organizador/");
+            exit();
+        }
+
+        $data["HEAD"]["title"] = $servico["TITULO"];
+
+        $data["TITLE"] = $servico["TITULO"];
+        $data["TITLEIMAGE"] = $servico["ICONE"];
+        $data["TITLEBREADCRUMB"] = "<li class='breadcrumb-item-custom'><a href='/'>Inicio</span></a><i class='mdi mdi-chevron-right mx-1' aria-hidden='true'></i></li><li class='breadcrumb-item-custom '><a href='/" . $moduleUrl . "/'>" . $servico["TITULOMODULO"] . "</a></li><i class='mdi mdi-chevron-right mx-1' aria-hidden='true'></i></li><li class='breadcrumb-item-custom '><a href='/{$moduleUrl}/{$serviceUrl}/'>" . $servico["TITULO"] . "</a></li>";
+
+        $data["SERVICO"] = $servico;
+        $data["SERVICO"]["URL"] = "/{$moduleUrl}/{$serviceUrl}";
+        $data["SERVICO"]["TEMPLATE"] = $template;
+        $data["SERVICO"]["MODULO"] = $moduleUrl;
+        $data["SERVICO"]["SERVICONOME"] = $url[2]??"";
+        $this->servico = $data["SERVICO"];
+
+
+        return $data;
+    }
+
+
     public function getSession(): bool
     {
         $usuarioDao = new UsuarioDao();
@@ -185,7 +279,7 @@ class ControllerCore
         }
 
         // 2. Se não existe sessão, tenta recuperar do TOKEN no Cookie
-        $tokenCookie = CookieLib::getValue("TOKEN");
+        $tokenCookie = CookieLib::getValue("REFRESH_TOKEN_JWT");
         if (empty($tokenCookie)) {
             return false;
         }
@@ -211,7 +305,7 @@ class ControllerCore
         ]);
 
         // 6. Atualiza o TOKEN no Cookie e configura sessão
-        CookieLib::setValue("TOKEN", $novoToken, true);
+        CookieLib::setValue("REFRESH_TOKEN_JWT", $novoToken, 30, true);
         SessionLib::regenerate(); // ✅ Novo ID de sessão
         SessionLib::setDataSession($usuarioModel->getDataSession());
 
@@ -219,40 +313,49 @@ class ControllerCore
     }
 
     public function isLogged(){
-        $funcoes = new FuncoesLib();
-        $cookie = new CookieLib();
-        $usuarioDao = new UsuarioDao();
-        $jwtTokenClass = new JwtLib();
-
         $codusuarioSessao = SessionLib::getValue("CODUSUARIO");
-        $tokenCookie = CookieLib::getValue("TOKEN");
+        $tokenCookie = CookieLib::getValue("REFRESH_TOKEN_JWT");
+
+        // VERIFICA SE o CODIGO ESTÁ NA SESSAO
         if (empty($codusuarioSessao)) {
+            // VERIFICA SE TEM O TOKEN NO COOKIE
             if (empty($tokenCookie)) {
-                SessionLib::setValue("REDIRECIONA", $funcoes->pegarUrlAtual());
+                SessionLib::setValue("REDIRECIONA", (new FuncoesLib())->pegarUrlAtual());
                 $this->redirect("/usuario/logoff");
                 exit();
-            } else {
-                $dataToken = $jwtTokenClass->decode($tokenCookie);
-                if (!empty($dataToken)) {
-                    $codusuarioCookie = $dataToken->data->id;
-                    $usuarioMOdel = $usuarioDao->buscarCodusuario($codusuarioCookie);
+            }
 
-                    $token = $jwtTokenClass->encode(43200, ["id" => $usuarioMOdel->getCODUSUARIO()]);
+            // PEGA INFORMACOES DO COOKIE
+            $dataToken = (new JwtLib())->decode($tokenCookie);
 
-                    CookieLib::setValue("TOKEN",$token, true);
-                    SessionLib::regenerate(); // ✅ Novo ID de sessão
-                    SessionLib::setDataSession($usuarioMOdel->getDataSession());
+            // VERIFICA SE O TOKEN É VALIDO
+            if (!empty($dataToken) && !empty($dataToken->data->id)) {
+                $codusuarioCookie = $dataToken->data->id;
+                $usuarioModel = (new UsuarioDao())->buscarCodusuario($codusuarioCookie);
 
-                    return true;
-                } else {
-                    SessionLib::setValue("REDIRECIONA", $funcoes->pegarUrlAtual());
+                if (!$usuarioModel) {
+                    SessionLib::setValue("REDIRECIONA", (new FuncoesLib())->pegarUrlAtual());
                     $this->redirect("/usuario/logoff");
                     exit();
                 }
+
+                $token = (new JwtLib())->encode(43200, ["id" => $usuarioModel->getCODUSUARIO()]);
+
+                CookieLib::setValue("REFRESH_TOKEN_JWT",$token, 30, true);
+                SessionLib::regenerate(); // ✅ Novo ID de sessão
+                SessionLib::setDataSession($usuarioModel->getDataSession());
+                return true;
             }
-        } else {
-            return true;
+
+            SessionLib::setValue("REDIRECIONA", (new FuncoesLib())->pegarUrlAtual());
+            $this->redirect("/usuario/logoff");
+            exit();
+
         }
+
+        // ESTA LOGADO
+        return true;
+
     }
 
     public function isLogged2(){
@@ -372,10 +475,11 @@ class ControllerCore
 
 
         $returnParams = count($queryParams) > 0 ? "?" . implode("&", $queryParams) : "";
+        $baseUrl = $this->servico["URL"] ?? "";
         if (!empty($servico))
-            return "{$this->servico["URL"]}-{$servico}/" . $returnParams;
+            return "{$baseUrl}-{$servico}/" . $returnParams;
         else
-            return "{$this->servico["URL"]}/" . $returnParams;
+            return "{$baseUrl}/" . $returnParams;
     }
 
 
