@@ -120,13 +120,8 @@ class TwigExtensionLib extends \Twig\Extension\AbstractExtension implements \Twi
             'COOKIE' => $_COOKIE ?? [],
             'CONFIG_COLOR' => CONFIG_COLOR ?? [],
             'CONFIG_SITE' => CONFIG_SITE ?? [],
-            'CONFIG_PAYMENT' => CONFIG_PAYMENT ?? [],
             'CONFIG_HEADER' => CONFIG_HEADER ?? [],
             'CONFIG_VERSION_CODE' => CONFIG_VERSION_CODE,
-            'CONFIG_SOCIAL_LOGIN' => CONFIG_SOCIAL_LOGIN,
-            'CONFIG_SUPORTE' => CONFIG_SUPORTE,
-            'CONFIG_ADMIN' => CONFIG_ADMIN,
-            'CONFIG_PHONENUMBER_WHATSAPP' => WhatsappFactory::create(CONFIG_KEY_API['whatsapp_provider'])->getPhoneNumber()
         ];
     }
 

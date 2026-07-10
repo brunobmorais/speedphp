@@ -6,7 +6,7 @@ if (strpos($_SERVER['SERVER_NAME'],"localhost") || $_SERVER['SERVER_NAME'] == "l
 }
 
 /*ALTERE ESSA VARIAVEL TODA VEZ QUE QUISER ATUALIZAR O CSS E JAVASCRIPT*/
-const CONFIG_VERSION_CODE = "2.0.1";
+const CONFIG_VERSION_CODE = "2.0.5";
 
 const CONFIG_MAINTENANCE = false;
 const DEBUG_ROUTER = false;
@@ -14,7 +14,7 @@ const DEBUG_ROUTER = false;
 
 const CONFIG_SECURITY = [
     "domain" => 'seudominio.com',
-    "token" => 'suaChavetoken',
+    "token" => 'MmWx4vxvnla9iCfl8l1pLIG6PVs6KquwFGnBbjOQasdfasdfASDFadsf4489',
     "permission_domains" => ['speedphp.bmorais.com', 'bmorais.com', 'www.seudominio.com']
 ];
 
@@ -94,3 +94,11 @@ const CONFIG_KEY_API = array(
     "google" => "ChaveKeyGoolge",
     "chatgpt" => ""
 );
+
+const CONFIG_SOCIAL_LOGIN = [
+    'google' => [
+        'client_id' => '',
+        'client_secret' => '',
+        'callback' => CONFIG_SITE['url'] . '',
+    ],
+];
