@@ -99,7 +99,7 @@ As rotas da API são definidas em `src/Api/Routers/`.
 
 ```php
 <?php
-namespace App\Controllers;
+namespace App\Modules\Home;
 
 use App\Core\Controller\ControllerCore;
 
