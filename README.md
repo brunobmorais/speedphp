@@ -188,3 +188,154 @@ speedphp/
 | `src/Modules/` | Controllers organizados por módulo/domínio |
 | `templates/` | Views Twig da aplicação |
 | `config/` | Configurações de ambiente e da aplicação |
+
+---
+
+## Bibliotecas Disponíveis
+
+Todas as bibliotecas ficam em `src/Libs/` e podem ser usadas diretamente nos controllers.
+
+| Biblioteca | Descrição |
+|------------|-----------|
+| `JwtLib` | Geração e validação de tokens JWT (`firebase/php-jwt`) |
+| `EmailLib` | Envio de e-mails via PHPMailer |
+| `TemplateEmailLib` | Templates HTML para e-mails |
+| `SessionLib` | Gerenciamento de sessões PHP |
+| `CookieLib` | Manipulação de cookies |
+| `FileLib` | Upload, validação e manipulação de arquivos |
+| `DownloadLib` | Download forçado de arquivos |
+| `Tcpdf/` | Geração de documentos PDF (`tecnickcom/tcpdf`) |
+| `PlanilhaLib` | Exportação para Excel via PhpSpreadsheet |
+| `PixLib` | Geração de QR Code e integração com Pix |
+| `MercadoPagoLib` | Integração com a API do Mercado Pago |
+| `OpenAiApi` | Integração com a API da OpenAI |
+| `HttpLib` | Requisições HTTP com cURL |
+| `LogLib` | Logging de eventos da aplicação |
+| `CacheLib` | Cache de dados em arquivo |
+| `AlertLib` | Sistema de alertas e flash messages |
+| `CryptTextLib` | Criptografia e descriptografia de texto |
+| `TimeLib` | Manipulação e formatação de datas e horários |
+| `TableLib` | Renderização dinâmica de tabelas HTML |
+| `ICalLib` | Geração de arquivos de calendário iCal |
+| `LoginLimit` | Limitador de tentativas de login (brute-force protection) |
+| `NotificacaoLib` | Notificações internas da aplicação |
+| `PushNotification/` | Push notifications para PWA |
+| `StravaLib` | Integração com a API do Strava |
+| `UuidClass` | Geração de UUIDs (`ramsey/uuid`) |
+| `LocalStorageClass` | Interação com localStorage do navegador |
+| `Form/` | Helpers para criação e validação de formulários |
+| `FuncoesLib` | Funções utilitárias gerais |
+
+---
+
+## Comandos
+
+### Makefile
+
+Execute `make help` para ver todos os comandos disponíveis.
+
+| Comando | Descrição |
+|---------|-----------|
+| `make up` | Para todos os containers e sobe com `--force-recreate` |
+| `make docker` | Menu interativo para gerenciar containers Docker |
+| `make start` | Menu interativo completo: Docker, config, composer, backup, uploads |
+| `make update` | Executa `composer update` dentro do container PHP |
+| `make push MSG="mensagem"` | Commit + pull --rebase + push para o repositório |
+| `make createmodel` | Cria Model e Dao a partir do nome de uma tabela do banco |
+| `make createcontroller` | Cria Controller e template dentro de `src/Modules` |
+| `make build` | Minifica JS e CSS do projeto |
+| `make backup` | Executa backup/import do banco de dados de produção |
+| `make download` | Baixa arquivos de uploads do servidor remoto |
+
+### Geração de arquivos via navegador
+
+```
+# Criar controller e template
+http://localhost/config/createcontroller/NOME_CONTROLLER/NOME_SERVICO
+
+# Criar model e dao
+http://localhost/config/createmodel/NOME_TABELA_BANCO
+
+# Build (minificação de JS e CSS)
+http://localhost/config/build
+```
+
+### Otimizar autoloader para produção
+
+```bash
+composer dump-autoload --optimize
+```
+
+---
+
+## Configuração
+
+### Ambiente de desenvolvimento local
+
+Renomeie o arquivo de exemplo e edite com as informações do seu servidor:
+
+```bash
+cp config/developerConfig.example.php config/developerConfig.php
+```
+
+### Banco de dados — phpMyAdmin
+
+| Campo | Valor |
+|-------|-------|
+| URL | http://phpmyadmin.localhost:8080/ |
+| Usuário | `user` |
+| Senha | `user` |
+| Root | `root` / `root` |
+
+### XDebug com PHPStorm
+
+1. Em **Settings → PHP → Servers**, adicione o servidor com a URL do projeto
+2. Marque **Use path mappings**
+3. Configure o **Absolute path on the server** como `/var/www/html`
+
+---
+
+## PWA (Progressive Web App)
+
+O SpeedPHP tem suporte nativo a PWA:
+
+- `manifest.json` — configuração do app (nome, ícones, cores)
+- `sw.js` — Service Worker para funcionamento offline
+
+---
+
+## Front-end
+
+O framework utiliza [Bootstrap 5.3](https://getbootstrap.com/) como base de CSS.
+
+Para gerar um favicon: [https://www.favicon-generator.org/](https://www.favicon-generator.org/)
+
+---
+
+## Pacotes Externos
+
+| Pacote | Descrição | Link |
+|--------|-----------|------|
+| `robmorgan/phinx` | Migrations e Seeds para banco de dados | [phinx.org](https://phinx.org/) |
+| `bmorais/database` | Conexão PDO ao banco de dados | [GitHub](https://github.com/brunobmorais/php-database) |
+| `phpmailer/phpmailer` | Envio de e-mails | [GitHub](https://github.com/PHPMailer/PHPMailer) |
+| `firebase/php-jwt` | Geração e validação de tokens JWT | [GitHub](https://github.com/firebase/php-jwt) |
+| `twig/twig` | Engine de templates | [twig.symfony.com](https://twig.symfony.com/) |
+| `tecnickcom/tcpdf` | Geração de PDFs | [tcpdf.org](https://tcpdf.org/) |
+| `phpoffice/phpspreadsheet` | Leitura e escrita de planilhas Excel | [GitHub](https://github.com/PHPOffice/PhpSpreadsheet) |
+| `ramsey/uuid` | Geração de UUIDs | [GitHub](https://github.com/ramsey/uuid) |
+| `mpdf/qrcode` | Geração de QR Codes | [Packagist](https://packagist.org/packages/mpdf/qrcode) |
+| `spatie/ignition` | Debug e tratamento de erros (dev) | [GitHub](https://github.com/spatie/ignition) |
+
+---
+
+## Autores
+
+- **Bruno Morais** — [github.com/brunobmorais](https://github.com/brunobmorais)
+- **Athus Felipe** — [github.com/AthusFelipe](https://github.com/AthusFelipe)
+
+---
+
+## Licença
+
+Este projeto está licenciado sob a [MIT License](LICENSE).
