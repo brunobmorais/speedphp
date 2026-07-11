@@ -60,15 +60,19 @@ class PessoaDao extends Crud
                     PF.CODPESSOA_FISICA, PF.CPF, PF.DATANASCIMENTO, PF.SEXO,
                     TIMESTAMPDIFF(YEAR, PF.DATANASCIMENTO, CURDATE()) AS IDADE,
                     PJ.CODPESSOA_JURIDICA, PJ.CODPESSOA_JURIDICA, PJ.CNPJ, PJ.NOMEFANTASIA,
-                    COALESCE(PF.CPF, PJ.CNPJ) AS CPFCNPJ
+                    COALESCE(PF.CPF, PJ.CNPJ) AS CPFCNPJ,
+                    U.CODUSUARIO, U.SITUACAO AS SITUACAO_USUARIO
                     FROM PESSOA AS P
+                    LEFT JOIN SI_USUARIO AS U ON U.CODPESSOA=P.CODPESSOA AND U.EXCLUIDO = 0
                     LEFT JOIN PESSOA_JURIDICA AS PJ on PJ.CODPESSOA=P.CODPESSOA
                     LEFT JOIN PESSOA_FISICA PF ON PF.CODPESSOA=P.CODPESSOA
                     WHERE P.EXCLUIDO='0'";
-        if (!empty($buscar))
-            $sql .= " AND (P.NOME LIKE '%{$buscar}%' OR PF.CPF LIKE '%{$buscar}%' OR PJ.CNPJ LIKE '%{$buscar}%' OR P.EMAIL LIKE '%{$buscar}%' OR P.TELEFONE LIKE '%{$buscar}%')";
+        if (!empty($buscar)) {
+            $cpfCnpj = (new FuncoesLib())->removeCaracteres($buscar);
+            $sql .= " AND (P.NOME LIKE '%{$buscar}%' OR PF.CPF LIKE '%{$cpfCnpj}%' OR PJ.CNPJ LIKE '%{$cpfCnpj}%' OR P.EMAIL LIKE '%{$buscar}%' OR P.TELEFONE LIKE '%{$cpfCnpj}%')";
+        }
 
-        $sql .= "  ORDER BY P.NOME";
+        $sql .= " GROUP BY P.CODPESSOA ORDER BY P.NOME";
 
         $result = $this->executeSQL($sql);
         return $this->fetchArrayObj($result) ?? null;
@@ -172,157 +176,97 @@ class PessoaDao extends Crud
     {
         try {
             $sql = "SELECT P.CODPESSOA, P.CODENDERECO, P.IMAGEM, P.TIPOPESSOA, P.NOME, P.TELEFONE, P.EMAIL, P.CRIADO_EM, P.ALTERADO_EM,
-                    COALESCE(PF.CPF, PJ.CNPJ) AS CPFCNPJ
+                    COALESCE(PF.CPF, PJ.CNPJ) AS CPFCNPJ,
+                    CASE WHEN U.CODUSUARIO IS NOT NULL THEN '1' ELSE '0' END AS IS_USUARIO
                     FROM PESSOA AS P
                     LEFT JOIN PESSOA_JURIDICA AS PJ on PJ.CODPESSOA=P.CODPESSOA
                     LEFT JOIN PESSOA_FISICA PF ON PF.CODPESSOA=P.CODPESSOA
+                    LEFT JOIN SI_USUARIO AS U ON U.CODPESSOA=P.CODPESSOA AND U.EXCLUIDO=0
                     WHERE P.EXCLUIDO='0' AND P.CODPESSOA=?";
 
             $this->executeSQL($sql, [$codpessoa]);
             return $this->fetchArrayObj();
-        } catch (\Throwable $e) {
-            return null;
+        } catch (Error $e) {
+            return $e;
         }
     }
 
     public function inserirPessoaFisica(EnderecoModel $endereco, PessoaModel $pessoa, PessoaFisicaModel $pessoaFisica)
     {
+        $pessoa->setNOME((new FuncoesLib())->textoPrimeiraLetraMaiusculoCadaPalavra($pessoa->getNOME()));
+        $pessoaFisica->setCPF((new FuncoesLib())->removeCaracteres($pessoaFisica->getCPF()));
+        $pessoaFisica->setDATANASCIMENTO((new FuncoesLib())->formatDataBanco($pessoaFisica->getDATANASCIMENTO()));
 
         try {
             $this->beginTransaction();
 
             // BUSCA SE A PESSOA ESTÁ CADASTRADA
-            $this->executeSQL('SELECT P.CODPESSOA, CODENDERECO, TIPOPESSOA, NOME, TELEFONE, EMAIL, CRIADO_EM, ALTERADO_EM 
-                FROM PESSOA AS P 
+            $this->executeSQL('SELECT P.CODPESSOA, CODENDERECO, TIPOPESSOA, NOME, TELEFONE, EMAIL, CRIADO_EM, ALTERADO_EM
+                FROM PESSOA AS P
                 INNER JOIN PESSOA_FISICA PF ON PF.CODPESSOA=P.CODPESSOA
                 WHERE PF.CPF = ? AND PF.EXCLUIDO = 0 AND P.EXCLUIDO= 0', [$pessoaFisica->getCPF()]);
 
-            // VERIFICA SE RETORNOU ALGUM RESULTADO
-            if ($this->rowCount() < 1) {
-                // CADASTRAR ENDEREÇO
-                $this->executeSQL("INSERT INTO ENDERECO (CODCIDADE, CEP, LOGRADOURO, NUMERO, BAIRRO, COMPLEMENTO)
-            VALUES (?, ?, ?, ?, ?, ?) ", [$endereco->getCODCIDADE(), $endereco->getCEP(), $endereco->getLOGRADOURO(), $endereco->getNUMERO(), $endereco->getBAIRRO(), $endereco->getCOMPLEMENTO()]);
-                $codEndereco = $this->lastInsertId();
-                if (!$codEndereco) {
-                    $this->rollBackTransaction();
-                    return [
-                        "error" => true,
-                        "message" => "Erro ao cadastrar endereço!",
-                        "codpessoa" => null
-                    ];
-                }
+            // VERIFICA SE CPF JÁ ESTÁ CADASTRADO
+            if ($this->rowCount() > 0) {
+                $this->rollBackTransaction();
+                return ["error" => true, "message" => "CPF já cadastrado no sistema!", "codpessoa" => null];
+            }
 
-                // CADASTRAR PESSOA
-                $this->executeSQL("INSERT INTO PESSOA (CODENDERECO, TIPOPESSOA, NOME, TELEFONE, EMAIL) VALUES (?, ?, ?, ?, ?) ", [$codEndereco, $pessoa->getTIPOPESSOA(), $pessoa->getNOME(), $pessoa->getTELEFONE(), $pessoa->getEMAIL()]);
-                $codpessoa = $this->lastInsertId();
-                if (!$codpessoa) {
-                    $this->rollBackTransaction();
-                    return [
-                        "error" => true,
-                        "message" => "Erro ao cadastrar pessoa!",
-                        "codpessoa" => null
-                    ];
-                }
+            // CADASTRAR ENDEREÇO
+            $this->executeSQL("INSERT INTO ENDERECO (CODCIDADE, CEP, LOGRADOURO, NUMERO, BAIRRO, COMPLEMENTO)
+                    VALUES (?, ?, ?, ?, ?, ?) ", [$endereco->getCODCIDADE(), $endereco->getCEP(), $endereco->getLOGRADOURO(), $endereco->getNUMERO(), $endereco->getBAIRRO(), $endereco->getCOMPLEMENTO()]);
+            $codEndereco = $this->lastInsertId();
+            if (!$codEndereco) {
+                $this->rollBackTransaction();
+                return ["error" => true, "message" => "Erro ao cadastrar endereço!", "codpessoa" => null];
+            }
 
-                // CADASTRAR PESSOA FISICA
-                $result = $this->executeSQL('INSERT INTO PESSOA_FISICA (CODPESSOA, DATANASCIMENTO, CPF, SEXO) VALUES (?, ?, ?, ?)', [$codpessoa, $pessoaFisica->getDATANASCIMENTO(), $pessoaFisica->getCPF(), $pessoaFisica->getSEXO()]);
-                if (!$result) {
-                    $this->rollBackTransaction();
-                    return [
-                        "error" => true,
-                        "message" => "Erro ao cadastrar pessoa física!",
-                        "codpessoa" => null
-                    ];
-                }
-            } // SE JA EXISTIR É PARA ATUALIZAR AS INFORMACOES EXISTENTES
-            else {
-                $pessoaObj = $this->fetchOneObj();
-                $codpessoa = $pessoaObj->CODPESSOA;
+            // CADASTRAR PESSOA
+            $this->executeSQL("INSERT INTO PESSOA (CODENDERECO, TIPOPESSOA, NOME, TELEFONE, EMAIL, IMAGEM) VALUES (?, ?, ?, ?, ?, ?) ", [$codEndereco, $pessoa->getTIPOPESSOA(), $pessoa->getNOME(), $pessoa->getTELEFONE(), $pessoa->getEMAIL(), $pessoa->getIMAGEM() ?? "default.png"]);
+            $codpessoa = $this->lastInsertId();
+            if (!$codpessoa) {
+                $this->rollBackTransaction();
+                return ["error" => true, "message" => "Erro ao cadastrar pessoa!", "codpessoa" => null];
+            }
 
-                // ATUALIZAR ENDEREÇO
-                $result = $this->executeSQL(
-                    "UPDATE ENDERECO SET CODCIDADE=?, CEP=?, LOGRADOURO=?, NUMERO=?, BAIRRO=?, COMPLEMENTO=? WHERE CODENDERECO=?",
-                    [$endereco->getCODCIDADE(), $endereco->getCEP(), $endereco->getLOGRADOURO(), $endereco->getNUMERO(), $endereco->getBAIRRO(), $endereco->getCOMPLEMENTO(), $pessoaObj->CODENDERECO]
-                );
-                if (!$result) {
-                    $this->rollBackTransaction();
-                    return [
-                        "error" => true,
-                        "message" => "Erro ao cadastrar endereço!",
-                        "codpessoa" => null
-                    ];
-                }
-
-                // ATUALIZAR PESSOA
-                $result = $this->executeSQL(
-                    "UPDATE PESSOA SET NOME=?, TELEFONE=?, EMAIL=? WHERE CODPESSOA=?",
-                    [$pessoa->getNOME(), $pessoa->getTELEFONE(), $pessoa->getEMAIL(), $pessoaObj->CODPESSOA]
-                );
-                if (!$result) {
-                    $this->rollBackTransaction();
-                    return [
-                        "error" => true,
-                        "message" => "Erro ao atualizar pessoa!",
-                        "codpessoa" => null
-                    ];
-                }
-
-                // ATUALIZAR PESSOA FISICA
-                $result = $this->executeSQL(
-                    'UPDATE PESSOA_FISICA SET DATANASCIMENTO=?, SEXO=? WHERE CODPESSOA=?',
-                    [$pessoaFisica->getDATANASCIMENTO(), $pessoaFisica->getSEXO(), $codpessoa]
-                );
-                if (!$result) {
-                    $this->rollBackTransaction();
-                    return [
-                        "error" => true,
-                        "message" => "Erro ao atualizar pessoa física!",
-                        "codpessoa" => null
-                    ];
-                }
+            // CADASTRAR PESSOA FISICA
+            $result = $this->executeSQL('INSERT INTO PESSOA_FISICA (CODPESSOA, DATANASCIMENTO, CPF, SEXO) VALUES (?, ?, ?, ?)', [$codpessoa, $pessoaFisica->getDATANASCIMENTO(), $pessoaFisica->getCPF(), $pessoaFisica->getSEXO()]);
+            if (!$result) {
+                $this->rollBackTransaction();
+                return ["error" => true, "message" => "Erro ao cadastrar pessoa física!", "codpessoa" => null];
             }
 
             $this->commitTransaction();
-            return [
-                "error" => false,
-                "message" => "Cadastrado com sucesso",
-                "codpessoa" => $codpessoa
-            ];
-        } catch (\Throwable $th) {
+            return ["error" => false, "message" => "Cadastrado com sucesso", "codpessoa" => $codpessoa];
+        } catch (\Error $th) {
             $this->rollBackTransaction();
-            return [
-                "error" => true,
-                "message" => $th->getMessage(),
-                "codpessoa" => null
-            ];
+            return ["error" => true, "message" => $th->getMessage(), "codpessoa" => null];
         }
     }
 
     public function atualizarPessoaFisica(EnderecoModel $endereco, PessoaModel $pessoa, PessoaFisicaModel $pessoaFisica)
     {
-
         try {
             $this->beginTransaction();
 
             $pessoa->setNOME((new FuncoesLib())->textoPrimeiraLetraMaiusculoCadaPalavra($pessoa->getNOME()));
+            $pessoaFisica->setCPF((new FuncoesLib())->removeCaracteres($pessoaFisica->getCPF()));
+            $pessoaFisica->setDATANASCIMENTO((new FuncoesLib())->formatDataBanco($pessoaFisica->getDATANASCIMENTO()));
 
-
-            $resultPessoa = $this->executeSQL("UPDATE PESSOA  SET NOME = ?, TELEFONE = ?, EMAIL = ?, IMAGEM=? WHERE CODPESSOA = ? ", [$pessoa->getNOME(), $pessoa->getTELEFONE(), $pessoa->getEMAIL(), $pessoa->getIMAGEM() ?? "default.png", $pessoa->getCODPESSOA()]);
+            if (!empty($pessoa->getIMAGEM())) {
+                $resultPessoa = $this->executeSQL("UPDATE PESSOA SET NOME = ?, TELEFONE = ?, EMAIL = ?, IMAGEM=? WHERE CODPESSOA = ?", [$pessoa->getNOME(), $pessoa->getTELEFONE(), $pessoa->getEMAIL(), $pessoa->getIMAGEM(), $pessoa->getCODPESSOA()]);
+            } else {
+                $resultPessoa = $this->executeSQL("UPDATE PESSOA SET NOME = ?, TELEFONE = ?, EMAIL = ? WHERE CODPESSOA = ?", [$pessoa->getNOME(), $pessoa->getTELEFONE(), $pessoa->getEMAIL(), $pessoa->getCODPESSOA()]);
+            }
             if (!$resultPessoa) {
                 $this->rollBackTransaction();
-                return [
-                    "error" => true,
-                    "message" => "Erro ao atualizar pessoa",
-                ];
+                return ["error" => true, "message" => "Erro ao atualizar pessoa"];
             }
 
-            $resultPessoaFisica = $this->executeSQL('UPDATE PESSOA_FISICA SET DATANASCIMENTO = ? , CPF = ? , SEXO = ? WHERE CODPESSOA = ?', [$pessoaFisica->getDATANASCIMENTO(), $pessoaFisica->getCPF(), $pessoaFisica->getSEXO(), $pessoaFisica->getCODPESSOA()]);
+            $resultPessoaFisica = $this->executeSQL('UPDATE PESSOA_FISICA SET DATANASCIMENTO = ?, CPF = ?, SEXO = ? WHERE CODPESSOA = ?', [$pessoaFisica->getDATANASCIMENTO(), $pessoaFisica->getCPF(), $pessoaFisica->getSEXO(), $pessoaFisica->getCODPESSOA()]);
             if (!$resultPessoaFisica) {
                 $this->rollBackTransaction();
-                return [
-                    "error" => true,
-                    "message" => "Erro ao atualizar pessoa física!",
-                ];
+                return ["error" => true, "message" => "Erro ao atualizar pessoa física!"];
             }
 
             $resultEndereco = $this->executeSQL(
@@ -331,80 +275,60 @@ class PessoaDao extends Crud
             );
             if (!$resultEndereco) {
                 $this->rollBackTransaction();
-                return [
-                    "error" => true,
-                    "message" => "Erro ao atualizar endereço!",
-                ];
+                return ["error" => true, "message" => "Erro ao atualizar endereço!"];
             }
 
             $this->commitTransaction();
-            return [
-                "error" => false,
-                "message" => "Atualizado com sucesso",
-                "codpessoa" => $pessoa->getCODPESSOA()
-            ];
-        } catch (\Throwable $th) {
+            return ["error" => false, "message" => "Atualizado com sucesso", "codpessoa" => $pessoa->getCODPESSOA()];
+        } catch (\Error $th) {
             $this->rollBackTransaction();
-            return [
-                "error" => true,
-                "message" => $th->getMessage(),
-                "codpessoa" => null
-            ];
+            return ["error" => true, "message" => $th->getMessage(), "codpessoa" => null];
         }
     }
 
     public function inserirPessoaJuridica(EnderecoModel $endereco, PessoaModel $pessoa, PessoaJuridicaModel $pessoaJuridica)
     {
-
         try {
             $this->beginTransaction();
 
+            $pessoaJuridica->setNOMEFANTASIA((new FuncoesLib())->textoPrimeiraLetraMaiusculoCadaPalavra($pessoaJuridica->getNOMEFANTASIA()));
+            $pessoaJuridica->setCNPJ((new FuncoesLib())->removeCaracteres($pessoaJuridica->getCNPJ()));
+
             // BUSCA SE A PESSOA JURÍDICA ESTÁ CADASTRADA
-            $this->executeSQL('SELECT P.CODPESSOA, CODENDERECO, TIPOPESSOA, NOME, TELEFONE, EMAIL, CRIADO_EM, ALTERADO_EM 
-                FROM PESSOA AS P 
+            $this->executeSQL('SELECT P.CODPESSOA, CODENDERECO, TIPOPESSOA, NOME, TELEFONE, EMAIL, P.CRIADO_EM, P.ALTERADO_EM
+                FROM PESSOA AS P
                 INNER JOIN PESSOA_JURIDICA PF ON PF.CODPESSOA=P.CODPESSOA
                 WHERE PF.CNPJ = ? AND PF.EXCLUIDO = 0 AND P.EXCLUIDO= 0', [$pessoaJuridica->getCNPJ()]);
             $objPessoa = $this->fetchArrayObj();
 
-            // SE NAO TIVER CADASTRADO
-            if (empty($objPessoa)) {
-                // CADASTRAR ENDEREÇO
-                $this->executeSQL("INSERT INTO ENDERECO (CODCIDADE, CEP, LOGRADOURO, NUMERO, BAIRRO, COMPLEMENTO)
-                                            VALUES (?, ?, ?, ?, ?, ?) ", [$endereco->getCODCIDADE(), $endereco->getCEP(), $endereco->getLOGRADOURO(), $endereco->getNUMERO(), $endereco->getBAIRRO(), $endereco->getCOMPLEMENTO()]);
-                $codEndereco = $this->lastInsertId();
-                if (!$codEndereco) {
-                    $this->rollBackTransaction();
-                    return [
-                        "error" => true,
-                        "message" => "Erro ao cadastrar endereço!",
-                        "codpessoa" => null
-                    ];
-                }
+            // VERIFICA SE CNPJ JÁ ESTÁ CADASTRADO
+            if (!empty($objPessoa)) {
+                $this->rollBackTransaction();
+                return ["error" => true, "message" => "CNPJ já cadastrado no sistema!", "codpessoa" => null];
+            }
 
-                // CADASTRAR PESSOA
-                $this->executeSQL("INSERT INTO PESSOA (CODENDERECO, TIPOPESSOA, NOME, TELEFONE, EMAIL) VALUES (?, ?, ?, ?, ?) ", [$codEndereco, $pessoa->getTIPOPESSOA(), $pessoa->getNOME(), $pessoa->getTELEFONE(), $pessoa->getEMAIL()]);
-                $codpessoa = $this->lastInsertId();
-                if (!$codpessoa) {
-                    $this->rollBackTransaction();
-                    return [
-                        "error" => true,
-                        "message" => "Erro ao cadastrar pessoa!",
-                        "codpessoa" => null
-                    ];
-                }
+            // CADASTRAR ENDEREÇO
+            $this->executeSQL("INSERT INTO ENDERECO (CODCIDADE, CEP, LOGRADOURO, NUMERO, BAIRRO, COMPLEMENTO)
+                                    VALUES (?, ?, ?, ?, ?, ?) ", [$endereco->getCODCIDADE(), $endereco->getCEP(), $endereco->getLOGRADOURO(), $endereco->getNUMERO(), $endereco->getBAIRRO(), $endereco->getCOMPLEMENTO()]);
+            $codEndereco = $this->lastInsertId();
+            if (!$codEndereco) {
+                $this->rollBackTransaction();
+                return ["error" => true, "message" => "Erro ao cadastrar endereço!", "codpessoa" => null];
+            }
 
-                // CADASTRAR PESSOA FISICA
-                $result = $this->executeSQL('INSERT INTO PESSOA_JURIDICA (CODPESSOA, NOMEFANTASIA, CNPJ) VALUES (?, ?, ?)', [$codpessoa, $pessoaJuridica->getNOMEFANTASIA(), $pessoaJuridica->getCNPJ()]);
-                if (!$result) {
-                    $this->rollBackTransaction();
-                    return [
-                        "error" => true,
-                        "message" => "Erro ao cadastrar pessoa jurídica!",
-                        "codpessoa" => null
-                    ];
-                }
-            } else {
-                $codpessoa = $objPessoa[0]->CODPESSOA;
+            // CADASTRAR PESSOA
+            $this->executeSQL("INSERT INTO PESSOA (CODENDERECO, TIPOPESSOA, NOME, TELEFONE, EMAIL) VALUES (?, ?, ?, ?, ?) ", [$codEndereco, $pessoa->getTIPOPESSOA(), $pessoa->getNOME(), $pessoa->getTELEFONE(), $pessoa->getEMAIL()]);
+            $codpessoa = $this->lastInsertId();
+            if (!$codpessoa) {
+                $this->rollBackTransaction();
+                return ["error" => true, "message" => "Erro ao cadastrar pessoa!", "codpessoa" => null];
+            }
+
+            // CADASTRAR PESSOA JURÍDICA
+            $result = $this->executeSQL('INSERT INTO PESSOA_JURIDICA (CODPESSOA, NOMEFANTASIA, CNPJ) VALUES (?, ?, ?)', [$codpessoa, $pessoaJuridica->getNOMEFANTASIA(), $pessoaJuridica->getCNPJ()]);
+            if (!$result) {
+                $this->rollBackTransaction();
+                return ["error" => true, "message" => "Erro ao cadastrar pessoa jurídica!", "codpessoa" => null];
             }
 
             $this->commitTransaction();
@@ -425,11 +349,13 @@ class PessoaDao extends Crud
 
     public function atualizarPessoaJuridica(EnderecoModel $endereco, PessoaModel $pessoa, PessoaJuridicaModel $pessoaJuridica)
     {
-
         try {
             $this->beginTransaction();
 
-            // CADASTRAR ENDEREÇO
+            $pessoaJuridica->setNOMEFANTASIA((new FuncoesLib())->textoPrimeiraLetraMaiusculoCadaPalavra($pessoaJuridica->getNOMEFANTASIA()));
+            $pessoaJuridica->setCNPJ((new FuncoesLib())->removeCaracteres($pessoaJuridica->getCNPJ()));
+
+            // ATUALIZAR ENDEREÇO
             $result = $this->executeSQL("UPDATE ENDERECO SET CODCIDADE=?, CEP=?, LOGRADOURO=?, NUMERO=?, BAIRRO=?, COMPLEMENTO=? WHERE CODENDERECO=?", [$endereco->getCODCIDADE(), $endereco->getCEP(), $endereco->getLOGRADOURO(), $endereco->getNUMERO(), $endereco->getBAIRRO(), $endereco->getCOMPLEMENTO(), $endereco->getCODENDERECO()]);
             if (!$result) {
                 $this->rollBackTransaction();

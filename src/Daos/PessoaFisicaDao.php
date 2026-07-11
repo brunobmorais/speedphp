@@ -75,8 +75,9 @@ class PessoaFisicaDao extends CrudBuilder
 
     public function inserirUsuario(EnderecoModel $endereco, PessoaModel $pessoa, PessoaFisicaModel $pessoaFisica)
     {
-
-        $pessoaFisica->setCPF((new FuncoesLib())->removeCaracteres($pessoaFisica->getCPF()));
+        $funcoesLib = new FuncoesLib();
+        $pessoaFisica->setCPF($funcoesLib->removeCaracteres($pessoaFisica->getCPF()));
+        $pessoaFisica->setDATANASCIMENTO($funcoesLib->formatDataBanco($pessoaFisica->getDATANASCIMENTO()));
         try {
             $this->beginTransaction();
 
@@ -102,7 +103,7 @@ class PessoaFisicaDao extends CrudBuilder
                 }
 
                 // CADASTRAR PESSOA
-                $this->executeSQL("INSERT INTO PESSOA (CODENDERECO, TIPOPESSOA, NOME, TELEFONE, EMAIL) VALUES (?, ?, ?, ?, ?) ", [$codEndereco, $pessoa->getTIPOPESSOA(), $pessoa->getNOME(), $pessoa->getTELEFONE(), $pessoa->getEMAIL()]);
+                $this->executeSQL("INSERT INTO PESSOA (CODENDERECO, TIPOPESSOA, NOME, TELEFONE, EMAIL, IMAGEM) VALUES (?, ?, ?, ?, ?, ?) ", [$codEndereco, $pessoa->getTIPOPESSOA(), $pessoa->getNOME(), $pessoa->getTELEFONE(), $pessoa->getEMAIL(), $pessoa->getIMAGEM() ?? "default.png"]);
                 $codpessoa = $this->lastInsertId();
                 if (!$codpessoa) {
                     $this->rollBackTransaction();
@@ -128,6 +129,7 @@ class PessoaFisicaDao extends CrudBuilder
             // SE JA EXISTIR É PARA ATUALIZAR AS INFORMACOES EXISTENTES
             else {
                 $pessoaObj = $this->fetchOneObj();
+                $codpessoa = $pessoaObj->CODPESSOA;
 
                 // ATUALIZAR ENDEREÇO
                 $result = $this->executeSQL(
@@ -160,17 +162,20 @@ class PessoaFisicaDao extends CrudBuilder
                 // NAO NECESSITA ATUALIZAR PESSOA FISICA POIS SAO INFORMAÇÕES BÁSICA DE UMA PESSOA FISICA
             }
 
+            // VERIFICA SE JÁ É USUÁRIO
+            $this->executeSQL('SELECT CODUSUARIO FROM SI_USUARIO WHERE CODPESSOA = ? AND EXCLUIDO = 0', [$codpessoa]);
+            if ($this->rowCount() > 0) {
+                $this->rollBackTransaction();
+                return ["error" => true, "message" => "Essa pessoa já possui acesso ao sistema!", "codpessoa" => $codpessoa];
+            }
+
             // CADASTRAR USUÁRIO
             $senha = substr($pessoaFisica->getCPF(), 0, 2) . "@".CONFIG_SITE["name"];
             $result = $this->executeSQL('INSERT INTO SI_USUARIO (CODPESSOA, SENHA, SITUACAO) VALUES (?,?,?)', [$codpessoa, (new FuncoesLib())->create_password_hash($senha), 1]);
             $codusuario = $this->lastInsertId();
             if (!$result) {
                 $this->rollBackTransaction();
-                return [
-                    "error" => true,
-                    "message" => "Erro ao cadastrar endereço!",
-                    "codpessoa" => null
-                ];
+                return ["error" => true, "message" => "Erro ao cadastrar usuário!", "codpessoa" => null];
             }
 
             // INSERE O PERFIL DE USUÁRIO
@@ -210,7 +215,9 @@ class PessoaFisicaDao extends CrudBuilder
 
     public function updatePessoa(EnderecoModel $endereco, PessoaModel $pessoa, PessoaFisicaModel $pessoaFisica)
     {
-        $pessoaFisica->setCPF((new FuncoesLib())->removeCaracteres($pessoaFisica->getCPF()));
+        $funcoesLib = new FuncoesLib();
+        $pessoaFisica->setCPF($funcoesLib->removeCaracteres($pessoaFisica->getCPF()));
+        $pessoaFisica->setDATANASCIMENTO($funcoesLib->formatDataBanco($pessoaFisica->getDATANASCIMENTO()));
         try {
             $this->beginTransaction();
 

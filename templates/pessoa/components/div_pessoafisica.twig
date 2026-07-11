@@ -22,9 +22,13 @@
     <div class="form-group col-12 col-md-4 float-left">
         <label class="form-label">Data de Nascimento</label>
         <input name="DATANASCIMENTO" id="datanascimento" type="text" class="form-control" required placeholder="01/01/2000"
-               value="{{ pessoafisicaObj ? pessoafisicaObj.DATANASCIMENTO|date('d/m/Y') : '' }}" minlength="10" maxlength="10" onkeyup="mascara(this,mdata)"/>
+               value="{{ pessoafisicaObj ? pessoafisicaObj.DATANASCIMENTO|date('d/m/Y') : '' }}"
+               minlength="10" maxlength="10"
+               pattern="[0-9]{2}/[0-9]{2}/[0-9]{4}"
+               onkeyup="mascara(this,mdata)"
+               onblur="validarDataNascimentoInput(this)"/>
         <div class="invalid-feedback">
-            Preencha o campo corretamente
+            Data inválida. Use o formato DD/MM/AAAA
         </div>
     </div>
     <div class="form-group col-12 col-md-4 float-left">
@@ -49,6 +53,24 @@
 {% block bottom %}{% endblock %}
 
 <script>
+    function validarDataNascimentoInput(el) {
+        const val = el.value;
+        if (!val || val.length < 10) {
+            el.setCustomValidity('Data inválida');
+            return;
+        }
+        const [d, m, y] = val.split('/').map(Number);
+        const date = new Date(y, m - 1, d);
+        const valida = date.getFullYear() === y &&
+                       date.getMonth() === m - 1 &&
+                       date.getDate() === d &&
+                       y >= 1900 &&
+                       date <= new Date();
+        el.setCustomValidity(valida ? '' : 'Data inválida');
+        el.classList.toggle('is-invalid', !valida);
+        el.classList.toggle('is-valid', valida);
+    }
+
     function checkCPF() {
         let cpf = document.getElementById("cpf").value;
         if (!validaCPF(cpf)) {

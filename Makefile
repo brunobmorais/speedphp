@@ -251,6 +251,7 @@ start:
 		echo "  3. 📦  Composer update (dentro do container)"; \
 		echo "  4. 💾  Backup/import do banco de dados"; \
 		echo "  5. ⬇️  Download de uploads do servidor"; \
+		echo "  6. 🔨  Build — minificar JS e CSS"; \
 		echo "  0. ❌  Sair"; \
 		echo ""; \
 		read -p "Escolha uma opção: " opt; \
@@ -354,6 +355,17 @@ start:
 			bash docker/get-uploads.sh && \
 				echo "" && echo "✅ Download concluído!" || \
 				echo "❌ Erro ao executar download!"; \
+			;; \
+		6) \
+			echo "════════════════════════════════════════════════════════════════"; \
+			echo "🔨 BUILD — MINIFICAR JS E CSS"; \
+			echo "════════════════════════════════════════════════════════════════"; \
+			echo ""; \
+			echo "🔄 Minificando JS e CSS..."; \
+			echo "────────────────────────────────────────────────────────────────"; \
+			$(CURL) "$(URL)/build" && \
+				echo "" && echo "✅ Build executado com sucesso!" || \
+				echo "❌ Erro ao executar build!"; \
 			;; \
 		0) \
 			echo "Saindo."; \

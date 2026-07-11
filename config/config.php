@@ -20,11 +20,11 @@ const CONFIG_SECURITY = [
 
 // PALETA DE CORES DO SITE
 const CONFIG_COLOR = [
-    "color-navbar" => "#F46434",
-    "color-primary" => "#F46434",
+    "color-navbar" => "#FF8102",
+    "color-primary" => "#FF8102",
     "color-primary-hover" => "#d83600", //#039050 verde
     "color-secondary" => "#676767",
-    "color-link" => "#F46434",
+    "color-link" => "#FF8102",
     "color-bg" => "#F5F6FA",
 ];
 

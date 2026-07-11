@@ -1,9 +1,9 @@
 :root {
-    --mycolor-primary: #9400d3;
-    --mycolor-primary-hover: #690095;
+    --mycolor-primary: #FF8102;
+    --mycolor-primary-hover: #d83600;
     --mycolor-secondary: #676767;
-    --mycolor-link: #914ead;
-    --mycolor-navbar: #9400d3;
+    --mycolor-link: #FF8102;
+    --mycolor-navbar: #FF8102;
     --mycolor-bg: #F5F6FA;
     --mycolor-card: #FFFFFF;
     --mycolor-black-white: #000000;

@@ -680,14 +680,14 @@ class SistemaController extends ControllerCore implements ControllerInterface
         }
     }
 
-    public function usuarioscadastroaction()
-    {
-        try {
-            $this->isLogged();
-            $data = $this->getServico();
-            $this->validateRequestMethod("POST");
+        public function usuarioscadastroaction()
+        {
+            try {
+                $this->isLogged();
+                $data = $this->getServico();
+                $this->validateRequestMethod("POST");
 
-            if (!$data["SERVICO"]['SALVAR'] == 1) (new AlertLib)->warning('Você não tem permissão para realizar essa ação', "{$data["SERVICO"]["URL"]}-cadastro/");
+                if ($data["SERVICO"]['SALVAR'] != 1) (new AlertLib)->warning('Você não tem permissão para realizar essa ação', "{$data["SERVICO"]["URL"]}-cadastro/");
 
 
             $endereco = (new EnderecoModel($_POST));
@@ -725,25 +725,54 @@ class SistemaController extends ControllerCore implements ControllerInterface
 
             $tableComponents->init(
                 $objServicos,
-                array("Nome", "CPF/CNPJ", ""),
+                array("Nome", "CPF/CNPJ", "Data Nascimento", ""),
                 array("b" => $this->getParams("b"))
             );
 
             foreach ($objServicos as $key => $item) {
                 if ($tableComponents->checkPagination($key)) {
-                    $tableComponents->addCol($item->NOME)
-                        ->addCol((new FuncoesLib())->formatCpfCnpjUsuario($item->CPFCNPJ))
-                        ->addCol("<a href='{$data["SERVICO"]["URL"]}-cadastro/?id={$item->CODPESSOA}' class='btn btn-outline-secondary btn-sm'><span class='mdi mdi-pencil-outline'></span> Editar</a>")
+
+                    if (empty($item->CODUSUARIO)) {
+                        $dropdown = "<div class='dropdown col'>
+                                    <button class='btn btn-outline-secondary btn-sm ' type='button' data-bs-toggle='dropdown' aria-expanded='false'>
+                                        <span class='mdi mdi-dots-vertical mdi-18px'></span>
+                                    </button>
+                                    <ul class='dropdown-menu'>
+                                        <li><a class='dropdown-item' href='{$data["SERVICO"]["URL"]}-cadastro/?id={$item->CODPESSOA}&pg={$this->getParams("pg")}&b={$this->getParams("b")}'><span class='mdi mdi-pencil-outline'></span> Editar</a></li>
+                                    </ul>
+                                </div>";
+                    } else {
+                        $dropdown = "<div class='dropdown col'>
+                                    <button class='btn btn-outline-secondary btn-sm' type='button' data-bs-toggle='dropdown' aria-expanded='false'>
+                                        <span class='mdi mdi-dots-vertical mdi-18px'></span>
+                                    </button>
+                                    <ul class='dropdown-menu'>
+                                        <li><a class='dropdown-item' href='{$data["SERVICO"]["URL"]}-cadastro/?id={$item->CODPESSOA}&pg={$this->getParams("pg")}&b={$this->getParams("b")}'><span class='mdi mdi-account-edit-outline'></span> Editar</a></li>
+                                        <li><a class='dropdown-item' href='#' onclick='alterarSenha(`{$item->CODUSUARIO}`,`" . htmlspecialchars($item->NOME, ENT_QUOTES) . "`, `" . htmlspecialchars($item->EMAIL, ENT_QUOTES) . "`)'><span class='mdi mdi-account-key-outline'></span> Alterar Senha</a></li>
+                                        <li><a class='dropdown-item' href='#' onclick='trocarUsuario(`{$item->CODUSUARIO}`,`" . htmlspecialchars($item->NOME, ENT_QUOTES) . "`, `" . htmlspecialchars($item->EMAIL, ENT_QUOTES) . "`)'><span class='mdi mdi-login-variant'></span> Logar Como</a></li>
+                                        <li><a class='dropdown-item' href='{$data["SERVICO"]["URL"]}-perfil/?id={$item->CODUSUARIO}'><span class='mdi mdi-account-group-outline'></span> Alterar Perfil</a></li>
+                                        <li><a class='dropdown-item' href='#' onclick='alterarSituacaoUsuario(`{$item->CODUSUARIO}`,`" . ($item->SITUACAO_USUARIO == '1' ? '0' : '1') . "`)'><span class='mdi " . ($item->SITUACAO_USUARIO == '1' ? 'mdi-thumb-down-outline' : 'mdi-thumb-up-outline') . "'></span> " . ($item->SITUACAO_USUARIO == '1' ? 'Desativar' : 'Ativar') . "</a></li>
+                                    </ul>
+                                </div>";
+                    }
+
+                    $iconUsuario = empty($item->CODUSUARIO) ? "<span class='mdi mdi-circle-outline text-secondary'></span> " :
+                        ($item->SITUACAO_USUARIO == 1 ? "<span class='mdi mdi-account text-success'></span> " : "<span class='mdi mdi-account text-danger'></span> ");
+
+                    $tableComponents->addCol($iconUsuario . $item->NOME . $tableComponents->addColLine($item->EMAIL))
+                        ->addCol($item->CPFCNPJ ?? "")
+                        ->addCol((new FuncoesLib())->formatDataUsuario($item->DATANASCIMENTO))
+                        ->addCol($dropdown)
                         ->addRow();
                 }
             }
             $data["TABLE_INPUT_PLACEHOLDER"] = "Nome, E-mail, CPF/CNPJ";
             $data["TABLE_COMPONENT"] = $tableComponents->render();
-            $data["BUTTON_TABLE"] = "components/button/table/right.html.twig";
+            $data["BUTTON_TABLE"] = "components/button/table/default.html.twig";
 
             return $this->render(
                 TemplateAbstract::LOGGED,
-                "components/pages/table",
+                $data["SERVICO"]["TEMPLATE"],
                 $data,
             );
         } catch (\Error $e) {
@@ -763,7 +792,7 @@ class SistemaController extends ControllerCore implements ControllerInterface
                 $data['PESSOAFISICA'] = (new PessoaFisicaDao)->buscarPessoa($codpessoa);
             }
 
-            $data["CARD_TITLE"] = "Usuários";
+            $data["CARD_TITLE"] = "Pessoas";
 
             return $this->render(
                 TemplateAbstract::LOGGED,
@@ -782,43 +811,232 @@ class SistemaController extends ControllerCore implements ControllerInterface
             $data = $this->getServico();
             $this->validateRequestMethod("POST");
 
-            if (!$data["SERVICO"]['SALVAR'] == 1) (new AlertLib)->warning('Você não tem permissão para realizar essa ação', "{$data["SERVICO"]["URL"]}-cadastro/");
+            if ($data["SERVICO"]['SALVAR'] != 1) (new AlertLib)->warning('Você não tem permissão para realizar essa ação', "{$data["SERVICO"]["URL"]}-cadastro/");
 
+            $action = $this->postParams("ACTION") ?? "";
 
-            $enderecoModel = (new EnderecoModel($_POST));
-            $pessoaModel = (new PessoaModel($_POST));
+            if ($action == 'update') {
 
-            if (!empty($_POST["CPF"])) {
+                $enderecoModel = (new EnderecoModel($_POST));
+                $pessoaModel = (new PessoaModel($_POST));
                 $pessoaFisicaModel = new PessoaFisicaModel($_POST);
-                $pessoaFisicaModel->setCPF((new FuncoesLib())->removeCaracteres($pessoaFisicaModel->getCPF()));
-                $pessoaFisicaModel->setDATANASCIMENTO((new FuncoesLib())->formatDataBanco($pessoaFisicaModel->getDATANASCIMENTO()));
-            } else {
                 $pessoaJuridicaModel = new PessoaJuridicaModel($_POST);
-                $pessoaJuridicaModel->setNOMEFANTASIA((new FuncoesLib())->textoPrimeiraLetraMaiusculoCadaPalavra($pessoaJuridicaModel->getNOMEFANTASIA()));
-                $pessoaJuridicaModel->setCNPJ((new FuncoesLib())->removeCaracteres($pessoaJuridicaModel->getCNPJ()));
-            }
 
-            $pessoaModel->setNOME((new FuncoesLib())->textoPrimeiraLetraMaiusculoCadaPalavra($pessoaModel->getNOME()));
-
-            if (!empty($pessoaModel->getCODPESSOA())) {
-                if (!empty($_POST["CPF"]))
-                    $result = (new PessoaDao())->atualizarPessoaFisica($enderecoModel, $pessoaModel, $pessoaFisicaModel);
-                else
-                    $result = (new PessoaDao())->atualizarPessoaJuridica($enderecoModel, $pessoaModel, $pessoaJuridicaModel);
-            } else {
-                if (!empty($_POST["CPF"])) {
-                    $result = (new PessoaDao())->inserirPessoaFisica($enderecoModel, $pessoaModel, $pessoaFisicaModel);
-                } else {
-                    $result = (new PessoaDao())->inserirPessoaJuridica($enderecoModel, $pessoaModel, $pessoaJuridicaModel);
+                $imagemBase64 = $this->postParams("IMAGEM_BASE64");
+                if (!empty($imagemBase64)) {
+                    $nomeArquivo = (new FileLib())->uploadFileBase64($imagemBase64, "/public/assets/upload/pessoa/");
+                    if ($nomeArquivo) {
+                        $pessoaModel->setIMAGEM($nomeArquivo);
+                    }
                 }
+
+                $cadastrarComoUsuario = $this->postParams("CADASTRAR_COMO_USUARIO") == "1";
+
+                if (!empty($pessoaModel->getCODPESSOA())) {
+                    if (!empty($_POST["CPF"])) {
+                        if ($cadastrarComoUsuario)
+                            $result = (new PessoaFisicaDao())->inserirUsuario($enderecoModel, $pessoaModel, $pessoaFisicaModel);
+                        else
+                            $result = (new PessoaDao())->atualizarPessoaFisica($enderecoModel, $pessoaModel, $pessoaFisicaModel);
+                    } else {
+                        $result = (new PessoaDao())->atualizarPessoaJuridica($enderecoModel, $pessoaModel, $pessoaJuridicaModel);
+                    }
+                } else {
+                    if (!empty($_POST["CPF"])) {
+                        if ($cadastrarComoUsuario)
+                            $result = (new PessoaFisicaDao())->inserirUsuario($enderecoModel, $pessoaModel, $pessoaFisicaModel);
+                        else
+                            $result = (new PessoaDao())->inserirPessoaFisica($enderecoModel, $pessoaModel, $pessoaFisicaModel);
+                    } else {
+                        $result = (new PessoaDao())->inserirPessoaJuridica($enderecoModel, $pessoaModel, $pessoaJuridicaModel);
+                    }
+                }
+
+                if (empty($result)) (new AlertLib)->warning("Opss! Aconteceu um erro", $this->returnPostAction());
+
+                if ($result["error"]) (new AlertLib)->warning($result["message"], $this->returnPostAction());
+
+                (new AlertLib)->success($result["message"], $this->returnPostAction());
+
+            } else if ($action == 'delete-usuario') {
+
+                $codpessoa = $this->postParams("ID_DELETE");
+
+                if (empty($codpessoa)) {
+                    (new AlertLib)->warning("Pessoa não encontrada!", $this->returnPostAction());
+                }
+
+                $result = (new UsuarioDao())->updateArray(
+                    ["EXCLUIDO" => "1"],
+                    "CODPESSOA=?",
+                    [$codpessoa]
+                );
+
+                if (empty($result)) (new AlertLib)->warning("Opss! Aconteceu um erro", $this->returnPostAction());
+
+                (new AlertLib)->success("Usuário excluído com sucesso!", $this->returnPostAction());
+
+            } else {
+                (new AlertLib)->warning("Ação inválida!", $this->returnPostAction());
+            }
+        } catch (\Error $e) {
+            return $e;
+        }
+    }
+
+    public function pessoasSituacaoAction($args = [])
+    {
+        try {
+            $this->isLogged();
+            $this->validateRequestMethod("POST");
+            $data = $this->getServico();
+            $returnParams = ($this->postParams("pg") != "" ? "?pg=" . $this->postParams("pg") : "") . ($this->postParams("b") != "" ? "&b=" . $this->postParams("b") : "");
+            $returnAction = "{$data["SERVICO"]["URL"]}/" . $returnParams;
+
+            $alerta = new AlertLib();
+            $usuarioModel = new UsuarioModel($_POST);
+
+            if ($data["SERVICO"]["ALTERAR"] == "1") {
+                $result = (new UsuarioDao())->update("SITUACAO", [$usuarioModel->getSITUACAO(), $usuarioModel->getCODUSUARIO()], "CODUSUARIO=?");
+                if ($result) {
+                    (new LogDao())->salvaLog("USUARIO: ALTERAÇÃO DA SITUACAO CODUSUARIO {$usuarioModel->getCODUSUARIO()}", $data["SERVICO"]["CODSERVICO"]);
+                    $alerta->success("Alterado com sucesso!", $returnAction);
+                } else {
+                    $alerta->danger("Ops! Aconteceu um erro, tente mais tarde.", $returnAction);
+                }
+            } else {
+                $alerta->warning("Você não tem privilégio para executar essa ação!", $returnAction);
+            }
+        } catch (\Error $e) {
+            return $e;
+        }
+    }
+
+    public function pessoasSenhaAction($getParametro = null)
+    {
+        try {
+            $this->isLogged();
+            $this->validateRequestMethod("POST");
+            $data = $this->getServico();
+            $returnParams = ($this->postParams("pg") != "" ? "?pg=" . $this->postParams("pg") : "") . ($this->postParams("b") != "" ? "&b=" . $this->postParams("b") : "");
+            $returnAction = "{$data["SERVICO"]["URL"]}/" . $returnParams;
+
+            $func = new FuncoesLib();
+            $usuarioModel = new UsuarioModel($_POST);
+            $alerta = new AlertLib();
+            $usuarioDao = new UsuarioDao();
+
+            $senha = $usuarioModel->getSENHA();
+            $usuarioModel->setSenha($func->create_password_hash($usuarioModel->getSENHA()));
+
+            if (!$usuarioDao->updateSenha($usuarioModel)) {
+                $alerta->warning('Aconteceu um erro, tente mais tarde', $returnAction);
             }
 
-            if (empty($result)) (new AlertLib)->warning("Opss! Aconteceu um erro", $this->returnPostAction());
+            $msge = (new TemplateEmailLib)->template1(
+                "Alteração de senha de acesso",
+                "Solicitação de alteração de senha",
+                "Foi gerada uma nova senha de acesso: <b>{$senha}</b>",
+                CONFIG_SITE['url'],
+                "Acessar agora"
+            );
 
-            if ($result["error"]) (new AlertLib)->warning($result["message"], $this->returnPostAction());
+            if (!EmailLib::sendEmailPHPMailer("Alteração de senha de acesso", $msge, array($usuarioModel->getEMAIL()))) {
+                $alerta->warning('Senha alterada, e-mail não enviado!', $returnAction);
+            }
 
-            (new AlertLib)->success($result["message"], $this->returnPostAction());
-        } catch (Error $e) {
+            (new LogDao())->salvaLog("USUARIO-SENHA: ALTERAÇÃO DE SENHA DO CODUSUARIO {$usuarioModel->getCODUSUARIO()}", $data["SERVICO"]["CODSERVICO"], $usuarioDao->getLogSQL());
+            $alerta->success("Alteração realizada, e-mail enviado!", $returnAction);
+        } catch (\Error $e) {
+            return $e;
+        }
+    }
+
+    public function pessoasTrocarAction($getParametro = null)
+    {
+        try {
+            $this->isLogged();
+            $data = $this->getServico();
+            $this->validateRequestMethod("POST");
+
+            $usuarioDao = new UsuarioDao();
+            $jwtTokenClass = new JwtLib();
+            $codusuario = $this->postParams("CODUSUARIO");
+
+            $usuarioModel = $usuarioDao->buscarCodusuario($codusuario);
+
+            $data['id'] = $codusuario;
+            $token = $jwtTokenClass->encode(1440, $data);
+            SessionLib::regenerate();
+            CookieLib::setValue("TOKEN", $token, 30, true);
+            SessionLib::setDataSession($usuarioModel->getDataSession());
+
+            (new LogDao())->salvaLog("USUARIO-LOGAR-COMO: LOGOU COMO CODUSUARIO: {$codusuario}", $data["SERVICO"]["CODSERVICO"], null);
+            (new AlertLib())->success("Efetuado com sucesso!", "/");
+        } catch (\Error $e) {
+            return $e;
+        }
+    }
+
+    public function pessoasPerfil($args = [])
+    {
+        try {
+            $this->isLogged();
+            $data = $this->getServico();
+            $perfilDao = new PerfilDao();
+
+            $data["CARD_TITLE"] = "Perfil do Usuário";
+            $id = $this->getParams("id") ?? "";
+
+            $data["PERFIS"] = $perfilDao->buscarPerfisUsuarioDisponivel($id);
+            $data["USUARIO"] = (new UsuarioDao())->buscarCodusuario($id);
+
+            return $this->render(
+                TemplateAbstract::LOGGED,
+                $data["SERVICO"]["MODULO"] . "/usuarios/perfil",
+                $data,
+            );
+        } catch (\Error $e) {
+            return $e;
+        }
+    }
+
+    public function pessoasPerfilAction($args = [])
+    {
+        try {
+            $this->isLogged();
+            $this->validateRequestMethod("POST");
+            $data = $this->getServico();
+            $returnParams = ($this->postParams("pg") != "" ? "?pg=" . $this->postParams("pg") : "") . ($this->postParams("b") != "" ? "&b=" . $this->postParams("b") : "");
+            $returnAction = "{$data["SERVICO"]["URL"]}/" . $returnParams;
+
+            $alerta = new AlertLib();
+            $perfilUsuarioDao = new SiPerfilUsuarioDao();
+
+            $action = $this->postParams("action");
+            $codusuario = $this->postParams("CODUSUARIO");
+            $perfis = $this->postParams("PERFIS");
+
+            if ($action == "update") {
+                if ($data["SERVICO"]["ALTERAR"] == "1") {
+                    $perfilUsuarioDao->delete([$codusuario], "CODUSUARIO=?");
+                    $atributos = "CODUSUARIO, CODPERFIL";
+                    foreach ($perfis as $item) {
+                        $result = $perfilUsuarioDao->insert($atributos, [$codusuario, $item]);
+                    }
+                    if ($result) {
+                        (new LogDao())->salvaLog("USUARIO-PERFIL: ALTERAÇÃO DE PERFIL CODUSUARIO {$codusuario}", $data["SERVICO"]["CODSERVICO"]);
+                        $alerta->success("Alterado com sucesso!", $returnAction);
+                    } else {
+                        $alerta->danger("Ops! Aconteceu um erro, tente mais tarde.", $returnAction);
+                    }
+                } else {
+                    $alerta->warning("Você não tem privilégio para executar essa ação!", $returnAction);
+                }
+            } else {
+                $alerta->warning("Nenhuma ação informada!", $returnAction);
+            }
+        } catch (\Error $e) {
             return $e;
         }
     }

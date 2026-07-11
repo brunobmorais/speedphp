@@ -4,47 +4,299 @@
               action="{{ SERVICO.URL }}-cadastro-action" method="post"
               enctype='multipart/form-data'>
             <input hidden name='CODPESSOA' value='{{ PESSOA.CODPESSOA }}'>
+            <input hidden name='pg' value='{{ GET.pg }}'>
+            <input hidden name='b' value='{{ GET.b }}'>
+            <input type="hidden" name="ACTION" value="update">
+            <input type="hidden" name="IMAGEM_BASE64" id="inputImgPerfilBase64Main" value="">
+
+            <div class="row mb-3">
+                <div class="col-12 d-flex flex-column align-items-center">
+                    <img src="/assets/upload/pessoa/{{ PESSOA.IMAGEM ?? 'default.png' }}"
+                         class="rounded-circle shadow"
+                         id="imgPerfil"
+                         alt="foto"
+                         style="height: 100px; width: 100px; object-fit: cover;">
+                    <label for="fileImgPerfil"
+                           class="btn btn-link d-flex align-items-center gap-1 justify-content-center mt-1" style="cursor:pointer">
+                        <span class="mdi mdi-camera mdi-18px"></span> Alterar foto
+                    </label>
+                </div>
+            </div>
 
             <div class="row">
                 <div class="section-title col-12">Informações</div>
                 {% embed "pessoa/components/div_pessoa.twig" %}
                     {% block top %}
-                        {% if PESSOA.CPFCNPJ|length == 11 %}
+                        {% if not PESSOA.CODPESSOA %}
+                            <div class="row mb-3">
+                                <div class="form-group col-12">
+                                    <div class="btn-group" role="group">
+                                        <input type="radio" class="btn-check" name="tipo_pessoa_toggle" id="radioPF" autocomplete="off" checked onchange="toggleTipoPessoa('F')">
+                                        <label class="btn btn-outline-secondary" for="radioPF"><span class="mdi mdi-account-outline"></span> Pessoa Física</label>
+                                        <input type="radio" class="btn-check" name="tipo_pessoa_toggle" id="radioPJ" autocomplete="off" onchange="toggleTipoPessoa('J')">
+                                        <label class="btn btn-outline-secondary" for="radioPJ"><span class="mdi mdi-office-building-outline"></span> Pessoa Jurídica</label>
+                                    </div>
+                                </div>
+                            </div>
                             <div id="divPessoaFisica">
                                 {% include "pessoa/components/div_pessoafisica.twig" %}
                             </div>
-                        {% else %}
+                            <div id="divPessoaJuridica" style="display:none">
+                                {% include "pessoa/components/div_pessoajuridica.twig" %}
+                            </div>
+                        {% elseif PESSOA.TIPOPESSOA == 'J' %}
                             <div id="divPessoaJuridica">
                                 {% include "pessoa/components/div_pessoajuridica.twig" %}
+                            </div>
+                        {% else %}
+                            <div id="divPessoaFisica">
+                                {% include "pessoa/components/div_pessoafisica.twig" %}
                             </div>
                         {% endif %}
                     {% endblock %}
                 {% endembed %}
+
+                {% if PESSOA.IS_USUARIO != "1" and PESSOA.TIPOPESSOA != 'J' %}
+                <div id="divCadastrarUsuario" class="col-12 mb-3">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="CADASTRAR_COMO_USUARIO"
+                               id="checkCadastrarUsuario" value="1">
+                        <label class="form-check-label fw-semibold" for="checkCadastrarUsuario">
+                            <span class="mdi mdi-account-key-outline"></span> Cadastrar como usuário do sistema
+                        </label>
+                        <div class="form-text">Ao marcar, será criado um acesso ao sistema e enviado e-mail com a senha temporária.</div>
+                    </div>
+                </div>
+                {% endif %}
+
                 {% embed "pessoa/components/div_endereco.twig" with { required: ''} %}{% endembed %}
             </div>
 
             <div class="row py-3">
                 <div class="col-12">
-                    <div class="d-grid gap-2 d-md-flex justify-content-md-end col-12">
+                    <div class="">
+                        {% if PESSOA.IS_USUARIO == "1" %}
+                            <button type="button" onclick="excluirItemTabela('{{ PESSOA.CODPESSOA }}')"
+                                    class="btn btn-outline-secondary btn-round btn-lg col-md-3 col-lg-2 col-12 mt-2">
+                                <span class="mdi mdi-trash-can-outline"></span> Excluir Usuário
+                            </button>
+                        {% endif %}
 
-                        <button type="button" onclick="verificaCPFCNPJ()" id="btnSalvarPessoa"
-                                class="btn btn-lg btn-primary btn-round col-md-3 col-lg-2 float-right mt-2">
+                        <button type="button" onclick="cadastrarPessoa()" id="btnSalvarPessoa"
+                                class="btn btn-lg btn-primary btn-round col-md-3 col-lg-2 col-12 float-right mt-2 float-end">
                             Salvar
+                        </button>
+                        <button type="button"
+                                onclick="window.location.href='{{ SERVICO.URL }}/?pg={{ GET.pg }}&b={{ GET.b }}'"
+                                class="btn btn-lg btn-outline-secondary btn-round col-md-3 col-12 col-lg-2 float-right mt-2 me-md-2 me-0 float-end">
+                            <span class="mdi mdi-close"></span> Voltar
                         </button>
                     </div>
                 </div>
             </div>
         </form>
+
+        <form action="{{ SERVICO.URL }}-cadastro-action" name="formExcluir" id="formExcluir" method="post">
+            <input type="hidden" name="pg" value="{{ GET.pg }}">
+            <input type="hidden" name="b" value="{{ GET.b }}">
+            <input type="hidden" name="ACTION" value="delete-usuario">
+            <input type="hidden" name="ID_DELETE" id="ID_DELETE" value="">
+        </form>
     </x-div.card>
 </x-theme.main.container>
 
+<link href="/assets/plugin/cropperjs/cropper.min.css" rel="stylesheet">
+<script src="/assets/plugin/cropperjs/cropper.min.js"></script>
+<style>
+    .crop-container {
+        width: 100%;
+        max-height: 70vh;
+        overflow: hidden;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    #cropperImage {
+        max-width: 100%;
+        max-height: 100%;
+        object-fit: contain;
+    }
+</style>
+
+<x-div.modal title="Recorte da imagem" id="modalRecortarImagem" size="modal-lg">
+    <div class="crop-container w-100">
+        <img id="cropperImage" alt="">
+    </div>
+    <button type="button" class="btn btn-outline-primary float-end mt-3" id="cropButton">Confirmar Recorte</button>
+</x-div.modal>
+
+<div class="d-none">
+    <input type="file" id="fileImgPerfil" accept=".png, .jpg, .jpeg">
+    {% if PESSOA.CODPESSOA %}
+    <form id="trocarFotoPerfil" action="/usuario/mudarfotoperfil" method="post">
+        <input type="hidden" name="IMAGEM" id="inputImgPerfil" value="{{ PESSOA.IMAGEM }}"/>
+        <input type="hidden" name="IMAGEM_BASE64" id="inputImgPerfilBase64" value=""/>
+        <input type="hidden" name="CODPESSOA" id="codPessoa" value="{{ PESSOA.CODPESSOA }}"/>
+        <input type="hidden" name="URL_RETORNO" id="urlRetorno" value=""/>
+    </form>
+    {% endif %}
+</div>
+
 <script>
-    async function verificaCPFCNPJ() {
-        let result = await checkDocumento();
-        console.log(result);
-        if (result) {
-            console.log("OK");
-            document.getElementById("formUsuarioCadastro").submit();
+    const codpessoa = '{{ PESSOA.CODPESSOA }}';
+
+    function toggleTipoPessoa(tipo) {
+        const divPF = document.getElementById('divPessoaFisica');
+        const divPJ = document.getElementById('divPessoaJuridica');
+        const divUsuario = document.getElementById('divCadastrarUsuario');
+        if (tipo === 'F') {
+            divPF.style.display = '';
+            divPJ.style.display = 'none';
+            divPF.querySelectorAll('input, select').forEach(el => el.disabled = false);
+            divPJ.querySelectorAll('input, select').forEach(el => el.disabled = true);
+            if (divUsuario) divUsuario.style.display = '';
+        } else {
+            divPF.style.display = 'none';
+            divPJ.style.display = '';
+            divPF.querySelectorAll('input, select').forEach(el => el.disabled = true);
+            divPJ.querySelectorAll('input, select').forEach(el => el.disabled = false);
+            if (divUsuario) {
+                divUsuario.style.display = 'none';
+                const cb = document.getElementById('checkCadastrarUsuario');
+                if (cb) cb.checked = false;
+            }
         }
     }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        const divPJ = document.getElementById('divPessoaJuridica');
+        if (divPJ && divPJ.style.display === 'none') {
+            divPJ.querySelectorAll('input, select').forEach(el => el.disabled = true);
+        }
+        if (codpessoa) {
+            document.getElementById('urlRetorno').value = window.location.href;
+        }
+    });
+
+    async function cadastrarPessoa() {
+        const formElement = document.getElementById('formUsuarioCadastro');
+
+        if (!formElement) {
+            console.error('Elemento #formUsuarioCadastro não encontrado no DOM');
+            alertError('Erro: formulário não encontrado');
+            return;
+        }
+
+        const cpfElement = document.getElementById('cpf');
+        const cnpjElement = document.getElementById('cnpj');
+        const datanascimentoElement = document.getElementById('datanascimento');
+        let isUsuario = `{{ PESSOA.IS_USUARIO }}`;
+
+        validaForm();
+
+        if (!formElement.checkValidity()) {
+            alertError("Preencha todos os campos corretamente");
+            return;
+        }
+
+        // VALIDAR CPF (Pessoa Física)
+        if (cpfElement && cpfElement.offsetParent !== null && cpfElement.value) {
+            if (!validaCPF(cpfElement.value)) {
+                cpfElement.classList.remove("is-valid", "is-invalid");
+                cpfElement.classList.add("is-invalid");
+                alertError('CPF inválido!');
+                return;
+            }
+
+            if (datanascimentoElement && datanascimentoElement.value) {
+                if (!validaDataNascimento(convertDateToISO(datanascimentoElement.value)) && isUsuario === "1") {
+                    const result = await Swal.fire({
+                        title: 'Atenção',
+                        icon: 'warning',
+                        html: 'Esse usuário é menor de 18 anos. O acesso dele poderá ser comprometido. Deseja continuar?',
+                        showCloseButton: true,
+                        showCancelButton: true,
+                        focusConfirm: true,
+                        cancelButtonText: 'Não, Cancelar',
+                        cancelButtonAriaLabel: 'nao',
+                        confirmButtonText: 'Sim, Salvar',
+                        confirmButtonAriaLabel: 'sim',
+                        confirmButtonColor: '#9400d3',
+                    });
+                    if (!result.isConfirmed) return;
+                }
+            }
+        }
+
+        // VALIDAR CNPJ (Pessoa Jurídica)
+        if (cnpjElement && cnpjElement.offsetParent !== null && cnpjElement.value) {
+            if (typeof validaCNPJ === 'function' && !validaCNPJ(cnpjElement.value)) {
+                cnpjElement.classList.remove("is-valid", "is-invalid");
+                cnpjElement.classList.add("is-invalid");
+                alertError('CNPJ inválido!');
+                return;
+            }
+        }
+
+        submitForm('btnSalvarPessoa', 'formUsuarioCadastro');
+    }
+
+    let cropper;
+    let currentImageField;
+    let targetWidth, targetHeight;
+
+    document.getElementById('modalRecortarImagem').addEventListener('shown.bs.modal', function () {
+        if (cropper) cropper.destroy();
+        cropper = new Cropper(document.getElementById('cropperImage'), {
+            aspectRatio: targetWidth / targetHeight,
+            viewMode: 2,
+            autoCropArea: 1,
+            responsive: true
+        });
+        document.querySelector('.crop-container').style.display = 'flex';
+    });
+
+    function initCropper(fileInput, previewImage, width, height) {
+        const file = fileInput.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                document.getElementById('cropperImage').src = e.target.result;
+                if (cropper) cropper.destroy();
+                cropper = new Cropper(document.getElementById('cropperImage'), {
+                    aspectRatio: width / height,
+                    viewMode: 2,
+                });
+                currentImageField = previewImage;
+                targetWidth = width;
+                targetHeight = height;
+            };
+            reader.readAsDataURL(file);
+        }
+    }
+
+    document.getElementById('fileImgPerfil').addEventListener('change', function () {
+        document.querySelector('.crop-container').style.display = 'none';
+        showModal('modalRecortarImagem');
+        initCropper(this, document.getElementById('imgPerfil'), 1080, 1080);
+    });
+
+    document.getElementById('cropButton').addEventListener('click', function () {
+        if (cropper) {
+            const canvas = cropper.getCroppedCanvas({ width: targetWidth, height: targetHeight });
+            const croppedImage = canvas.toDataURL('image/webp', 0.85);
+            currentImageField.src = croppedImage;
+            document.querySelector('.crop-container').style.display = 'none';
+            hideModal('modalRecortarImagem');
+
+            if (codpessoa) {
+                // Pessoa existente: salva imediatamente
+                document.getElementById('inputImgPerfilBase64').value = croppedImage;
+                setTimeout(function () { document.getElementById('trocarFotoPerfil').submit(); }, 300);
+            } else {
+                // Novo cadastro: guarda base64 no form principal
+                document.getElementById('inputImgPerfilBase64Main').value = croppedImage;
+            }
+        }
+    });
 </script>
