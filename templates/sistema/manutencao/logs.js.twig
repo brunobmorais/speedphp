@@ -1,0 +1,10 @@
+(function () {
+    var btnFinal = document.getElementById('btn-ir-final');
+    var logsEnd  = document.getElementById('logs-end');
+
+    if (btnFinal && logsEnd) {
+        btnFinal.addEventListener('click', function () {
+            logsEnd.scrollIntoView({ behavior: 'smooth', block: 'end' });
+        });
+    }
+})();

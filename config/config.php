@@ -6,7 +6,7 @@ if (strpos($_SERVER['SERVER_NAME'],"localhost") || $_SERVER['SERVER_NAME'] == "l
 }
 
 /*ALTERE ESSA VARIAVEL TODA VEZ QUE QUISER ATUALIZAR O CSS E JAVASCRIPT*/
-const CONFIG_VERSION_CODE = "2.0.5";
+const CONFIG_VERSION_CODE = "2.0.6";
 
 const CONFIG_MAINTENANCE = false;
 const DEBUG_ROUTER = false;
@@ -20,11 +20,11 @@ const CONFIG_SECURITY = [
 
 // PALETA DE CORES DO SITE
 const CONFIG_COLOR = [
-    "color-navbar" => "#FF8102",
-    "color-primary" => "#FF8102",
-    "color-primary-hover" => "#d83600", //#039050 verde
+    "color-navbar" => "#4F6DF7",
+    "color-primary" => "#4F6DF7",
+    "color-primary-hover" => "#0e30f6", //#039050 verde
     "color-secondary" => "#676767",
-    "color-link" => "#FF8102",
+    "color-link" => "#4F6DF7",
     "color-bg" => "#F5F6FA",
 ];
 

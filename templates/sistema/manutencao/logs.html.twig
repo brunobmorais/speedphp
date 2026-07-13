@@ -1,0 +1,252 @@
+
+<main class="container-fluid">
+  <div class="row g-4">
+
+    {# Sidebar de filtros (Sticky para acompanhar a rolagem) #}
+    <div class="col-md-3 col-lg-2">
+      <div class="sticky-top" style="top: 1rem;">
+        
+        <div class="card shadow-sm mb-3">
+          <div class="card-header bg-light fw-bold">
+            <span class="mdi mdi-filter-outline"></span> Filtros
+          </div>
+          <div class="card-body">
+            <form method="GET" action="/sistema/manutencao/" id="form-filtros">
+              <div class="mb-3">
+                <label for="canal" class="form-label small fw-semibold text-muted">Canal</label>
+                <select name="canal" id="canal" class="form-select form-select-sm">
+                  {% for c in CANAIS %}
+                    <option value="{{ c|e('html_attr') }}" {% if c == CANAL_SELECIONADO %}selected{% endif %}>{{ c|e }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+
+              {% if DATAS is not empty %}
+              <div class="mb-3">
+                <label for="data" class="form-label small fw-semibold text-muted">Data</label>
+                <select name="data" id="data" class="form-select form-select-sm">
+                  {% for d in DATAS %}
+                    <option value="{{ d|e('html_attr') }}" {% if d == DATA_SELECIONADA %}selected{% endif %}>{{ d|e }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+              {% endif %}
+
+              <div class="mb-3">
+                <label for="nivel" class="form-label small fw-semibold text-muted">Nível</label>
+                <select name="nivel" id="nivel" class="form-select form-select-sm">
+                  <option value="" {% if NIVEL_SELECIONADO == '' %}selected{% endif %}>Todos</option>
+                  <option value="ERROR" {% if NIVEL_SELECIONADO == 'ERROR' %}selected{% endif %}>ERROR</option>
+                  <option value="WARNING" {% if NIVEL_SELECIONADO == 'WARNING' %}selected{% endif %}>WARNING</option>
+                  <option value="INFO" {% if NIVEL_SELECIONADO == 'INFO' %}selected{% endif %}>INFO</option>
+                </select>
+              </div>
+
+              <button type="submit" class="btn btn-primary btn-sm w-100">
+                <span class="mdi mdi-magnify"></span> Aplicar Filtros
+              </button>
+            </form>
+          </div>
+        </div>
+
+        {# Resumo por nível #}
+        <div class="card shadow-sm">
+          <div class="card-header bg-light fw-bold">
+            <span class="mdi mdi-chart-bar"></span> Resumo
+          </div>
+          <ul class="list-group list-group-flush small">
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+              <span class="badge bg-danger text-white">ERROR</span>
+              <span class="fw-bold">{{ RESUMO.ERROR ?? 0 }}</span>
+            </li>
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+              <span class="badge bg-warning text-dark">WARNING</span>
+              <span class="fw-bold">{{ RESUMO.WARNING ?? 0 }}</span>
+            </li>
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+              <span class="badge bg-info text-dark">INFO</span>
+              <span class="fw-bold">{{ RESUMO.INFO ?? 0 }}</span>
+            </li>
+          </ul>
+        </div>
+
+      </div>
+    </div>
+
+    {# Área principal de Logs #}
+    <div class="col-md-9 col-lg-10">
+      <div class="card shadow-sm">
+        <div class="card-header bg-white d-flex justify-content-between align-items-center py-3">
+          <h5 class="mb-0 fs-5">
+            Logs do Canals: <span class="text-primary">{{ CANAL_SELECIONADO|e }}</span>
+            {% if DATA_SELECIONADA %}
+              <span class="text-muted fs-6 ms-2">({{ DATA_SELECIONADA|e }})</span>
+            {% endif %}
+          </h5>
+          <div class="d-flex align-items-center gap-2">
+            <span class="badge bg-secondary rounded-pill">{{ TOTAL_LINHAS ?? LINHAS|length }} registros</span>
+            <button type="button" class="btn btn-sm btn-outline-danger" data-bs-toggle="modal" data-bs-target="#modal-limpar-logs">
+              <span class="mdi mdi-delete-sweep-outline"></span> Limpar log
+            </button>
+          </div>
+        </div>
+
+        <div class="card-body p-0">
+          {% if LINHAS is empty %}
+            <div class="alert alert-info border-0 rounded-0 m-0 p-4 text-center">
+              <span class="mdi mdi-information-outline fs-4 d-block mb-2"></span>
+              Nenhum registro encontrado para os filtros selecionados.
+            </div>
+          {% else %}
+            <div class="table-responsive">
+              <table class="table table-hover table-borderless table-striped align-middle mb-0" id="tbl-logs">
+                <thead class="table-dark">
+                  <tr>
+                    <th scope="col" style="width:160px">Timestamp</th>
+                    <th scope="col" style="width:80px">Nível</th>
+                    <th scope="col">Mensagem</th>
+                    <th scope="col" style="width:60px">Método</th>
+                    <th scope="col" style="width:200px">URL</th>
+                    <th scope="col" style="width:130px">IP</th>
+                    <th scope="col" style="width:80px">Usuário</th>
+                  </tr>
+                </thead>
+                <tbody class="border-top-0">
+                {% for linha in LINHAS %}
+                  {% set unique_id = linha.id|default(loop.index) %}
+                  <tr>
+                    <td class="small font-monospace text-muted">{{ linha.timestamp|e }}</td>
+                    <td>
+                      {% if linha.nivel == 'ERROR' %}
+                        <span class="badge bg-danger">ERROR</span>
+                      {% elseif linha.nivel == 'WARNING' %}
+                        <span class="badge bg-warning text-dark">WARNING</span>
+                      {% else %}
+                        <span class="badge bg-info text-dark">INFO</span>
+                      {% endif %}
+                    </td>
+                    <td>
+                      <span class="text-break">{{ linha.mensagem|e }}</span>
+                      
+                      {% if linha.contexto %}
+                        <button class="btn btn-sm btn-link text-decoration-none p-0 ms-2" 
+                                type="button" 
+                                data-bs-toggle="collapse" 
+                                data-bs-target="#ctx-{{ unique_id }}" 
+                                aria-expanded="false" 
+                                aria-controls="ctx-{{ unique_id }}">
+                          Ver contexto
+                        </button>
+                        <div class="collapse mt-2" id="ctx-{{ unique_id }}">
+                          <pre class="bg-dark text-light border-0 rounded p-3 mb-0 small" style="white-space:pre-wrap;word-break:break-all;">{{ linha.contexto|e }}</pre>
+                        </div>
+                      {% endif %}
+                    </td>
+                    <td class="small font-monospace">
+                      {% if linha.method %}
+                        {% if linha.method == 'POST' %}
+                          <span class="badge bg-warning text-dark">POST</span>
+                        {% elseif linha.method == 'GET' %}
+                          <span class="badge bg-success">GET</span>
+                        {% elseif linha.method == 'CLI' %}
+                          <span class="badge bg-secondary">CLI</span>
+                        {% else %}
+                          <span class="badge bg-info text-dark">{{ linha.method|e }}</span>
+                        {% endif %}
+                      {% endif %}
+                    </td>
+                    <td class="small text-truncate" style="max-width: 200px;" title="{{ linha.url|e }}">
+                      {{ linha.url|e }}
+                    </td>
+                    <td class="small text-muted font-monospace">
+                      {% if linha.ua %}
+                        <span title="{{ linha.ua|e }}" data-bs-toggle="tooltip">{{ linha.ip|e }}</span>
+                      {% else %}
+                        {{ linha.ip|e }}
+                      {% endif %}
+                    </td>
+                    <td class="small text-muted">{{ linha.user|e }}</td>
+                  </tr>
+                {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          {% endif %}
+        </div>
+
+        {# Componente de Paginação #}
+        {% if LINHAS is not empty %}
+        <div class="card-footer bg-white py-3 d-flex justify-content-center d-none">
+          <nav aria-label="Navegação de logs">
+            <ul class="pagination pagination-sm mb-0">
+              <li class="page-item disabled"><a class="page-link" href="#">Anterior</a></li>
+              <li class="page-item active"><a class="page-link" href="#">1</a></li>
+              <li class="page-item"><a class="page-link" href="#">2</a></li>
+              <li class="page-item"><a class="page-link" href="#">3</a></li>
+              <li class="page-item"><a class="page-link" href="#">Próximo</a></li>
+            </ul>
+          </nav>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+
+  </div>
+</main>
+
+{# Modal de confirmação para limpar o log #}
+<div class="modal fade" id="modal-limpar-logs" tabindex="-1" aria-labelledby="modal-limpar-logs-label" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modal-limpar-logs-label">
+          <span class="mdi mdi-delete-sweep-outline text-danger"></span> Limpar arquivo de log
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+      </div>
+      <div class="modal-body">
+        Deseja apagar todo o conteúdo do arquivo <strong>{{ CANAL_SELECIONADO|e }}{% if DATA_SELECIONADA %}_{{ DATA_SELECIONADA|e }}{% endif %}.log</strong>?
+        <br><small class="text-muted">Esta ação não pode ser desfeita.</small>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+        <button type="button" class="btn btn-danger" id="btn-confirmar-limpar">
+          <span class="mdi mdi-delete-forever-outline"></span> Limpar
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+document.getElementById('btn-confirmar-limpar')?.addEventListener('click', function () {
+    const btn = this;
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Limpando...';
+
+    fetch('/sistema/manutencao/limpar-logs', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams({
+            canal: '{{ CANAL_SELECIONADO|e("js") }}',
+            data: '{{ DATA_SELECIONADA|e("js") }}'
+        })
+    })
+    .then(r => r.json())
+    .then(res => {
+        bootstrap.Modal.getInstance(document.getElementById('modal-limpar-logs')).hide();
+        if (!res.error) {
+            window.location.reload();
+        } else {
+            alert('Erro: ' + res.message);
+            btn.disabled = false;
+            btn.innerHTML = '<span class="mdi mdi-delete-forever-outline"></span> Limpar';
+        }
+    })
+    .catch(() => {
+        alert('Erro ao processar a requisição.');
+        btn.disabled = false;
+        btn.innerHTML = '<span class="mdi mdi-delete-forever-outline"></span> Limpar';
+    });
+});
+</script>
