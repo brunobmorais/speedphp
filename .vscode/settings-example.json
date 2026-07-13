@@ -1,0 +1,62 @@
+{
+    // Configurações gerais
+    "editor.formatOnSave": true,
+    "editor.defaultFormatter": "bmewburn.vscode-intelephense-client",
+    "files.autoSave": "afterDelay",
+
+    // PHP
+    "php.validate.enable": true,
+    "php.suggest.basic": false,
+    "intelephense.format.enable": true,
+    "intelephense.completion.triggerParameterHints": true,
+    "intelephense.completion.insertUseDeclaration": true,
+    "intelephense.diagnostics.undefinedTypes": false,
+    "intelephense.diagnostics.undefinedFunctions": false,
+    "intelephense.diagnostics.undefinedConstants": false,
+    "intelephense.diagnostics.undefinedClassConstants": false,
+    "intelephense.diagnostics.undefinedMethods": false,
+    "intelephense.diagnostics.undefinedProperties": false,
+    "intelephense.diagnostics.undefinedVariables": false,
+
+    "todo-tree.tree.scanMode": "workspace only",
+    "files.associations": {
+        "*.twig": "twig",
+        "*.html.twig": "twig",
+        "*.css.twig": "css",
+        "*.js.twig": "javascript"
+    },
+    "emmet.includeLanguages": {
+        "twig": "html"
+    },
+    "editor.quickSuggestions": {
+        "strings": true
+    },
+    "[twig]": {
+        "editor.formatOnSave": true,
+        "editor.defaultFormatter": "mblode.twig-language-2"
+    },
+    "javascript.preferences.importModuleSpecifier": "relative",
+    "javascript.suggest.autoImports": true,
+    "javascript.updateImportsOnFileMove.enabled": "always",
+    "typescript.preferences.importModuleSpecifier": "relative",
+    "typescript.suggest.autoImports": true,
+    "typescript.updateImportsOnFileMove.enabled": "always",
+    "editor.smartSelect.selectSubwords": true,
+    "search.include": {
+        "**/*.css": true,
+        "**/*.js": true,
+        "**/*.twig": true
+    },
+    // MySQL
+    "sqltools.connections": [
+        {
+            "name": "localhost",
+            "driver": "MySQL",
+            "server": "localhost",
+            "port": 3306,
+            "database": "speedphp",
+            "username": "root",
+            "password": "root"
+        }
+    ]
+}

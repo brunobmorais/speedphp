@@ -1,13 +1,13 @@
--- MySQL dump 10.13  Distrib 8.0.44, for macos15 (arm64)
+-- MySQL dump 10.13  Distrib 8.0.40, for macos14 (arm64)
 --
 -- Host: 147.79.93.152    Database: u576166589_speedphp
 -- ------------------------------------------------------
--- Server version	11.8.3-MariaDB-log
+-- Server version	11.8.8-MariaDB-log
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
 /*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
-/*!50503 SET NAMES utf8 */;
+/*!50503 SET NAMES utf8mb4 */;
 /*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
 /*!40103 SET TIME_ZONE='+00:00' */;
 /*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
@@ -222,7 +222,7 @@ CREATE TABLE `SI_LOG` (
   KEY `fk_LOG_PESSOA1_idx` (`CODPESSOA`),
   CONSTRAINT `fk_LOG_PESSOA1` FOREIGN KEY (`CODPESSOA`) REFERENCES `PESSOA` (`CODPESSOA`),
   CONSTRAINT `fk_LOG_SI_SERVICO1` FOREIGN KEY (`CODSERVICO`) REFERENCES `SI_SERVICO` (`CODSERVICO`)
-) ENGINE=InnoDB AUTO_INCREMENT=28 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=37 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -231,7 +231,7 @@ CREATE TABLE `SI_LOG` (
 
 LOCK TABLES `SI_LOG` WRITE;
 /*!40000 ALTER TABLE `SI_LOG` DISABLE KEYS */;
-INSERT INTO `SI_LOG` VALUES (1,2,NULL,NULL,'LOGIN: ENTROU NO SISTEMA','192.168.148.1','/api/usuario/login','2025-05-15 20:20:35'),(2,2,NULL,NULL,'LOGIN: ENTROU NO SISTEMA','191.30.137.187','/api/usuario/login','2025-05-15 20:27:52'),(3,2,NULL,NULL,'LOGIN: ENTROU NO SISTEMA','2804:d59:b02e:6700:f416:83b0:b8e4:54c9','/api/usuario/login','2025-05-15 20:55:57'),(4,2,8,'INSERT INTO SI_MODULO (CONTROLLER, ICONE, TITULO, DESCRICAO, ORDEM, SITUACAO) VALUES (\'Almeida\',\'mdi mdi-file\',\'Almeida\',\'Teste\',\'1\',\'1\')','MODULO: CADASTRAR','2804:d59:b02e:6700:f416:83b0:b8e4:54c9','/sistema/modulos-action/','2025-05-15 20:57:33'),(5,2,8,'UPDATE SI_MODULO SET CONTROLLER = \'Almeida\',  ICONE = \'mdi mdi-eye\',  TITULO = \'Almeida\',  DESCRICAO = \'Teste\',  ORDEM = \'1\',  SITUACAO = \'1\' WHERE CODMODULO=\'7\'','MODULO: ALTERAR','2804:d59:b02e:6700:f416:83b0:b8e4:54c9','/sistema/modulos-action/','2025-05-15 20:57:46'),(6,2,NULL,NULL,'LOGIN: ENTROU NO SISTEMA','170.239.227.81','/api/usuario/login','2025-05-16 11:56:54'),(7,2,NULL,NULL,'LOGIN: ENTROU NO SISTEMA','170.239.227.81','/api/usuario/login','2025-05-16 16:02:24'),(8,2,NULL,NULL,'LOGIN: ENTROU NO SISTEMA','170.239.227.81','/api/usuario/login','2025-05-16 18:37:11'),(9,2,NULL,NULL,'LOGIN: ENTROU NO SISTEMA','170.239.227.81','/api/usuario/login','2025-05-16 22:26:10'),(10,2,8,'INSERT INTO SI_MODULO (CONTROLLER, ICONE, TITULO, DESCRICAO, ORDEM, SITUACAO) VALUES (\'inscricao\',\'mdi-cog-sync-outline\',\'Inscrições\',\'acompanhamento das inscrições realizadas \',\'1\',\'1\')','MODULO: CADASTRAR','170.239.227.81','/sistema/modulos-action/','2025-05-16 22:30:33'),(11,2,6,NULL,'USUARIO-LOGAR-COMO: LOGOU COMO CODUSUARIO: 2','170.239.227.81','/sistema/usuarios-trocar-action/','2025-05-16 22:32:47'),(12,2,NULL,NULL,'LOGIN: ENTROU NO SISTEMA','131.72.217.249','/api/usuario/login','2025-05-19 15:40:54'),(13,2,NULL,NULL,'LOGIN: ENTROU NO SISTEMA','131.72.217.249','/api/usuario/login','2025-05-28 13:57:41'),(14,2,NULL,NULL,'LOGIN: ENTROU NO SISTEMA','2804:389:a2b9:79ba:e503:df94:73a5:c703','/api/usuario/login','2025-05-31 10:56:48'),(15,2,NULL,NULL,'LOGIN: ENTROU NO SISTEMA','128.201.17.239','/api/usuario/login','2025-06-24 13:42:36'),(16,2,NULL,NULL,'LOGIN: ENTROU NO SISTEMA','2804:820:d15d:6000:bc5d:1d12:a0dc:6b23','/api/usuario/login','2025-07-24 19:38:58'),(17,2,NULL,NULL,'LOGIN: ENTROU NO SISTEMA','177.134.91.235','/api/usuario/login','2025-07-25 19:33:06'),(18,2,8,'UPDATE SI_MODULO SET CONTROLLER = \'Gestão de Eventos\',  ICONE = \'mdi mdi-eye\',  TITULO = \'Organizador\',  DESCRICAO = \'Teste\',  ORDEM = \'1\',  SITUACAO = \'1\' WHERE CODMODULO=\'7\'','MODULO: ALTERAR','177.134.91.235','/sistema/modulos-action/','2025-07-25 19:34:22'),(19,2,NULL,NULL,'LOGIN: ENTROU NO SISTEMA','177.134.91.235','/api/usuario/login','2025-07-27 13:24:49'),(20,2,NULL,NULL,'LOGIN: ENTROU NO SISTEMA','170.239.226.69','/api/usuario/login','2025-08-06 18:33:43'),(21,2,NULL,NULL,'LOGIN: ENTROU NO SISTEMA','170.239.3.252','/api/usuario/login','2025-09-15 19:46:48'),(22,2,NULL,NULL,'LOGIN: ENTROU NO SISTEMA','179.155.133.255','/api/usuario/login','2025-09-15 19:50:03'),(23,2,NULL,NULL,'LOGIN: ENTROU NO SISTEMA','45.234.138.209','/api/usuario/login','2025-09-18 11:39:14'),(24,2,6,NULL,'USUARIO-LOGAR-COMO: LOGOU COMO CODUSUARIO: 2','45.234.138.209','/sistema/usuarios-trocar-action/','2025-09-18 11:42:02'),(25,2,NULL,NULL,'LOGIN: ENTROU NO SISTEMA','2804:820:f74f:2a00:a102:20d8:3f8d:418d','/api/usuario/login','2025-09-22 19:46:42'),(26,2,NULL,NULL,'LOGIN: ENTROU NO SISTEMA','2804:820:f787:7900:80fc:622e:4762:7b9','/api/usuario/login','2025-11-14 15:17:47'),(27,2,NULL,NULL,'LOGIN: ENTROU NO SISTEMA','128.201.17.239','/api/usuario/login','2026-03-24 08:17:20');
+INSERT INTO `SI_LOG` VALUES (1,2,NULL,NULL,'LOGIN: ENTROU NO SISTEMA','192.168.148.1','/api/usuario/login','2025-05-15 20:20:35'),(2,2,NULL,NULL,'LOGIN: ENTROU NO SISTEMA','191.30.137.187','/api/usuario/login','2025-05-15 20:27:52'),(3,2,NULL,NULL,'LOGIN: ENTROU NO SISTEMA','2804:d59:b02e:6700:f416:83b0:b8e4:54c9','/api/usuario/login','2025-05-15 20:55:57'),(4,2,8,'INSERT INTO SI_MODULO (CONTROLLER, ICONE, TITULO, DESCRICAO, ORDEM, SITUACAO) VALUES (\'Almeida\',\'mdi mdi-file\',\'Almeida\',\'Teste\',\'1\',\'1\')','MODULO: CADASTRAR','2804:d59:b02e:6700:f416:83b0:b8e4:54c9','/sistema/modulos-action/','2025-05-15 20:57:33'),(5,2,8,'UPDATE SI_MODULO SET CONTROLLER = \'Almeida\',  ICONE = \'mdi mdi-eye\',  TITULO = \'Almeida\',  DESCRICAO = \'Teste\',  ORDEM = \'1\',  SITUACAO = \'1\' WHERE CODMODULO=\'7\'','MODULO: ALTERAR','2804:d59:b02e:6700:f416:83b0:b8e4:54c9','/sistema/modulos-action/','2025-05-15 20:57:46'),(6,2,NULL,NULL,'LOGIN: ENTROU NO SISTEMA','170.239.227.81','/api/usuario/login','2025-05-16 11:56:54'),(7,2,NULL,NULL,'LOGIN: ENTROU NO SISTEMA','170.239.227.81','/api/usuario/login','2025-05-16 16:02:24'),(8,2,NULL,NULL,'LOGIN: ENTROU NO SISTEMA','170.239.227.81','/api/usuario/login','2025-05-16 18:37:11'),(9,2,NULL,NULL,'LOGIN: ENTROU NO SISTEMA','170.239.227.81','/api/usuario/login','2025-05-16 22:26:10'),(10,2,8,'INSERT INTO SI_MODULO (CONTROLLER, ICONE, TITULO, DESCRICAO, ORDEM, SITUACAO) VALUES (\'inscricao\',\'mdi-cog-sync-outline\',\'Inscrições\',\'acompanhamento das inscrições realizadas \',\'1\',\'1\')','MODULO: CADASTRAR','170.239.227.81','/sistema/modulos-action/','2025-05-16 22:30:33'),(11,2,6,NULL,'USUARIO-LOGAR-COMO: LOGOU COMO CODUSUARIO: 2','170.239.227.81','/sistema/usuarios-trocar-action/','2025-05-16 22:32:47'),(12,2,NULL,NULL,'LOGIN: ENTROU NO SISTEMA','131.72.217.249','/api/usuario/login','2025-05-19 15:40:54'),(13,2,NULL,NULL,'LOGIN: ENTROU NO SISTEMA','131.72.217.249','/api/usuario/login','2025-05-28 13:57:41'),(14,2,NULL,NULL,'LOGIN: ENTROU NO SISTEMA','2804:389:a2b9:79ba:e503:df94:73a5:c703','/api/usuario/login','2025-05-31 10:56:48'),(15,2,NULL,NULL,'LOGIN: ENTROU NO SISTEMA','128.201.17.239','/api/usuario/login','2025-06-24 13:42:36'),(16,2,NULL,NULL,'LOGIN: ENTROU NO SISTEMA','2804:820:d15d:6000:bc5d:1d12:a0dc:6b23','/api/usuario/login','2025-07-24 19:38:58'),(17,2,NULL,NULL,'LOGIN: ENTROU NO SISTEMA','177.134.91.235','/api/usuario/login','2025-07-25 19:33:06'),(18,2,8,'UPDATE SI_MODULO SET CONTROLLER = \'Gestão de Eventos\',  ICONE = \'mdi mdi-eye\',  TITULO = \'Organizador\',  DESCRICAO = \'Teste\',  ORDEM = \'1\',  SITUACAO = \'1\' WHERE CODMODULO=\'7\'','MODULO: ALTERAR','177.134.91.235','/sistema/modulos-action/','2025-07-25 19:34:22'),(19,2,NULL,NULL,'LOGIN: ENTROU NO SISTEMA','177.134.91.235','/api/usuario/login','2025-07-27 13:24:49'),(20,2,NULL,NULL,'LOGIN: ENTROU NO SISTEMA','170.239.226.69','/api/usuario/login','2025-08-06 18:33:43'),(21,2,NULL,NULL,'LOGIN: ENTROU NO SISTEMA','170.239.3.252','/api/usuario/login','2025-09-15 19:46:48'),(22,2,NULL,NULL,'LOGIN: ENTROU NO SISTEMA','179.155.133.255','/api/usuario/login','2025-09-15 19:50:03'),(23,2,NULL,NULL,'LOGIN: ENTROU NO SISTEMA','45.234.138.209','/api/usuario/login','2025-09-18 11:39:14'),(24,2,6,NULL,'USUARIO-LOGAR-COMO: LOGOU COMO CODUSUARIO: 2','45.234.138.209','/sistema/usuarios-trocar-action/','2025-09-18 11:42:02'),(25,2,NULL,NULL,'LOGIN: ENTROU NO SISTEMA','2804:820:f74f:2a00:a102:20d8:3f8d:418d','/api/usuario/login','2025-09-22 19:46:42'),(26,2,NULL,NULL,'LOGIN: ENTROU NO SISTEMA','2804:820:f787:7900:80fc:622e:4762:7b9','/api/usuario/login','2025-11-14 15:17:47'),(27,2,NULL,NULL,'LOGIN: ENTROU NO SISTEMA','128.201.17.239','/api/usuario/login','2026-03-24 08:17:20'),(28,2,NULL,NULL,'LOGIN: ENTROU NO SISTEMA','128.201.17.239','/api/usuario/login','2026-03-24 10:38:29'),(29,2,NULL,NULL,'LOGIN: ENTROU NO SISTEMA','2804:d59:b0e7:9100:8494:f5b6:9772:2b7e','/api/usuario/login','2026-03-24 10:41:19'),(30,2,NULL,NULL,'LOGIN: ENTROU NO SISTEMA','128.201.17.239','/api/usuario/login','2026-03-24 11:16:52'),(31,2,NULL,NULL,'LOGIN: ENTROU NO SISTEMA','183.185.197.63','/api/usuario/login','2026-04-26 04:29:26'),(32,2,NULL,NULL,'LOGIN: ENTROU NO SISTEMA','186.213.34.134','/api/usuario/login','2026-07-10 18:55:18'),(33,2,NULL,NULL,'LOGIN: ENTROU NO SISTEMA','186.213.34.134','/api/usuario/login','2026-07-11 07:55:36'),(34,2,NULL,NULL,'LOGIN: ENTROU NO SISTEMA','186.213.34.134','/api/usuario/login','2026-07-13 07:03:39'),(35,2,5,'INSERT INTO SI_SERVICO (CODMODULO, CONTROLLER, ICONE, TITULO, DESCRICAO, ORDEM, SITUACAO) VALUES (\'6\',\'manutencao\',\'mdi-archive-plus-outline\',\'Manutenção\',\'Logs do sistema\',\'1\',\'1\')','SERVICO: CADASTRAR','186.213.34.134','/sistema/servicos-action/','2026-07-13 07:04:52'),(36,2,7,'INSERT INTO SI_PRIVILEGIO (CODPERFIL, CODSERVICO, LER, SALVAR, ALTERAR, EXCLUIR, OUTROS) VALUES (\'1\',\'10\',\'1\',\'1\',\'1\',\'1\',\'1\')','PRIVILEGIO-PERFIL: CADASTRAR','186.213.34.134','/sistema/perfil-privilegios-action/','2026-07-13 07:09:25');
 /*!40000 ALTER TABLE `SI_LOG` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -382,7 +382,7 @@ CREATE TABLE `SI_PRIVILEGIO` (
   KEY `fk_PRIVILEGIO_PERFIL1_idx` (`CODPERFIL`),
   CONSTRAINT `FK_PRIVILEGIO_PERFIL` FOREIGN KEY (`CODPERFIL`) REFERENCES `SI_PERFIL` (`CODPERFIL`),
   CONSTRAINT `FK_PRIVILEGIO_SERVICO` FOREIGN KEY (`CODSERVICO`) REFERENCES `SI_SERVICO` (`CODSERVICO`)
-) ENGINE=InnoDB AUTO_INCREMENT=67 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=73 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -391,7 +391,7 @@ CREATE TABLE `SI_PRIVILEGIO` (
 
 LOCK TABLES `SI_PRIVILEGIO` WRITE;
 /*!40000 ALTER TABLE `SI_PRIVILEGIO` DISABLE KEYS */;
-INSERT INTO `SI_PRIVILEGIO` VALUES (62,5,1,1,1,1,1,1,0),(63,6,1,1,1,1,1,1,0),(64,7,1,1,1,1,1,1,0),(65,8,1,1,1,1,1,1,0),(66,9,1,1,1,1,1,1,0);
+INSERT INTO `SI_PRIVILEGIO` VALUES (67,5,1,1,1,1,1,1,0),(68,6,1,1,1,1,1,1,0),(69,7,1,1,1,1,1,1,0),(70,8,1,1,1,1,1,1,0),(71,9,1,1,1,1,1,1,0),(72,10,1,1,1,1,1,1,0);
 /*!40000 ALTER TABLE `SI_PRIVILEGIO` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -443,7 +443,7 @@ CREATE TABLE `SI_SERVICO` (
   PRIMARY KEY (`CODSERVICO`),
   KEY `FK_SERVICO_MODULO_idx` (`CODMODULO`),
   CONSTRAINT `FK_SERVICO_MODULO` FOREIGN KEY (`CODMODULO`) REFERENCES `SI_MODULO` (`CODMODULO`)
-) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -452,7 +452,7 @@ CREATE TABLE `SI_SERVICO` (
 
 LOCK TABLES `SI_SERVICO` WRITE;
 /*!40000 ALTER TABLE `SI_SERVICO` DISABLE KEYS */;
-INSERT INTO `SI_SERVICO` VALUES (5,6,'Serviços','Cadastro de serviços','mdi-animation','servicos',1,1,0),(6,6,'Usuários','Cadastro de usuários','mdi-account-group-outline','usuarios',1,1,0),(7,6,'Perfils','Cadastro de perfil','mdi-account-circle','perfil',1,1,0),(8,6,'Módulos','Cadastro de módulos','mdi-view-module','modulos',1,1,0),(9,6,'Pessoas','Pessoas cadastradas no sistema','mdi-account-outline','pessoas',1,1,0);
+INSERT INTO `SI_SERVICO` VALUES (5,6,'Serviços','Cadastro de serviços','mdi-animation','servicos',1,1,0),(6,6,'Usuários','Cadastro de usuários','mdi-account-group-outline','usuarios',1,1,0),(7,6,'Perfils','Cadastro de perfil','mdi-account-circle','perfil',1,1,0),(8,6,'Módulos','Cadastro de módulos','mdi-view-module','modulos',1,1,0),(9,6,'Pessoas','Pessoas cadastradas no sistema','mdi-account-outline','pessoas',1,1,0),(10,6,'Manutenção','Logs do sistema','mdi-archive-plus-outline','manutencao',1,1,0);
 /*!40000 ALTER TABLE `SI_SERVICO` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -517,9 +517,13 @@ CREATE TABLE `SI_USUARIO` (
 
 LOCK TABLES `SI_USUARIO` WRITE;
 /*!40000 ALTER TABLE `SI_USUARIO` DISABLE KEYS */;
-INSERT INTO `SI_USUARIO` VALUES (2,2,'$2y$10$rliLT9eqksi.5JTorf3sv.75FkNuGQo6/.PKOlNTYqpwgYRxevmBi','2026-03-24 08:17:20',0,1,0,'2025-05-12 23:57:05','2026-03-24 08:17:20');
+INSERT INTO `SI_USUARIO` VALUES (2,2,'$2y$10$rliLT9eqksi.5JTorf3sv.75FkNuGQo6/.PKOlNTYqpwgYRxevmBi','2026-07-13 07:03:39',0,1,0,'2025-05-12 23:57:05','2026-07-13 07:03:39');
 /*!40000 ALTER TABLE `SI_USUARIO` ENABLE KEYS */;
 UNLOCK TABLES;
+
+--
+-- Dumping routines for database 'u576166589_speedphp'
+--
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
@@ -530,4 +534,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2026-03-24  8:33:06
+-- Dump completed on 2026-07-13  7:26:49

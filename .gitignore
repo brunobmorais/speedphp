@@ -26,6 +26,7 @@ speed-measure-plugin.json
 
 # IDEs and editors
 .idea/*
+.cursor/*
 .project
 .classpath
 .c9/
@@ -34,11 +35,10 @@ speed-measure-plugin.json
 *.sublime-workspace
 
 # IDE - VSCode
-.vscode/*
-!.vscode/settings.json
-!.vscode/tasks.json
-!.vscode/launch.json
-!.vscode/extensions.json
+/.vscode/*
+!/.vscode/launch-example.json
+!/.vscode/settings-example.json
+
 .history/*
 
 # misc
@@ -56,12 +56,17 @@ testem.log
 Thumbs.db
 
 # PASTAS
+/public/error_log
 /public/assets/upload/pessoa/*
 /vendor
 /node_modules
 /templates/tmp
+/cache
 /docker/volumes/mysql
+/logs
 
-# ARQUIVOS
+
+# ARQUIVOS IGNORADOS
 /config/productionConfig.php
 !/public/assets/upload/img/pessoa/default.png
+!/logs/default.log
