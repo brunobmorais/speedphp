@@ -63,6 +63,16 @@ class AlertLib
         $alert = "<script>window.onload = function () {iziToast.{$type}({title: '{$title}', message: '{$message}', position: 'bottomRight'});}</script>";
 
         $this->setSessionAlert($alert);
+
+        // Envio via fetch (ver public/assets/js/my-theme-form.js): não fazemos um redirect
+        // HTTP de verdade aqui, pois o fetch() seguiria o redirect sozinho e acabaria lendo
+        // (e limpando) a mensagem de sessão antes da página realmente aparecer pro usuário.
+        if (($_SERVER['HTTP_X_FETCH_REDIRECT'] ?? '') === '1') {
+            header("X-Redirect-To: $redirect");
+            http_response_code(200);
+            exit;
+        }
+
         header("Location: $redirect");
         exit;
     }

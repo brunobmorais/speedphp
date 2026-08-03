@@ -36,13 +36,39 @@ document.querySelectorAll("form").forEach((formElement) => {
         validaFormElement(formElement);
 
         if (formElement.checkValidity()) {
-            window.onpageshow = function (event) {
-                if (event.persisted && buttonId) {
-                    clickBotaoProgressInativo(buttonId, textButton);
-                }
-            };
+            const isMultipart = (formElement.getAttribute('enctype') || '').toLowerCase() === 'multipart/form-data';
 
-            formElement.submit(); // tudo certo, envia o formulário
+            if (isMultipart) {
+                // form.submit() nativo pode sair com o corpo vazio (Content-Length: 0) no
+                // Safari/iOS após escolher um arquivo pela galeria/câmera. Montar o FormData
+                // em JS e enviar via fetch() evita esse bug.
+                const method = (formElement.getAttribute('method') || 'POST').toUpperCase();
+                const action = formElement.getAttribute('action') || window.location.href;
+                const formData = new FormData(formElement);
+
+                fetch(action, {
+                    method: method,
+                    body: formData,
+                    credentials: 'same-origin',
+                    headers: { 'X-Fetch-Redirect': '1' }
+                }).then((response) => {
+                    // O servidor responde com 200 + header X-Redirect-To (em vez de um
+                    // redirect HTTP de verdade) para o fetch não consumir a mensagem flash
+                    // da sessão antes da navegação real acontecer.
+                    window.location.href = response.headers.get('X-Redirect-To') || response.url;
+                }).catch(() => {
+                    if (buttonId) clickBotaoProgressInativo(buttonId, textButton);
+                    alertError("Falha ao enviar o formulário. Verifique sua conexão e tente novamente.");
+                });
+            } else {
+                window.onpageshow = function (event) {
+                    if (event.persisted && buttonId) {
+                        clickBotaoProgressInativo(buttonId, textButton);
+                    }
+                };
+
+                formElement.submit(); // tudo certo, envia o formulário
+            }
         } else {
             if (buttonId) clickBotaoProgressInativo(buttonId, textButton);
             alertError("Preencha todos os campos corretamente!");
