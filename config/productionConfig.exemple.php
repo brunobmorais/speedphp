@@ -25,3 +25,6 @@ const CONFIG_DISPLAY_ERROR_DETAILS = false;
 
 const CONFIG_URL = "https://seusite.com";
 
+// TOKEN DO public/autodeploy.php (gere com: php -r "echo bin2hex(random_bytes(32));")
+const CONFIG_DEPLOY_TOKEN = '';
+

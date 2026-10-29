@@ -378,11 +378,28 @@ class FileLib
             mkdir($caminhoImagem, 0755, true);
         }
 
-        $name = $this->generateFileNameBase64($string);
+        if (!is_string($string) || !str_contains($string, ',')) {
+            return null;
+        }
 
-        $base64Image = $string;
-        $imageData = explode(',', $base64Image)[1];
-        $imageData = base64_decode($imageData);
+        $imageData = base64_decode(explode(',', $string, 2)[1], true);
+        if ($imageData === false) {
+            return null;
+        }
+
+        // A EXTENSAO VEM DO CONTEUDO REAL DA IMAGEM, NUNCA DO MIME INFORMADO PELO CLIENTE
+        $extensoesPermitidas = [
+            IMAGETYPE_JPEG => 'jpg',
+            IMAGETYPE_PNG => 'png',
+            IMAGETYPE_GIF => 'gif',
+            IMAGETYPE_WEBP => 'webp',
+        ];
+        $imageInfo = getimagesizefromstring($imageData);
+        if ($imageInfo === false || !isset($extensoesPermitidas[$imageInfo[2]])) {
+            return null;
+        }
+
+        $name = md5(uniqid(time()) . (new FuncoesLib())->pegaIpUsuario()) . "." . $extensoesPermitidas[$imageInfo[2]];
         file_put_contents($caminhoImagem . $name, $imageData);
 
         return $name;

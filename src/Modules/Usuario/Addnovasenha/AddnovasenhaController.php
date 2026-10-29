@@ -32,14 +32,23 @@ class AddnovasenhaController extends ControllerCore implements ControllerModuleI
             $siCodigoTokenDao = new SICodigoValidadorDao();
             $usuarioDao = new UsuarioDao();
 
+            if (empty($usuarioModel->getSENHA())) {
+                $alerta->warning('Informe a nova senha!', '/usuario/esquecisenha');
+            }
+
             $usuarioModel->setSenha($func->create_password_hash($usuarioModel->getSENHA()));
 
-            $objCodigoValidador = $siCodigoTokenDao->validarToken($this->postParams("TOKEN"));
+            $token = $this->postParams("TOKEN");
+            $dataToken = (new JwtLib())->decode($token);
+            $objCodigoValidador = $dataToken ? $siCodigoTokenDao->validarToken($token) : false;
 
-            // VERIFICA SE É VALIDO
-            if (!$objCodigoValidador) {
+            // VERIFICA SE É VALIDO E SE O TOKEN PERTENCE AO USUÁRIO DO REGISTRO
+            if (!$objCodigoValidador || empty($dataToken->data->id) || $dataToken->data->id != $objCodigoValidador[0]->CODUSUARIO) {
                 $alerta->warning('Sua solicitação expirou! Tente novamente.', '/usuario/esquecisenha');
             }
+
+            // O USUÁRIO VEM DO TOKEN, NUNCA DO FORMULÁRIO
+            $usuarioModel->setCODUSUARIO($objCodigoValidador[0]->CODUSUARIO);
 
             // ATUALIZA TOKEN COMO UTILIZADO
             $siCodigoTokenDao->update("SITUACAO", array(0, $objCodigoValidador[0]->CODCODIGOVALIDADOR), "CODCODIGOVALIDADOR=?");

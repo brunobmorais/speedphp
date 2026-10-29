@@ -926,6 +926,9 @@ class SistemaController extends ControllerCore implements ControllerInterface
             $alerta = new AlertLib();
             $usuarioDao = new UsuarioDao();
 
+            if ($data["SERVICO"]["ALTERAR"] != "1")
+                $alerta->warning("Você não tem privilégio para executar essa ação!", $returnAction);
+
             $senha = $usuarioModel->getSENHA();
             $usuarioModel->setSenha($func->create_password_hash($usuarioModel->getSENHA()));
 
@@ -959,11 +962,16 @@ class SistemaController extends ControllerCore implements ControllerInterface
             $data = $this->getServico();
             $this->validateRequestMethod("POST");
 
+            if ($data["SERVICO"]["OUTROS"] != "1")
+                (new AlertLib())->warning("Você não tem privilégio para executar essa ação!", "{$data["SERVICO"]["URL"]}/");
+
             $usuarioDao = new UsuarioDao();
             $jwtTokenClass = new JwtLib();
             $codusuario = $this->postParams("CODUSUARIO");
 
             $usuarioModel = $usuarioDao->buscarCodusuario($codusuario);
+            if (!$usuarioModel)
+                (new AlertLib())->warning("Usuário não encontrado!", "{$data["SERVICO"]["URL"]}/");
 
             $data['id'] = $codusuario;
             $token = $jwtTokenClass->encode(1440, $data);
@@ -1124,6 +1132,9 @@ class SistemaController extends ControllerCore implements ControllerInterface
             $alerta = new AlertLib();
             $usuarioDao = new UsuarioDao();
 
+            if ($data["SERVICO"]["ALTERAR"] != "1")
+                $alerta->warning("Você não tem privilégio para executar essa ação!", $returnAction);
+
             $senha = $usuarioModel->getSENHA();
             $usuarioModel->setSenha($func->create_password_hash($usuarioModel->getSENHA()));
 
@@ -1163,11 +1174,16 @@ class SistemaController extends ControllerCore implements ControllerInterface
             $returnParams = ($this->postParams("pg") != "" ? "?pg=" . $this->postParams("pg") : "") . ($this->postParams("b") != "" ? "&b=" . $this->postParams("b") : "");
             $returnAction = "{$data["SERVICO"]["URL"]}/" . $returnParams;
 
+            if ($data["SERVICO"]["OUTROS"] != "1")
+                (new AlertLib())->warning("Você não tem privilégio para executar essa ação!", "{$data["SERVICO"]["URL"]}/");
+
             $usuarioDao = new UsuarioDao();
             $jwtTokenClass = new JwtLib();
             $codusuario = $this->postParams("CODUSUARIO");
 
             $usuarioModel = $usuarioDao->buscarCodusuario($codusuario);
+            if (!$usuarioModel)
+                (new AlertLib())->warning("Usuário não encontrado!", "{$data["SERVICO"]["URL"]}/");
 
             $data['id'] = $codusuario;
             $token = $jwtTokenClass->encode(1440, $data);
@@ -1412,6 +1428,10 @@ class SistemaController extends ControllerCore implements ControllerInterface
             $this->isLogged();
             $data = $this->getServico();
             $this->validateRequestMethod("POST");
+
+            $extensao = strtolower(pathinfo($_FILES["ARQUIVO"]["name"] ?? "", PATHINFO_EXTENSION));
+            if (!in_array($extensao, ["xlsx", "xls", "csv", "ods"]))
+                (new AlertLib)->warning("Arquivo inválido! Envie uma planilha (xlsx, xls, csv ou ods).", $this->returnPostAction());
 
             $destino = "/public/assets/upload/";
             $nomeArquivo = (new FileLib())->uploadFile($_FILES["ARQUIVO"],$destino);

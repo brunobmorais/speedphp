@@ -24,8 +24,8 @@ class DownloadController extends ControllerCore implements ControllerInterface
                 $this->isLogged();
 
             $folder = $this->getParams("folder");
-            $file = $this->getParams("file");
-            $caminho = $_SERVER['DOCUMENT_ROOT'];
+            // basename IMPEDE PATH TRAVERSAL (../)
+            $file = basename($this->getParams("file"));
 
             if (empty($folder))
                 (new AlertLib())->warning("Informe a pasta!", "/");
@@ -33,18 +33,19 @@ class DownloadController extends ControllerCore implements ControllerInterface
             if (empty($file))
                 (new AlertLib())->warning("Informe o arquivo!", "/");
 
-            switch ($folder) {
-                case "funcionario":
-                    $caminho .= "/public/assets/upload/files/funcionario/";
-                    break;
-                default:
-                    $caminho .= "";
-            }
+            // SOMENTE PASTAS LIBERADAS PARA DOWNLOAD
+            $pastas = [
+                "funcionario" => "/public/assets/upload/files/funcionario/",
+            ];
 
-            if (!file_exists($caminho . $file))
+            if (!isset($pastas[$folder]))
+                (new AlertLib())->warning("Pasta inválida!", "/");
+
+            $caminho = realpath(dirname(__DIR__, 2) . $pastas[$folder]);
+            $filename = realpath($caminho . "/" . $file);
+
+            if (!$caminho || !$filename || !str_starts_with($filename, $caminho . DIRECTORY_SEPARATOR) || !is_file($filename))
                 (new AlertLib())->warning("Arquivo inválido!", "/");
-
-            $filename = $caminho . $file;
 
             $finfo = finfo_open(FILEINFO_MIME_TYPE);
             $type = finfo_file($finfo, $filename);
