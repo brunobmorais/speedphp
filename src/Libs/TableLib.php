@@ -139,7 +139,7 @@ class TableLib
      */
     public function sortData(array $data): array
     {
-        if (empty($this->currentSort)) {
+        if (!in_array($this->currentSort, $this->sortKeys, true)) {
             return $data;
         }
 
@@ -188,10 +188,10 @@ class TableLib
         $this->total        = !empty($this->data) ? count($this->data) : 0;
 
         // Lê os parâmetros de ordenação do GET
-        $this->currentSort  = isset($_GET['sort'])  ? trim(strip_tags($_GET['sort']))  : '';
-        $this->currentOrder = (isset($_GET['order']) && strtolower($_GET['order']) === 'desc') ? 'desc' : 'asc';
+        $this->currentSort  = is_string($_GET['sort'] ?? null) ? trim(strip_tags($_GET['sort'])) : '';
+        $this->currentOrder = is_string($_GET['order'] ?? null) && strtolower($_GET['order']) === 'desc' ? 'desc' : 'asc';
 
-        $this->pg = empty($_GET['pg']) ? 1 : $_GET["pg"];
+        $this->pg = filter_var($_GET['pg'] ?? 1, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]) ?: 1;
 
         $this->npages = floor($this->total / $this->qtd);
 
@@ -227,9 +227,17 @@ class TableLib
         return '?' . http_build_query($params);
     }
 
-    public static function getOrderByDatabase(string $sort, string $order): string{
-        $sort  = isset($_GET['sort'])  ? trim(strip_tags($_GET['sort']))  : $sort;
-        $asc = (isset($_GET['order']) && strtolower($_GET['order']) === 'desc') ? 'desc' : $order;
+    /**
+     * Monta o ORDER BY a partir do GET. O sort do GET só vale se estiver em $allowedColumns;
+     * $sort é o padrão definido pelo código e nunca deve vir da requisição.
+     *
+     * @param array $allowedColumns colunas aceitas no parâmetro sort
+     */
+    public static function getOrderByDatabase(string $sort, string $order, array $allowedColumns = []): string{
+        $getSort = $_GET['sort'] ?? null;
+        $sort = is_string($getSort) && in_array($getSort, $allowedColumns, true) ? $getSort : $sort;
+        $getOrder = is_string($_GET['order'] ?? null) ? $_GET['order'] : $order;
+        $asc = strtolower($getOrder) === 'desc' ? 'desc' : 'asc';
 
         return " ORDER BY {$sort} {$asc}";
     }
@@ -355,26 +363,28 @@ class TableLib
      * @param $link
      * @param $onclick
      * @param $style
+     * @param $attrs Atributos extras da linha (ex: data-id, class)
      * @return $this
      * @example $table->addRow("/modulo/servico-cadastro/?id=1", "nomeFuncaoJS()", "style: css");
      */
-    public function addRow($link = "", $onclick = "", $style = "")
+    public function addRow($link = "", $onclick = "", $style = "", $attrs = "")
     {
+        $this->link = '';
+
         if (!empty($link)) {
-            $parameter = "&pg={$this->pg}&";
-            foreach ($this->busca as $key => $value) {
-                $parameter .= $key . "=" . str_replace(" ", "+", htmlentities((string)($value ?? "")));
-            }
-            $this->link = "onclick='location.href=`{$link}{$parameter}`'";
-            $style      = "style='cursor: pointer;{$style}'";
+            $url = $link . (str_contains($link, '?') ? '&' : '?') . http_build_query(['pg' => $this->pg] + $this->busca);
+            $this->link = "onclick='location.href=" . htmlspecialchars(json_encode($url), ENT_QUOTES) . "'";
         }
 
         if (!empty($onclick)) {
             $this->link = "onclick='{$onclick}'";
-            $style      = "style='cursor: pointer;{$style}'";
         }
 
-        $this->dataTable .= "<tr id='linec" . $this->linhas . "' {$style}>\n";
+        $css = (!empty($this->link) ? 'cursor: pointer;' : '') . $style;
+        $style = $css !== '' ? "style='{$css}'" : '';
+
+        $extra = trim((string) $attrs);
+        $this->dataTable .= "<tr id='linec" . $this->linhas . "' {$style} {$extra}>\n";
 
         $j = 0;
 
